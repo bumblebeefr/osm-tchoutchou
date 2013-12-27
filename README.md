@@ -8,7 +8,7 @@ Some details on the original raildar map and API : http://blog.spyou.org/wordpre
 
 How to install :
 ----------------
-Install python-pi and python-virtualenv then run
+Install python-pip and python-virtualenv on your system then run
 ```
 ./install.sh
 ```
