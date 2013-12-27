@@ -8,11 +8,9 @@ Some details on the original raildar map and API : http://blog.spyou.org/wordpre
 
 How to install :
 ----------------
-
+Install python-pi and python-virtualenv then run
 ```
 ./install.sh
-./webserver.sh
-
 ```
 
 If you have some porblems when compiling lxml you should install lxml source, for exemple on debian/ubuntu :
@@ -26,7 +24,7 @@ How to run :
 ------------
 
 ```
-./install.sh
+./webserver.sh
 
 ```
 Will launch a python webserver on http://localhost:5000/
