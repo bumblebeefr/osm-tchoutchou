@@ -25,7 +25,11 @@ train_types = {
     'Unknown': 'unknown',
     'TER/IC': 'simple',
     'Thalys': 'thalys',
-    'TGV LYRIA': 'tgv'
+    'TGV LYRIA': 'tgv',
+    'Lunea': 'simple',
+    'LER': 'simple',
+    'Intercite': 'simple',
+    'TER': 'simple'
 }
 
 
