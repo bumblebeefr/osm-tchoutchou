@@ -68,10 +68,6 @@ def map_generic():
         x2 = gare_dict.get(m.get('next_gare', None), {}).get('lng', None)
         y2 = gare_dict.get(m.get('next_gare', None), {}).get('lat', None)
         if(x1 and x2 and y1 and y2):
-#             m["x_diff"] = x2 - x1
-#             m["y_diff"] = y2 - y1
-#             m["next_lat"] = gare_dict.get(remove_accents(m.get('next_gare', "")), {}).get('lat', None)
-#             m["next_lng"] = gare_dict.get(remove_accents(m.get('next_gare', "")), {}).get('lng', None)
             if(x2 == x1):
                 m["angle"] = 0
             else:
