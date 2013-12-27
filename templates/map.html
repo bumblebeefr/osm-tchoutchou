@@ -121,6 +121,12 @@
 		
 		
 		
+		.circle-icon, .leaflet-popup{
+			-webkit-transition: all 20s linear;
+			-moz-transition: all 20s linear;
+			-o-transition: all 20s linear;
+			transition: all 20s linear;
+		}
 		.circle-icon{
 			border-radius:9px;
 			opacity:0.8;
@@ -130,15 +136,15 @@
 			overflow:hidden;
 			font-size:12px;
 			color:#FFF;
-			-webkit-transition: all 20s linear;
-			-moz-transition: all 20s linear;
-			-o-transition: all 20s linear;
-			transition: all 20s linear;
 		}
 		
 		.circle-icon img{
 			width:18px;
 			height:18px;
+			-webkit-transition: all 20s linear;
+			-moz-transition: all 20s linear;
+			-o-transition: all 20s linear;
+			transition: all 20s linear;
 		}
 		
 		
@@ -157,6 +163,7 @@
 			-o-transition: width 0.3s;
 			transition: width 0.3s;
 			max-width:100%;
+			display:none;
 		}
 		#sidebar_button{
 			position:absolute;
@@ -250,7 +257,7 @@
 			<label><input type="checkbox" class="filter" name="cancelled" checked="checked"/>Supprimé</label>
 		</div>
 		<div></div>
-		<div>
+		<div id="detail_block">
 			<i class="fa fa-search"></i>  <strong>Detail du train :</strong>
 			<div id="details">
 				<div id="mission_detail_help">Survolez un train pour en voir les détails</div>
@@ -261,8 +268,10 @@
 			<i class="fa fa-info-circle"></i> À propos
 			<div>
 				Radar des trains, utilisant des cartes <a href="http://www.openstreetmap.org" target="_blank">Open Street Map</a>. 
+				<br/>
 				Données provenant du <a href="http://raildar.fr" target="_blank">raildar.fr</a> 
 				de <a href="http://blog.spyou.org/wordpress-mu/2013/11/30/jstchoutchou/" target="_blank">@Turblog</a>. 
+				<br/>
 				Sources et détails sur <a href="https://github.com/bumblebeefr/osm-tchoutchou" target="_blank">github</a>.
 			</div>
 		</div> 
@@ -329,7 +338,7 @@
 				$("#icon").removeClass("loading");
 			},
 			show : function(){
-
+				console.time("req");
 				$("#icon").addClass("loading");
 				jQuery.ajax("/api/map_generic.json",{
 					async : true,
@@ -339,6 +348,8 @@
 						$("#icon").removeClass("loading");
 					}},
 					success : function(data, textStatus, jqXHR){
+						console.timeEnd("req");
+						console.time("load");
 						console.info("Rafraichit les trains",new Date().toString());
 						Missions.statuses = {ttl:0}
 						var mission_ids ={};
@@ -378,6 +389,7 @@
 						//Affichage des stats
 						$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
 						$("#icon").removeClass("loading");
+						console.timeEnd("load");
 					}
 				});
 /* 				$.get("/api/map_generic.json?t="+(new Date()),function(data){
@@ -454,7 +466,10 @@
 		
 		$(function(){
 			if(L.Browser.touch){
-				body.addClass("touch");	
+				$("body").addClass("touch");	
+				$("#detail_block").hide();
+			}else{
+				$("#sidebar").show();
 			}
 		
 			$("input.filter").change(function(){
