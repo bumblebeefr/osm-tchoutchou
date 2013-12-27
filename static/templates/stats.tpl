@@ -1,4 +1,4 @@
-<strong>{{ttl}}</strong> missions en cours :
+<strong>{{ttl}}</strong> missions en cours à {{hour}}
 <ul>
 	<li><img src="/static/images/fleche_green.png" width="10"/> <strong>{{ok}}</strong> trains à l'heure ({{percent ok ttl}})</li>
 	<li><img src="/static/images/fleche_orange.png" width="10"/> <strong>{{delayed}}</strong> trains en retard ({{percent delayed ttl}}) :

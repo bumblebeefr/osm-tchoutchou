@@ -32,6 +32,10 @@
 			font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva, sans-serif;
 			font-size:10pt;
 		}
+		a{
+			color:#666;
+			font-weight:bold;
+		}
 		html, body, #map {
 			height: 100%;
 		}
@@ -44,10 +48,78 @@
 		}
 		#title img{
 			height:1.8em;
-			disaplay:inline-block;
+		}
+		#icon{
+			display:inline-block;
+			width:43px;
+			height:43px;
 			position:relative;
 			top:0.5em;
 		}
+		
+		#icon #icon-loading{
+			display:none;
+		}
+		
+		#icon.loading{
+			-webkit-animation: fade 0.6s linear infinite;
+			-moz-animation: fade 0.6s linear infinite;
+			-ms-animation: fade 0.6s linear infinite;
+			-o-animation: fade 0.6s linear infinite;
+			animation: fade 0.6s linear infinite;
+		}
+		
+		#icon.loading #icon-loading{
+			display:inline;
+		}
+		
+		#icon.loading #icon-fixed{
+			display:none;
+		}
+		
+		
+		
+		
+		#icon.loading{
+ 			-webkit-animation: fade 0.6s linear infinite;
+			-moz-animation: fade 0.6s linear infinite;
+			-ms-animation: fade 0.6s linear infinite;
+			-o-animation: fade 0.6s linear infinite;
+			animation: fade 0.6s linear infinite; 
+		}
+
+		/* animation */
+		@-webkit-keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		}
+		
+		@-moz-keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		}
+		
+		@-ms-keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		}
+		
+		@-o-keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		}
+		
+		@keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		} 
+		
+		
 		
 		.circle-icon{
 			border-radius:9px;
@@ -69,25 +141,6 @@
 			height:18px;
 		}
 		
-/* 		.circle-icon-green{
-			background-color:#35a619;
-		}
-		
-		.circle-icon-yellow{
-			background-color:#b7c916;
-		}
-		
-		.circle-icon-orange{
-			background-color:#c79516;
-		}
-		
-		.circle-icon-red{
-			background-color:#c71818;
-		}
-		
-		.circle-icon-black{
-			background-color:#575757;
-		} */
 		
 		#sidebar>div{
 			padding:1em;
@@ -150,7 +203,7 @@
 			padding:3em;
 		}
 		#mission_detail{
-			padding:0.5em;
+			padding:0.5em 1em ;
 		}
 		#stats li{
 			list-style-type: none;
@@ -158,7 +211,14 @@
 		#stats ul{
 			padding-left:15px;
 		}
-		
+		#details{
+			height:120px;
+		}
+		#about>div{
+			padding:0.5em 1em;
+			color:#333;
+			font-size:0.9em;
+		}
 		
 		
 	</style>
@@ -167,13 +227,16 @@
 	<div id="map"></div>
 	<div id="sidebar">
 		<div id="title">
-			<img src="{{url_for('static', filename='images/train.svg')}}"/>
+			<span id="icon">
+				<img id="icon-loading" src="{{url_for('static', filename='images/train_loading.gif')}}"/>
+				<img id="icon-fixed" src="{{url_for('static', filename='images/train_full.png')}}"/>
+			</span>
 			OSM Tchoutchou
 		</div>
 		<!-- <i id="sidebar_close" class="fa fa-times"></i> -->
 		<div id="stats"> </div>
 		<div id="type_selection">
-			<strong>Filtres :</strong>
+			<i class="fa fa-magic"></i>   <strong>Filtres :</strong>
 			<br>
 			  Train n°<input type="text" id="number_filter" class="filter"/>
 			<br>
@@ -188,10 +251,21 @@
 		</div>
 		<div></div>
 		<div>
-			<strong>Detail du train :</strong>
-			<div id="mission_detail_help">Survolez un train pour en voir les détails</div>
-			<div id="mission_detail"></div>
+			<i class="fa fa-search"></i>  <strong>Detail du train :</strong>
+			<div id="details">
+				<div id="mission_detail_help">Survolez un train pour en voir les détails</div>
+				<div id="mission_detail"></div>
+			</div>
 		</div>
+		<div id="about">
+			<i class="fa fa-info-circle"></i> À propos
+			<div>
+				Radar des trains, utilisant des cartes <a href="http://www.openstreetmap.org" target="_blank">Open Street Map</a>. 
+				Données provenant du <a href="http://raildar.fr" target="_blank">raildar.fr</a> 
+				de <a href="http://blog.spyou.org/wordpress-mu/2013/11/30/jstchoutchou/" target="_blank">@Turblog</a>. 
+				Sources et détails sur <a href="https://github.com/bumblebeefr/osm-tchoutchou" target="_blank">github</a>.
+			</div>
+		</div> 
 	</div>
 	<div id="sidebar_button"><i class="fa fa-cogs"></i></div>
 
@@ -246,18 +320,22 @@
 			//redraw each mission whithout changing data (after an UI event for example)
 			redrawMarkers : function(){
 				console.time("redraw")
+				$("#icon").addClass("loading");
 				$.each(Missions.missions,function(){
 					this.drawMarker();
 				});
 				console.timeEnd("redraw")
+				$("#icon").removeClass("loading");
 			},
 			show : function(){
-				
+
+				$("#icon").addClass("loading");
 				jQuery.ajax("/api/map_generic.json",{
 					async : true,
 					cache : false,
 					error : function(e){if(console && console.error){
 						console.error("Error when loading #jstchouchou data "+url,e);
+						$("#icon").removeClass("loading");
 					}},
 					success : function(data, textStatus, jqXHR){
 						console.info("Rafraichit les trains",new Date().toString());
@@ -280,22 +358,25 @@
 									}else{
 										Missions.statuses[this.type]  += 1;
 									}
+									Missions.statuses['hour'] = this.last_check;
 									Missions.statuses['ttl']  += 1;
 								/* } catch(e){
 									console.warn("Oups ya un probleme avec le point là ",this,e);
 								} */
-
+								
 							}else{
 								//console.warn("Hum ce marker n'a pas de coorrdonées ? ",this);
 							};
-						})
-						;
+						});
+						
+						
 						//tnetoyyage des mission terminées
 						Missions.clean(mission_ids);
 						delete(mission_ids);
 						
 						//Affichage des stats
 						$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
+						$("#icon").removeClass("loading");
 					}
 				});
 /* 				$.get("/api/map_generic.json?t="+(new Date()),function(data){
