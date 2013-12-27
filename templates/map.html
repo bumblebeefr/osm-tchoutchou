@@ -270,6 +270,7 @@
 	<div id="sidebar_button"><i class="fa fa-cogs"></i></div>
 
 	<script src="{{url_for('static', filename='leaflet.js')}}"></script>
+	<script src="{{url_for('static', filename='leaflet-hash.js')}}"></script>
 	<script src="{{url_for('static', filename='jquery-2.0.3.js')}}"></script>
 	<script src="{{url_for('static', filename='moment.min.js')}}"></script>
 	<script src="{{url_for('static', filename='moment.fr.js')}}"></script>
@@ -445,8 +446,7 @@
 		L.control.scale({imperial:false}).addTo(map);
 		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
-		
-		
+	    var hash = new L.Hash(map);
 		
 		Missions.show();
 		setInterval(Missions.show,10000);
