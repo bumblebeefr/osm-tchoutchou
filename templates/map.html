@@ -152,7 +152,12 @@
 		#mission_detail{
 			padding:0.5em;
 		}
-		
+		#stats li{
+			list-style-type: none;
+		}
+		#stats ul{
+			padding-left:15px;
+		}
 		
 		
 		
@@ -184,7 +189,7 @@
 		<div></div>
 		<div>
 			<strong>Detail du train :</strong>
-			<div id="mission_detail_help">Survollez un train pour en voir les details</div>
+			<div id="mission_detail_help">Survolez un train pour en voir les détails</div>
 			<div id="mission_detail"></div>
 		</div>
 	</div>
@@ -268,6 +273,12 @@
 										Missions.statuses[this.status] = 1;
 									}else{
 										Missions.statuses[this.status]  += 1;
+									}
+									if(!(this.type in Missions.statuses)){
+										//console.info("Nouveau type : ",mission.type);
+										Missions.statuses[this.type] = 1;
+									}else{
+										Missions.statuses[this.type]  += 1;
 									}
 									Missions.statuses['ttl']  += 1;
 								/* } catch(e){
