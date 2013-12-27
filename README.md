@@ -18,10 +18,7 @@ How to install :
 If you have some porblems when compiling lxml you should install lxml source, for exemple on debian/ubuntu :
 
 ```
-sudo apt-get install libxml2
-sudo apt-get install libxslt1.1
-sudo apt-get install libxml2-dev
-sudo apt-get install libxslt1-dev
+sudo apt-get install libxml2 libxslt1.1 libxml2-dev libxslt1-dev
 ```
 
 
