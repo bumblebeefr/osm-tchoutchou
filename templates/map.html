@@ -136,7 +136,7 @@
 			padding:1em;
 		}
 		#sidebar{
-			width:350px;
+			width:380px;
 			position:absolute;
 			background-color:rgba(255,255,255,0.8);
 			top:0px;
@@ -224,7 +224,6 @@
 			</span>
 			OSM Tchoutchou
 		</div>
-		<!-- <i id="sidebar_close" class="fa fa-times"></i> -->
 		<div id="stats"> </div>
 		<div id="type_selection">
 			<i class="fa fa-magic"></i>   <strong>Filtres :</strong>
@@ -273,27 +272,10 @@
 	<script src="./static/raildar/Train.js"></script>
 	
 	<script>
-/* 		Object.prototype.get = function(key,default_value){
-		    if( key in this) return this[key];
-		    else return default_value;
-		}
-		
-	
-		Object.prototype.foreach = function(callback){
-		    for(k in this){
-		        if(this.hasOwnProperty(k)){
-		            if(callback(k,this[k]) === false) return;
-		        }
-		    }
-		} */
 		var get = function(obj,key,default_value){
 		    if( key in obj) return obj[key];
 		    else return default_value;
 		}
-
-	
-		
-
 		
 		var Missions = {
 			icons:{
@@ -330,19 +312,20 @@
 			},
 			show : function(){
 				$("#icon").addClass("loading");
-				//$.get("http://www.raildar.fr/json/map_generic",function(data){console.log("données json",data)});
-				jQuery.ajax("/api/map_generic.json",{
+				jQuery.ajax("http://www.raildar.fr/json/map_generic",{
 					async : true,
 					cache : false,
-					error : function(e){if(console && console.error){
-						console.error("Error when loading #jstchouchou data ",e);
+					error : function(e){
 						$("#icon").removeClass("loading");
-					}},
+						if(console && console.error){
+							console.error("Error when loading #jstchouchou data ",e);
+						}
+					},
 					success : function(data, textStatus, jqXHR){
 						Missions.statuses = {ttl:0}
 						var mission_ids ={};
 						$.each(data.features,function(){
-								//try{
+								try{
 									var mission = Missions.add(this);
 									mission_ids[mission.id_mission] = true;
 									if(!(mission.status in Missions.statuses)){
@@ -359,9 +342,9 @@
 									}
 									Missions.statuses['hour'] = mission.last_check;
 									Missions.statuses['ttl']  += 1;
-								/* } catch(e){
+								} catch(e){
 									console.warn("Oups ya un probleme avec le point là ",this,e);
-								} */
+								} 
 						});
 						
 						//netoyage des mission terminées
@@ -374,10 +357,6 @@
 						console.timeEnd("load");
 					}
 				});
-/* 				$.get("/api/map_generic.json?t="+(new Date()),function(data){
-					
-					
-				}); */
 
 			},
 			clean : function(mission_ids){
