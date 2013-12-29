@@ -71,7 +71,8 @@ Train.prototype.isVisible = function(){
 
 Train.prototype.updateAngle = function(){
 	if(this.id_mission in Missions.markers){
-		$(Missions.markers[this.id_mission]._icon.firstChild).css({"transform":"rotate("+(this.heading+180)+"deg)","display":"block"});
+		var angle = 180+parseInt(this.heading);
+		$(Missions.markers[this.id_mission]._icon.firstChild).css({"transform":"rotate("+angle+"deg)","display":"block"});
 	}
 }
 //Show, update hide a train marker
