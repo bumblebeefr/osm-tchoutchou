@@ -58,17 +58,18 @@ var Tracking = {
 				bootbox.dialog({
 					message : html,
 					title : "Selectionner une gare",
+					closeButton : false,
 					buttons : {
 						cancel : {
 							label : "Annuler",
-							className : "btn-inverted",
+							className : " btn-default",
 							callback : function() {
 								Tracking.stop();
 							}
 						},
 						ok : {
 							label : "Ok",
-							className : "btn-danger",
+							className : "btn-success",
 							callback : function() {
 								bootbox.alert('Not yet implemented !');
 								Tracking.stop();
