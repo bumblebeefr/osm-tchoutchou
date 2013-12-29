@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>OSM Tchoutchou - raildar with Leaflet</title>
+	<title>OSM Tchoutchou - Raildar with Leaflet and Open Street Map</title>
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -296,8 +296,8 @@
 			},
 			//redraw each mission whithout changing data (after an UI event for example)
 			redrawMarkers : function(){
-				console.time("redraw")
 				$("#icon").addClass("loading");
+				console.time("redraw")
 				$.each(Missions.missions,function(){
 					this.drawMarker();
 				});
@@ -324,6 +324,7 @@
 					success : function(data, textStatus, jqXHR){
 						Missions.statuses = {ttl:0}
 						var mission_ids ={};
+						Missions.statuses['hour'] = null;
 						$.each(data.features,function(){
 								try{
 									var mission = Missions.add(this);
@@ -340,8 +341,10 @@
 									}else{
 										Missions.statuses[mission.type]  += 1;
 									}
-									Missions.statuses['hour'] = mission.last_check;
 									Missions.statuses['ttl']  += 1;
+									if(Missions.statuses['hour'] == null){
+										Missions.statuses['hour'] = mission.last_check;
+									}
 								} catch(e){
 									console.warn("Oups ya un probleme avec le point là ",this,e);
 								} 
