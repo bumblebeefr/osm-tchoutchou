@@ -2,13 +2,14 @@
 <html>
 <head>
 	<title>OSM Tchoutchou - Raildar with Leaflet and Open Street Map</title>
-
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
+	
 	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<link rel="stylesheet" href="./static/jquery.jqplot.css">
 	<link rel="stylesheet" href="./static/leaflet.css" />
 	<link rel="shortcut icon" href="./static/train.ico" />
-
+	
 	<style>
 		body {
 			padding: 0;
@@ -211,6 +212,17 @@
 			font-size:0.9em;
 		}
 		
+		#camembert {
+		margin-top:20px;
+			width:80px;
+			height:120px;
+			float:right;
+			opacity:0.8;
+		}
+		
+		.jqplot-grid-canvas{
+			display:none;
+		}
 		
 	</style>
 </head>
@@ -264,6 +276,8 @@
 	<script src="./static/leaflet.js"></script>
 	<script src="./static/leaflet-hash.js"></script>
 	<script src="./static/jquery-2.0.3.js"></script>
+	<script src="./static/jquery.jqplot.js"></script>
+	<script src="./static/jqplot.pieRenderer.js"></script>
 	<script src="./static/moment.min.js"></script>
 	<script src="./static/moment.fr.js"></script>
 	<script src="./static/handlebars.js"></script>
@@ -279,11 +293,11 @@
 		
 		var Missions = {
 			icons:{
-				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(18,18), html:'<img src="/static/images/fleche_green.png" />'}),
-				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(18,18), html:'<img src="/static/images/fleche_yellow.png" />'}),
-				orange: L.divIcon({className: 'circle-icon circle-icon-orange',iconSize:L.point(18,18), html:'<img src="/static/images/fleche_orange.png" />'}),
-				red: L.divIcon({className: 'circle-icon circle-icon-red',iconSize:L.point(18,18), html:'<img src="/static/images/fleche_red.png" />'}),
-				black: L.divIcon({className: 'circle-icon circle-icon-black',iconSize:L.point(18,18), html:'<img src="/static/images/fleche_black.png" />'})
+				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_green.png" />'}),
+				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_yellow.png" />'}),
+				orange: L.divIcon({className: 'circle-icon circle-icon-orange',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_orange.png" />'}),
+				red: L.divIcon({className: 'circle-icon circle-icon-red',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_red.png" />'}),
+				black: L.divIcon({className: 'circle-icon circle-icon-black',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_black.png" />'})
 			},
 			markers:{},
 			missions:{},
@@ -356,6 +370,38 @@
 						
 						//Affichage des stats
 						$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
+						
+						var pcts = {
+								"green" : 0,
+								"yellow" : 0,
+								"orange" :0,
+								"red":0,
+								"black":0
+						}
+						for(k in pcts){
+							if(k in Missions.statuses){
+								pcts[k] = Math.round(Missions.statuses[k]/Missions.statuses.ttl*1000)/10;
+							}
+						}
+						console.log(pcts);
+						var data = [
+						   ['green',pcts.green], ['yellow',pcts.yellow], ['orange',pcts.orange], ['red',pcts.red], ['black',pcts.black]
+						  ];
+						  var plot1 = jQuery.jqplot ('camembert', [data],
+						    {
+							  seriesColors:['#35a619','#b7c916','#c79516','#c71818','#575757'],
+						      seriesDefaults: {
+						    	fillAlpha :0,
+						        // Make this a pie chart.
+						        renderer: jQuery.jqplot.PieRenderer,
+						        rendererOptions: {
+							        padding:3,
+							        shadowOffset:0.9,
+						             startAngle: -90
+						        }
+						      }
+						    });
+				
 						$("#icon").removeClass("loading");
 						console.timeEnd("load");
 					}
@@ -432,7 +478,6 @@
 			}else{
 				$("#sidebar").show();
 			}
-		
 			$("input.filter").change(function(){
 				Missions.redrawMarkers();
 			});
@@ -440,8 +485,7 @@
  			$("#sidebar_button,#sidebar_close" ).click(function(){
  				$("#sidebar").toggle();
  			});
-
- 			setInterval(Missions.show,10000);
+ 			//setInterval(Missions.show,10000);
 		});
 		
 

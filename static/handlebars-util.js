@@ -1,5 +1,5 @@
 var HandlebarsUtil = {
-		base : "/static/templates/",
+		base : "./static/templates/",
 		templates:{},
 		render:function(template,context){
 				var out = "";
@@ -8,12 +8,13 @@ var HandlebarsUtil = {
 					jQuery.ajax(url,{
 						async : false,
 						cache : false,
+						dataType : "text",
 						error : function(e){if(console && console.error){
 							console.error("error when loading template "+url,e);
 						}},
 						success : function(data, textStatus, jqXHR){
 							out = jqXHR.responseText;
-						}
+						},
 					});
 					HandlebarsUtil.templates[template] = Handlebars.compile(out);
 				}
