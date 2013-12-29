@@ -1,8 +1,45 @@
+var statuses = {
+    "green": "ok",
+    "yellow": "delayed",
+    "orange": "delayed",
+    "red": "delayed",
+    "black": 'cancelled'
+}
+var train_types = {
+    'TGV/ICE': 'tgv',
+    'TGV': 'tgv',
+    'iDTGV': 'tgv',
+    'Unknown': 'unknown',
+    'TER/IC': 'simple',
+    'Thalys': 'thalys',
+    'TGV LYRIA': 'tgv',
+    'Lunea': 'simple',
+    'LER': 'simple',
+    'Intercite': 'simple',
+    'TER': 'simple'
+}
+
+
 var Train = function(mission){
-	this.updated =true;
-	for(k in mission){
-		this[k] = mission[k];
+	this.lng = mission.geometry.coordinates[0];
+	this.lat = mission.geometry.coordinates[1];
+	
+	for(k in mission.properties){
+		this[k] = mission.properties[k];
 	}
+	
+	if(this.type in statuses){
+		this.status = statuses[this.type]
+	}else{
+		this.status = "unknown"
+	}
+	
+	if(this.brand in train_types){
+		this.train_type = train_types[this.brand]
+	}else{
+		this.train_type = "unknown"
+	}
+		
 }
 
 Train.prototype.getTitle = function(){
@@ -33,10 +70,8 @@ Train.prototype.isVisible = function(){
 }
 
 Train.prototype.updateAngle = function(){
-	if('angle' in this && this.id_mission in Missions.markers){
-		$(Missions.markers[this.id_mission]._icon).find("img").css({"transform":"rotate("+this.angle+"deg)","display":"block"});
-	}else{
-		$(Missions.markers[this.id_mission]._icon).find("img").css({"display":"none"});
+	if(this.id_mission in Missions.markers){
+		$(Missions.markers[this.id_mission]._icon.firstChild).css({"transform":"rotate("+(this.heading+180)+"deg)","display":"block"});
 	}
 }
 //Show, update hide a train marker

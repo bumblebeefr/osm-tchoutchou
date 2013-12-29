@@ -4,12 +4,14 @@ from pprint import pprint
 from urlfetch import get
 import math
 import unicodedata
+import simplejson
 
 trans = {
   'lat': float,
   'lng': float,
   'minutes_to_next_gare': int,
-  'retard': int
+  'retard': int,
+  'heading': float
 }
 statuses = {
     "green": "ok",
@@ -55,29 +57,18 @@ def load_markers(url):
 
 
 def map_generic():
-    markers = []
-    for m in load_markers('http://www.raildar.fr/xml/map_generic'):
-        x1 = m.get('lng', None)
-        y1 = m.get('lat', None)
+    return get("http://www.raildar.fr/json/map_generic").body
 
-        # ajout du status du train
-        m['status'] = statuses.get(m.get('type', None), "unknown")
-        m['train_type'] = train_types.get(m.get('brand', None), "unknown")
 
-        # calcul l'angle a utiliser pour le picto de direction
-        x2 = gare_dict.get(m.get('next_gare', None), {}).get('lng', None)
-        y2 = gare_dict.get(m.get('next_gare', None), {}).get('lat', None)
-        if(x1 and x2 and y1 and y2):
-            if(x2 == x1):
-                m["angle"] = 0
-            else:
-                m["angle"] = -(math.atan((y2 - y1) / (x2 - x1)) * 180 / math.pi)
-                if((x2 - x1) < 0):
-                    m["angle"] += 180
-
-        markers.append(m)
-
-    return markers
+def line(id_train="20071"):
+    if(id_train):
+        print("http://raildar.fr:3000/json/convert?url=draw_line&id_train=%s" % id_train)
+        resp = get("http://raildar.fr:3000/json/convert?url=draw_line&id_train=%s" % id_train)
+    else:
+        print("http://raildar.fr:3000/json/convert?url=draw_line")
+        resp = get("http://raildar.fr:3000/json/convert?url=draw_line")
+    print(resp.body)
+    return simplejson.loads(resp.body)
 
 
 def gares():
@@ -88,14 +79,10 @@ def remove_accents(input_str):
     nkfd_form = unicodedata.normalize('NFKD', u"".join(input_str))
     return u"".join([c for c in nkfd_form if not unicodedata.combining(c)])
 
-# dict des gares initialisee au demarrage FAUDR
-gare_dict = {}
-for g in gares():
-    gare_dict[remove_accents(g.get('name'))] = g
 
 if __name__ == '__main__':
-#     print("========= Liste des trains/mission en cours =========")
-    # #pprint(map_generic())
+    print("========= Liste des trains/mission en cours =========")
+    pprint(map_generic())
 
     print("========= Liste des gares =========")
     pprint(gares())

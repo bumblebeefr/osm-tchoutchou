@@ -6,25 +6,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-	<link rel="stylesheet" href="{{url_for('static', filename='leaflet.css')}}" />
-	<link rel="shortcut icon" href="{{url_for('static', filename='train.ico')}}" />
-<!-- 
-{"minutes_to_next_gare": 0,
- "retard": 0,
-  "terminus": "Foix",
-   "pos_type": "extrapol\u00e9e",
-    "type": "green",
-     "brand": "TER/IC",
-     "last_check": "16:30:23",
-      "id_mission": "101859",
-       "num": "871413",
-        "lat": 43.4377564816,
-         "lng": 1.42341743893333,
-          "next_gare": "Venerque-le-Vernet"}
+	<link rel="stylesheet" href="./static/leaflet.css" />
+	<link rel="shortcut icon" href="./static/train.ico" />
 
-
-
- -->
 	<style>
 		body {
 			padding: 0;
@@ -235,8 +219,8 @@
 	<div id="sidebar">
 		<div id="title">
 			<span id="icon">
-				<img id="icon-loading" src="{{url_for('static', filename='images/train_loading.gif')}}"/>
-				<img id="icon-fixed" src="{{url_for('static', filename='images/train_full.png')}}"/>
+				<img id="icon-loading" src="./static/images/train_loading.gif"/>
+				<img id="icon-fixed" src="./static/images/train_full.png"/>
 			</span>
 			OSM Tchoutchou
 		</div>
@@ -278,15 +262,15 @@
 	</div>
 	<div id="sidebar_button"><i class="fa fa-cogs"></i></div>
 
-	<script src="{{url_for('static', filename='leaflet.js')}}"></script>
-	<script src="{{url_for('static', filename='leaflet-hash.js')}}"></script>
-	<script src="{{url_for('static', filename='jquery-2.0.3.js')}}"></script>
-	<script src="{{url_for('static', filename='moment.min.js')}}"></script>
-	<script src="{{url_for('static', filename='moment.fr.js')}}"></script>
-	<script src="{{url_for('static', filename='handlebars.js')}}"></script>
-	<script src="{{url_for('static', filename='handlebars-helpers.js')}}"></script>
-	<script src="{{url_for('static', filename='handlebars-util.js')}}"></script>
-	<script src="{{url_for('static', filename='raildar/Train.js')}}"></script>
+	<script src="./static/leaflet.js"></script>
+	<script src="./static/leaflet-hash.js"></script>
+	<script src="./static/jquery-2.0.3.js"></script>
+	<script src="./static/moment.min.js"></script>
+	<script src="./static/moment.fr.js"></script>
+	<script src="./static/handlebars.js"></script>
+	<script src="./static/handlebars-helpers.js"></script>
+	<script src="./static/handlebars-util.js"></script>
+	<script src="./static/raildar/Train.js"></script>
 	
 	<script>
 /* 		Object.prototype.get = function(key,default_value){
@@ -326,6 +310,7 @@
 				mission = new Train(mission);
 				Missions.missions[mission.id_mission] = mission;
 				mission.drawMarker(true);
+				return mission;
 			},
 			//redraw each mission whithout changing data (after an UI event for example)
 			redrawMarkers : function(){
@@ -337,57 +322,47 @@
 				console.timeEnd("redraw")
 				$("#icon").removeClass("loading");
 				
-				if(Missions.markers.length >10){
+				/* if(Missions.markers.length >10){
 					$("body").removeClass("animated");
 				}else{
 					$("body").addClass("animated");
-				}
+				} */
 			},
 			show : function(){
-				console.time("req");
 				$("#icon").addClass("loading");
 				//$.get("http://www.raildar.fr/json/map_generic",function(data){console.log("données json",data)});
 				jQuery.ajax("/api/map_generic.json",{
 					async : true,
 					cache : false,
 					error : function(e){if(console && console.error){
-						console.error("Error when loading #jstchouchou data "+url,e);
+						console.error("Error when loading #jstchouchou data ",e);
 						$("#icon").removeClass("loading");
 					}},
 					success : function(data, textStatus, jqXHR){
-						console.timeEnd("req");
-						console.time("load");
-						console.info("Rafraichit les trains",new Date().toString());
 						Missions.statuses = {ttl:0}
 						var mission_ids ={};
-						$.each(data,function(){
-							if(('lat' in this) && ('lng' in this) && this.lat !="" && this.lng != "") {
+						$.each(data.features,function(){
 								//try{
-									mission_ids[this.id_mission] = true;
-									Missions.add(this);
-									if(!(this.status in Missions.statuses)){
+									var mission = Missions.add(this);
+									mission_ids[mission.id_mission] = true;
+									if(!(mission.status in Missions.statuses)){
 										//console.info("Nouveau type : ",mission.type);
-										Missions.statuses[this.status] = 1;
+										Missions.statuses[mission.status] = 1;
 									}else{
-										Missions.statuses[this.status]  += 1;
+										Missions.statuses[mission.status]  += 1;
 									}
-									if(!(this.type in Missions.statuses)){
+									if(!(mission.type in Missions.statuses)){
 										//console.info("Nouveau type : ",mission.type);
-										Missions.statuses[this.type] = 1;
+										Missions.statuses[mission.type] = 1;
 									}else{
-										Missions.statuses[this.type]  += 1;
+										Missions.statuses[mission.type]  += 1;
 									}
-									Missions.statuses['hour'] = this.last_check;
+									Missions.statuses['hour'] = mission.last_check;
 									Missions.statuses['ttl']  += 1;
 								/* } catch(e){
 									console.warn("Oups ya un probleme avec le point là ",this,e);
 								} */
-								
-							}else{
-								//console.warn("Hum ce marker n'a pas de coorrdonées ? ",this);
-							};
 						});
-						
 						
 						//netoyage des mission terminées
 						Missions.clean(mission_ids);
@@ -417,11 +392,11 @@
 						};
 					}
 				}
-				if(Missions.markers.length >10){
+				/* if(Missions.markers.length >10){
 					$("body").removeClass("animated");
 				}else{
 					$("body").addClass("animated");
-				}
+				} */
 			}
 		};
 
@@ -466,7 +441,6 @@
 	    var hash = new L.Hash(map);
 		
 		Missions.show();
-		setInterval(Missions.show,10000);
 
 		
 		$(function(){
@@ -484,7 +458,8 @@
  			$("#sidebar_button,#sidebar_close" ).click(function(){
  				$("#sidebar").toggle();
  			});
- 			
+
+ 			setInterval(Missions.show,10000);
 		});
 		
 
