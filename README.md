@@ -1,6 +1,9 @@
 osm-tchoutchou
 ==============
 
+*This version is deprecated, it used a small python backend to proxify and translate data from raildar. The new version
+use directly data from raildail with cross-domain calls.*
+
 An Open Street Map (leaflet) inteface to Turblog's raildar.fr data.
 
 Some details on the original raildar map and API : http://blog.spyou.org/wordpress-mu/2013/11/30/jstchoutchou/
