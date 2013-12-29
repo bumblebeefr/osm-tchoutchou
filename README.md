@@ -3,7 +3,7 @@ osm-tchoutchou
 
 An Open Street Map (leaflet) interface to Turblog's raildar.fr data.
 
-Demo : http://raildar.bumblebee.cc
+Demo : http://raildar.bumblebee.cc or http://raildar.fr/osmtchoutchou/
 
 Some details on the original raildar map and API : http://blog.spyou.org/wordpress-mu/2013/11/30/jstchoutchou/
 
