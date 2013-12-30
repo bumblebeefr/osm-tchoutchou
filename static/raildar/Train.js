@@ -71,8 +71,21 @@ Train.prototype.isVisible = function(){
 
 Train.prototype.updateAngle = function(){
 	if(this.id_mission in Missions.markers){
-		var angle = 180+parseInt(this.heading);
-		$(Missions.markers[this.id_mission]._icon.firstChild).css({"transform":"rotate("+angle+"deg)","display":"block"});
+		var angle = (180+parseInt(this.heading))%360;
+		var angleRad=angle/360*2*Math.PI;
+		var cosA=Math.cos(angleRad);
+                var cosAmirror=-cosA;
+		var sinA=Math.sin(angleRad);
+                var sinAmirror=-sinA
+ 		var marker=$(Missions.markers[this.id_mission]._icon.firstChild);
+		if (angle>90 && angle < 270 ) {
+                         marker.css({"transform":"matrix("+cosA+", "+sinA+", "+sinA+", "+(-cosA)+", 0, 0)","display":"block"});
+			//marker.css({"transform":"matrix("+(cosA)+", "+(sinA)+", "+(-sinA)+", "+(cosA)+", 0, 0)","display":"block"});
+
+                } else {
+			marker.css({"transform":"matrix("+cosA+", "+sinA+", "+(-sinA)+", "+cosA+", 0, 0)","display":"block"});
+		}
+		//marker.css({"transform":"rotate("+angle+"deg)","display":"block"});
 	}
 }
 //Show, update hide a train marker

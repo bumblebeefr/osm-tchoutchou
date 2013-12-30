@@ -104,8 +104,6 @@
 			100% { opacity:0.5 }
 		} 
 		
-		
-		
 		.animated .circle-icon, .animated .leaflet-popup{
 			-webkit-transition: all 20s linear;
 			-moz-transition: all 20s linear;
@@ -124,8 +122,8 @@
 		}
 		
 		.circle-icon img{
-			width:18px;
-			height:18px;
+			width:42px;
+			height:42px;
 		}
 		
 		
@@ -249,10 +247,17 @@
 		</div>
 		<div></div>
 		<div id="detail_block">
-			<i class="fa fa-search"></i>  <strong>Detail du train :</strong>
+			<i class="fa fa-search"></i>  <strong>Détail du train :</strong>
 			<div id="details">
 				<div id="mission_detail_help">Survolez un train pour en voir les détails</div>
 				<div id="mission_detail"></div>
+			</div>
+		</div>
+                <div id="histo_block">
+			<i class="fa fa-book"></i>  <strong>Historique :</strong>
+			<div id="historique">
+                                <div id="historique_help">Indiquer la date à laquelle vous souhaitez voir l'état du traffic</div>
+				date (jj/mm/aaa) : <input type="text" id="date_historique" class="datePicker">			
 			</div>
 		</div>
 		<div id="about">
@@ -282,6 +287,10 @@
 	<script src="./static/raildar/Train.js"></script>
 	
 	<script>
+		var getDateHistorique = function (){
+			var dateH=moment($("#dateHistorique").val(), "DD/MM/YYYY");
+			return (dateH)?dateH.format("X"):null;
+                }
 		var get = function(obj,key,default_value){
 		    if( key in obj) return obj[key];
 		    else return default_value;
@@ -289,11 +298,11 @@
 		
 		var Missions = {
 			icons:{
-				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_green.png" />'}),
-				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_yellow.png" />'}),
-				orange: L.divIcon({className: 'circle-icon circle-icon-orange',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_orange.png" />'}),
-				red: L.divIcon({className: 'circle-icon circle-icon-red',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_red.png" />'}),
-				black: L.divIcon({className: 'circle-icon circle-icon-black',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_black.png" />'})
+				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(42,42), html:'<img src="./static/images/tchou_green.png" />'}),
+				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(42,42), html:'<img src="./static/images/tchou_yellow.png" />'}),
+				orange: L.divIcon({className: 'circle-icon circle-icon-orange',iconSize:L.point(42,42), html:'<img src="./static/images/tchou_orange.png" />'}),
+				red: L.divIcon({className: 'circle-icon circle-icon-red',iconSize:L.point(42,42), html:'<img src="./static/images/tchou_red.png" />'}),
+				black: L.divIcon({className: 'circle-icon circle-icon-black',iconSize:L.point(42,42), html:'<img src="./static/images/tchou_black.png" />'})
 			},
 			markers:{},
 			missions:{},
@@ -322,9 +331,13 @@
 			},
 			show : function(){
 				$("#icon").addClass("loading");
+				var params=[];
+console.log("Mode historique : date = "+getDateHistorique());
+				params.push(getDateHistorique());
 				jQuery.ajax("http://www.raildar.fr/json/map_generic",{
 					async : true,
 					cache : false,
+					params : params,					
 					error : function(e){
 						$("#icon").removeClass("loading");
 						if(console && console.error){
