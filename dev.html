@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>OSM Tchoutchou - Raildar with Leaflet and Open Street Map</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<link rel="stylesheet" href="./static/bootstrap3/css/bootstrap.min.css">
+	<link rel="stylesheet" href="./static/jquery.jqplot.css">
+	<link rel="stylesheet" href="./static/leaflet.css" />
+	<link rel="shortcut icon" href="./static/train.ico" />
+	
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+			font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva, sans-serif;
+			font-size:10pt;
+		}
+		a{
+			color:#666;
+			font-weight:bold;
+		}
+		html, body, #map {
+			height: 100%;
+		}
+		
+		#title{
+			font-size:1.8em;
+			padding-top:0!important;
+			border-bottom:solid 1px #888;
+			overflow:auto;
+		}
+		#title img{
+			height:1.8em;
+		}
+		#icon{
+			display:inline-block;
+			width:43px;
+			height:43px;
+			position:relative;
+			top:0.5em;
+		}
+		
+		#icon #icon-loading{
+			display:none;
+		}
+		
+		#icon.loading{
+			-webkit-animation: fade 0.6s linear infinite;
+			-moz-animation: fade 0.6s linear infinite;
+			-ms-animation: fade 0.6s linear infinite;
+			-o-animation: fade 0.6s linear infinite;
+			animation: fade 0.6s linear infinite;
+		}
+		
+		#icon.loading #icon-loading{
+			display:inline;
+		}
+		
+		#icon.loading #icon-fixed{
+			display:none;
+		}
+		
+		
+		
+		
+		#icon.loading{
+ 			-webkit-animation: fade 0.6s linear infinite;
+			-moz-animation: fade 0.6s linear infinite;
+			-ms-animation: fade 0.6s linear infinite;
+			-o-animation: fade 0.6s linear infinite;
+			animation: fade 0.6s linear infinite; 
+		}
+
+		/* animation */
+		@-webkit-keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		}
+		
+		@-moz-keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		}
+		
+		@-ms-keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		}
+		
+		@-o-keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		}
+		
+		@keyframes fade {
+			0% { opacity:0.5 }
+			60% { opacity:0.9 }
+			100% { opacity:0.5 }
+		} 
+		
+		
+		
+		.animated .circle-icon, .animated .leaflet-popup{
+			-webkit-transition: all 20s linear;
+			-moz-transition: all 20s linear;
+			-o-transition: all 20s linear;
+			transition: all 20s linear;
+		}
+		.circle-icon{
+			border-radius:9px;
+			opacity:0.8;
+			/* box-shadow: 0px 0px 2px #444; */
+			text-align:center;
+			line-height:18px;
+			overflow:hidden;
+			font-size:12px;
+			color:#FFF;
+		}
+		
+		.circle-icon img{
+			width:18px;
+			height:18px;
+		}
+		
+		
+		#sidebar>div{
+			padding:1em;
+		}
+		#sidebar{
+			width:380px;
+			position:absolute;
+			background-color:rgba(255,255,255,0.8);
+			top:0px;
+			right:0px;
+			height:100%;
+			-webkit-transition: width 0.3s;
+			-moz-transition: width 0.3s;
+			-o-transition: width 0.3s;
+			transition: width 0.3s;
+			max-width:100%;
+			display:none;
+		}
+		
+		.button{
+			position:absolute;
+			right:10px;
+			width:36px;
+			text-align:center;
+			overflow:hidden;
+			height:36px;
+			padding:0;
+			
+			cursor:pointer;
+			border-radius:6px 0 0 6px;
+			font-size:1.5em;
+			line-height:36px;
+			
+			box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+			background: #fff;
+			border-radius: 5px;
+		
+		}
+		
+		.touch .button {
+			border:2px solid rgba(0, 0, 0, 0.2);
+			box-shadow:none;
+			width:44px;
+			height:44px;
+			line-height:44px;
+		}
+		
+		
+		#sidebar_button{
+			top:56px;
+		}
+		.touch #sidebar_button {
+			
+			top:64px;
+		}
+		
+		#tracking_button{
+			top:102px;	
+		}
+		#tracking_button.enabled{
+			color:#BB0000;
+		}
+		.touch #tracking_button{
+			top:118px;	
+		}
+		
+		#number_filter{
+			border:solid 1px #888;
+			background-color: rgba(255,255,255,0.4);
+		}
+		#mission_detail_help{
+			color:#444;
+			text-align:center;
+			font-style: italic;
+			font-size:0.9em;
+			padding:3em;
+		}
+		#mission_detail{
+			padding:0.5em 1em ;
+		}
+		#stats li{
+			list-style-type: none;
+		}
+		#stats ul{
+			padding-left:15px;
+		}
+		#details{
+			height:120px;
+		}
+		#about>div{
+			padding:0.5em 1em;
+			color:#333;
+			font-size:0.9em;
+		}
+		
+		#camembert {
+		margin-top:20px;
+			width:80px;
+			height:120px;
+			float:right;
+			opacity:0.8;
+		}
+		
+		.jqplot-grid-canvas{
+			display:none;
+		}
+		
+	</style>
+</head>
+<body>
+	<div id="map"></div>
+	<div id="sidebar">
+		<div id="title">
+			<span id="icon">
+				<img id="icon-loading" src="./static/images/train_loading.gif"/>
+				<img id="icon-fixed" src="./static/images/train_full.png"/>
+			</span>
+			OSM Tchoutchou
+		</div>
+		<div id="stats"> </div>
+		<div id="type_selection">
+			<i class="fa fa-magic"></i>   <strong>Filtres :</strong>
+			<br>
+			  Train n°<input type="text" id="number_filter" class="filter"/>
+			<br>
+			<label><input type="checkbox" class="filter" name="simple" checked="checked"/>TER / Intercités</label>
+			<label><input type="checkbox" class="filter" name="tgv" checked="checked"/>TGV</label>
+			<label><input type="checkbox" class="filter" name="thalys" checked="checked"/>Thalys</label>
+			<label><input type="checkbox" class="filter" name="unknown" checked="checked"/>Autres</label>
+			<br/>
+			<label><input type="checkbox" class="filter" name="ok"/>À l'heure</label>
+			<label><input type="checkbox" class="filter" name="delayed" checked="checked"/>En retard</label>
+			<label><input type="checkbox" class="filter" name="cancelled" checked="checked"/>Supprimé</label>
+		</div>
+		<div></div>
+		<div id="detail_block">
+			<i class="fa fa-search"></i>  <strong>Detail du train :</strong>
+			<div id="details">
+				<div id="mission_detail_help">Survolez un train pour en voir les détails</div>
+				<div id="mission_detail"></div>
+			</div>
+		</div>
+		<div id="about">
+			<i class="fa fa-info-circle"></i> À propos
+			<div>
+				Radar des trains, utilisant des cartes <a href="http://www.openstreetmap.org" target="_blank">Open Street Map</a>. 
+				<br/>
+				Données provenant du <a href="http://raildar.fr" target="_blank">raildar.fr</a> 
+				de <a href="http://blog.spyou.org/wordpress-mu/2013/11/30/jstchoutchou/" target="_blank">@Turblog</a>. 
+				<br/>
+				Sources et détails sur <a href="https://github.com/bumblebeefr/osm-tchoutchou" target="_blank">github</a>.
+			</div>
+		</div> 
+	</div>
+	<div id="sidebar_button" class="button"><i class="fa fa-cogs"></i></div>
+	<div id="tracking_button"  class="button"><i class="fa fa-location-arrow"></i></div>
+
+	<script src="./static/leaflet.js"></script>
+	<script src="./static/leaflet-hash.js"></script>
+	<script src="./static/jquery-2.0.3.js"></script>
+	<script src="./static/jquery.jqplot.js"></script>
+	<script src="./static/jqplot.pieRenderer.js"></script>
+	<script src="./static/bootstrap3/js/bootstrap.min.js"></script>
+	<script src="./static/bootstrap3/js/bootbox.js"></script>
+	<script src="./static/moment.min.js"></script>
+	<script src="./static/moment.fr.js"></script>
+	<script src="./static/handlebars.js"></script>
+	<script src="./static/handlebars-helpers.js"></script>
+	<script src="./static/handlebars-util.js"></script>
+	<script src="./static/raildar/Train.js"></script>
+	<script src="./static/raildar/Tracking.js"></script>
+	
+	<script>
+		var get = function(obj,key,default_value){
+		    if( key in obj) return obj[key];
+		    else return default_value;
+		}
+		
+		var Missions = {
+			icons:{
+				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_green.png" />'}),
+				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_yellow.png" />'}),
+				orange: L.divIcon({className: 'circle-icon circle-icon-orange',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_orange.png" />'}),
+				red: L.divIcon({className: 'circle-icon circle-icon-red',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_red.png" />'}),
+				black: L.divIcon({className: 'circle-icon circle-icon-black',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_black.png" />'})
+			},
+			markers:{},
+			missions:{},
+			statuses:{ttl:0},
+			add : function(mission){
+				mission = new Train(mission);
+				Missions.missions[mission.id_mission] = mission;
+				mission.drawMarker(true);
+				return mission;
+			},
+			//redraw each mission whithout changing data (after an UI event for example)
+			redrawMarkers : function(){
+				$("#icon").addClass("loading");
+				console.time("redraw")
+				$.each(Missions.missions,function(){
+					this.drawMarker();
+				});
+				console.timeEnd("redraw")
+				$("#icon").removeClass("loading");
+				
+				/* if(Missions.markers.length >10){
+					$("body").removeClass("animated");
+				}else{
+					$("body").addClass("animated");
+				} */
+			},
+			show : function(){
+				$("#icon").addClass("loading");
+				jQuery.ajax("http://www.raildar.fr/json/map_generic",{
+					async : true,
+					cache : false,
+					error : function(e){
+						$("#icon").removeClass("loading");
+						if(console && console.error){
+							console.error("Error when loading #jstchouchou data ",e);
+						}
+					},
+					success : function(data, textStatus, jqXHR){
+						Missions.statuses = {ttl:0}
+						var mission_ids ={};
+						Missions.statuses['hour'] = null;
+						$.each(data.features,function(){
+								try{
+									var mission = Missions.add(this);
+									mission_ids[mission.id_mission] = true;
+									if(!(mission.status in Missions.statuses)){
+										//console.info("Nouveau type : ",mission.type);
+										Missions.statuses[mission.status] = 1;
+									}else{
+										Missions.statuses[mission.status]  += 1;
+									}
+									if(!(mission.type in Missions.statuses)){
+										//console.info("Nouveau type : ",mission.type);
+										Missions.statuses[mission.type] = 1;
+									}else{
+										Missions.statuses[mission.type]  += 1;
+									}
+									Missions.statuses['ttl']  += 1;
+									if(Missions.statuses['hour'] == null){
+										Missions.statuses['hour'] = mission.last_check;
+									}
+								} catch(e){
+									console.warn("Oups ya un probleme avec le point là ",this,e);
+								} 
+						});
+						
+						//netoyage des mission terminées
+						Missions.clean(mission_ids);
+						delete(mission_ids);
+						
+						//Affichage des stats
+						$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
+						
+						var pcts = {
+								"green" : 0,
+								"yellow" : 0,
+								"orange" :0,
+								"red":0,
+								"black":0
+						}
+						for(k in pcts){
+							if(k in Missions.statuses){
+								pcts[k] = Math.round(Missions.statuses[k]/Missions.statuses.ttl*1000)/10;
+							}
+						}
+						var data = [
+						   ['green',pcts.green], ['yellow',pcts.yellow], ['orange',pcts.orange], ['red',pcts.red], ['black',pcts.black]
+						  ];
+						  var plot1 = jQuery.jqplot ('camembert', [data],
+						    {
+							  seriesColors:['#35a619','#b7c916','#c79516','#c71818','#575757'],
+						      seriesDefaults: {
+						    	fillAlpha :0,
+						        // Make this a pie chart.
+						        renderer: jQuery.jqplot.PieRenderer,
+						        rendererOptions: {
+							        padding:3,
+							        shadowOffset:0.9,
+						             startAngle: -90
+						        }
+						      }
+						    });
+						  delete(pcts);
+						  delete(data);
+						  delete(plot1);
+				
+						$("#icon").removeClass("loading");
+						console.timeEnd("load");
+					}
+				});
+
+			},
+			clean : function(mission_ids){
+				for(k in Missions.missions){
+					if( mission_ids && !(k in mission_ids)){
+						Missions.missions[k].removeMarker();
+						delete(Missions.missions[k]);
+						console.info('Remove mission from map '+k);
+					}else{
+						if(!Missions.missions[k].isVisible()){
+							Missions.missions[k].removeMarker();
+						};
+					}
+				}
+				/* if(Missions.markers.length >10){
+					$("body").removeClass("animated");
+				}else{
+					$("body").addClass("animated");
+				} */
+			}
+		};
+
+		var cloudmadeLayer = L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+		});
+
+		var transportLayer = L.tileLayer('http://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.thunderforest.com/">Thunderforest</a>'
+		});
+
+		var mapquestLayer = L.tileLayer('http://otile2.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.mapquest.com/">Mapquest</a>'
+		});
+		
+		var osmLegacyLayer = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 18,
+			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.openstreetmap.org/">OpenStreetMap</a>'
+		});
+		
+
+		var map = L.map('map',{
+			center: new L.LatLng(46.354510837365254,3.33984375),
+			zoom:7,
+			layers: [mapquestLayer]
+		});
+
+		var baseMaps = {
+			    "Mapquest": mapquestLayer,
+			    "CloudMade": cloudmadeLayer,
+			    "Transport": transportLayer,
+			    "OSM Legacy": osmLegacyLayer
+		};
+		var overlayMaps = {};
+		L.control.layers(baseMaps, overlayMaps).addTo(map);
+		L.control.scale({imperial:false}).addTo(map);
+		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
+		
+	    var hash = new L.Hash(map);
+		
+		Missions.show();
+
+		
+		$(function(){
+			if(L.Browser.touch){
+				$("body").addClass("touch");	
+				$("#detail_block").hide();
+			}else{
+				$("#sidebar").show();
+			}
+			$("input.filter").change(function(){
+				Missions.redrawMarkers();
+			});
+
+ 			$("#sidebar_button" ).click(function(){
+ 				$("#sidebar").toggle();
+ 			});
+ 			$("#tracking_button").click(function(){
+ 				$("#sidebar").hide();
+ 				if(Tracking.started){
+ 					if(confirm('Arreter le tracking en cours ?')){
+ 	 					Tracking.stop();
+ 					}
+	 			}else{
+	 				Tracking.start();
+	 			}
+ 			});
+ 			
+ 			setInterval(Missions.show,10000);
+		});
+		
+
+	</script>
+</body>
+</html>
