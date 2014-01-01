@@ -2,7 +2,7 @@
 <br/>
 <em>Mission n&deg; {{id_mission}}</em>
 <br/>
-Prochaine Gare : {{next_gare}}
+Prochaine Gare : {{next_gare}} (dans {{minutes_to_next_gare}} min)
 <br>
 {{#when type equals='green'}}
 	Train &agrave; l'heure.
