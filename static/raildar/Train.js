@@ -4,7 +4,7 @@ var statuses = {
     "orange": "delayed",
     "red": "delayed",
     "black": 'cancelled'
-}
+};
 var train_types = {
     'TGV/ICE': 'tgv',
     'TGV': 'tgv',
@@ -17,7 +17,7 @@ var train_types = {
     'LER': 'simple',
     'Intercite': 'simple',
     'TER': 'simple'
-}
+};
 
 
 var Train = function(mission){
@@ -29,34 +29,40 @@ var Train = function(mission){
 	}
 	
 	if(this.type in statuses){
-		this.status = statuses[this.type]
+		this.status = statuses[this.type];
 	}else{
-		this.status = "unknown"
+		this.status = "unknown";
 	}
 	
 	if(this.brand in train_types){
-		this.train_type = train_types[this.brand]
+		this.train_type = train_types[this.brand];
 	}else{
-		this.train_type = "unknown"
+		this.train_type = "unknown";
 	}
 		
-}
+};
 
 Train.prototype.getTitle = function(){
 	return this.brand+" n°"+this.num+" en direction de "+this.terminus;
-}
+};
+
 Train.prototype.getPopup = function(){
 	return HandlebarsUtil.render('train_popup',this);
-}
+};
+
 Train.prototype.isVisible = function(){
 	var b = map.getBounds();
 	if(this.lng > b._southWest.lng && this.lng < b._northEast.lng){
-
-		if($.trim($("#number_filter").val()).length >0){
+		if( Tracking && Tracking.running == 2 ){ //when tracking : hide other trains
+			return Tracking.id_mission == this.num;
+			
+		}else
+		 if($.trim($("#number_filter").val()).length >0){ //if filtering on train number show only matchin trains
 			if(this.num.indexOf($.trim($("#number_filter").val()))>-1){
 				return true;
 			}
-		}else{
+			
+		}else{//filtering on train types and status
 			if(this.lat > b._southWest.lat && this.lat < b._northEast.lat){
 				if(($("input[name='"+this.train_type+"']:checked").length >0)){
 					if(($("input[name='"+this.status+"']:checked").length >0)){
@@ -67,14 +73,29 @@ Train.prototype.isVisible = function(){
 		}
 	}
 	return false;
-}
+};
 
 Train.prototype.updateAngle = function(){
 	if(this.id_mission in Missions.markers){
-		var angle = 180+parseInt(this.heading);
-		$(Missions.markers[this.id_mission]._icon.firstChild).css({"transform":"rotate("+angle+"deg)","display":"block"});
+		var angle = (180+parseInt(this.heading))%360;
+		var angleRad=angle/360*2*Math.PI;
+		var cosA=Math.cos(angleRad);
+                var cosAmirror=-cosA;
+		var sinA=Math.sin(angleRad);
+                var sinAmirror=-sinA
+ 		var marker=$(Missions.markers[this.id_mission]._icon.firstChild);
+		if (angle>90 && angle < 270 ) {
+                         marker.css({"transform":"matrix("+cosA+", "+sinA+", "+sinA+", "+(-cosA)+", 0, 0)","display":"block"});
+			//marker.css({"transform":"matrix("+(cosA)+", "+(sinA)+", "+(-sinA)+", "+(cosA)+", 0, 0)","display":"block"});
+
+                } else {
+			marker.css({"transform":"matrix("+cosA+", "+sinA+", "+(-sinA)+", "+cosA+", 0, 0)","display":"block"});
+		}
+		//marker.css({"transform":"rotate("+angle+"deg)","display":"block"});
 	}
-}
+};
+
+
 //Show, update hide a train marker
 Train.prototype.drawMarker = function(forceUpdate){
 	if(this.id_mission in Missions.markers){
@@ -95,6 +116,7 @@ Train.prototype.drawMarker = function(forceUpdate){
 		}
 	}else{
 		if(this.isVisible()){
+			
 			//ajout du marker si visible
 			Missions.markers[this.id_mission] = L.marker(L.latLng(this.lat,this.lng),{
 				icon:Missions.icons[this.type],
@@ -119,10 +141,11 @@ Train.prototype.drawMarker = function(forceUpdate){
 			this.updateAngle();
 		}
 	}
-}
+};
+
 Train.prototype.removeMarker = function(){
 	if(this.id_mission in Missions.markers){
 		map.removeLayer(Missions.markers[this.id_mission]);
 		delete(Missions.markers[this.id_mission]);
 	}
-}
+};

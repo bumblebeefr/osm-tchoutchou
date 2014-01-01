@@ -485,6 +485,9 @@
 		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
 	    var hash = new L.Hash(map);
+	    
+	  	//Sart leaflet geolocation.
+	    Tracking.init();
 		
 		Missions.show();
 

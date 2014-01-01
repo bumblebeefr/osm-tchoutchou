@@ -12,7 +12,35 @@
 			this.init(map);
 		}
 	};
+	
+	L.splitHash = function(hash){
+		if(hash.indexOf('#') === 0) {
+			hash = hash.substr(1);
+		}
+		var output = {}
+		if(hash){
+			var h = hash.split("&");
+			for(i in h){
+				var prop = h[i].split("=");
+				if(prop.length == 2){
+					output[unescape(prop[0])] = unescape(prop[1]);
+				}
+			}
+		}
+		return output;
+	};
 
+	L.serialiszeToHash = function(o){
+		var h = "#";
+		for(k in o){
+			if(h != "#"){
+				h += "&";
+			}
+			h += escape(k)+ "=" + escape(o[k]);
+		}
+		return h;
+	};
+	
 	L.Hash.parseHash = function(hash) {
 		if(hash.indexOf('#') === 0) {
 			hash = hash.substr(1);
@@ -73,7 +101,6 @@
 			if (this.isListening) {
 				this.stopListening();
 			}
-
 			this.map = null;
 		},
 
