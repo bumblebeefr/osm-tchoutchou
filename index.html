@@ -279,13 +279,15 @@
 			<div id="historique" class="blockContent">
 				<div id="historique_help" class="help">
 					Date à laquelle vous souhaitez voir l'état du traffic.
-					<br> Le curseur règle le décalage en minutes entre chaque jeux de  données.  (1 = 1 minute ; 60 = 1 heure ; 1440 : 1 jour)
+					<br> Le curseur règle le décalage entre chaque jeux de  données..
 					<br><i class="fa fa-power-off" ></i> stoppe le mode historique et revient au présent
 				</div>
 				date : <input size="15" type="text" id="dateHistorique" class="datetimepicker" />
 				<button id="btnStopHisto" type="button" title="Stoppe le mode historique"><i class="fa fa-power-off" ></i></button>				
 				<br>		
-				Prochaines données : <input read size="6" type="text" id="multiplicateurVitesseHistorique" />
+				Prochaines données : <span id="txtMultiplicateurVitesseHistorique" ></span>
+				<input type="hidden" id="multiplicateurVitesseHistorique" />
+				
 				<div id="sliderHistoTime"></div>
 			</div>
 		</div>
@@ -381,11 +383,12 @@
 					async : true,
 					cache : false,
 					data : params,	
-					error : function(e){
+					error : function(jqXHR,textStatus,errorThrown){
 						$("#icon").removeClass("loading");
 						if(console && console.error){
-							console.error("Error when loading #jstchouchou data ",e);
+							console.error("Error when loading #jstchouchou data ",jqXHR);
 						}
+						$("#stats").html("<div class='error centered'>Erreur de récupération des données ("+jqXHR.status+") <br>"+ errorThrown+"</div>")
 					},
 					success : function(data, textStatus, jqXHR){
 						Missions.statuses = {ttl:0}
@@ -467,16 +470,12 @@
 						$("#icon").removeClass("loading");
 						console.timeEnd("load");
 					},
-					error : function( jqXHR, textStatus, errorThrown){
-						$("#icon").removeClass("loading");
-						$("#stats").html("<div class='error centered'>Erreur de récupération des données ("+jqXHR.status+") <br>"+ errorThrown+"</div>")
-					},
 					// apres traitement succes ou erreur
 					complete : function(jqXHR, textStatus){
 						if (DEBUG.refreshMissions) {
 							var delai=10000 // Par défaut on relance le refresh toutes les 10s					
 							if(getDateHistorique()) {
-								delai=3000 //en cas d'historique, on va plus vite
+								delai=5000 //en cas d'historique, on va plus vite
 							} 
 							setTimeout(Missions.show,delai);
 						}
@@ -560,10 +559,13 @@
 					min: 1,
 					max: 1440,
 					slide: function( event, ui ) {
-						$( "#multiplicateurVitesseHistorique" ).val( ui.value+" min" );
+						$( "#multiplicateurVitesseHistorique" ).val( ui.value );
+						var txt=moment.duration(ui.value, 'minutes').humanize();						
+						$( "#txtMultiplicateurVitesseHistorique" ).html( txt );
 					}
 			});
-			$( "#multiplicateurVitesseHistorique" ).val( $( "#sliderHistoTime" ).slider( "value" ) +" min" );
+			$( "#multiplicateurVitesseHistorique" ).val($( "#sliderHistoTime" ).slider( "value" ) );
+			$( "#txtMultiplicateurVitesseHistorique" ).html(moment.duration( $( "#sliderHistoTime" ).slider( "value" ), 'minutes').humanize() );
 
 			$("#btnStopHisto").click(function(event) {
 				$("#dateHistorique").val("");
