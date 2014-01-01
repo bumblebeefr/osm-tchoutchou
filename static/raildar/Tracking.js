@@ -45,7 +45,7 @@ var Tracking = {
 	askDeparture : function(){
 		Tracking.loadingMessage.show();
 
-		var args = {lat : Tracking.latlng.lat,lng:Tracking.latlng.lng,dist:20};
+		var args = {lat : Tracking.latlng.lat,lng:Tracking.latlng.lng};
 		$.get("http://raildar.fr/xml/gares",args,function(data){
 			Tracking.loadingMessage.hide();
 			console.log(data);
@@ -114,7 +114,7 @@ var Tracking = {
 				
 				bootbox.dialog({
 					message : html,
-					title : "Selectionner un train pres de vous",
+					title : "Selectionner un train au départ",
 					closeButton : false,
 					buttons : {
 						cancel : {
@@ -163,7 +163,7 @@ var Tracking = {
 			
 			bootbox.dialog({
 				message : html,
-				title : "Selectionner un train",
+				title : "Selectionner un train pres de vous",
 				closeButton : false,
 				buttons : {
 					cancel : {
