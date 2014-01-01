@@ -4,7 +4,7 @@ var statuses = {
     "orange": "delayed",
     "red": "delayed",
     "black": 'cancelled'
-};
+}
 var train_types = {
     'TGV/ICE': 'tgv',
     'TGV': 'tgv',
@@ -17,7 +17,12 @@ var train_types = {
     'LER': 'simple',
     'Intercite': 'simple',
     'TER': 'simple'
-};
+}
+
+var position_type = {
+	1:"GPS théorique",
+	2:"extrapolée"	
+}
 
 
 var Train = function(mission){
@@ -28,41 +33,45 @@ var Train = function(mission){
 		this[k] = mission.properties[k];
 	}
 	
-	if(this.type in statuses){
-		this.status = statuses[this.type];
-	}else{
-		this.status = "unknown";
-	}
+	if(this.retard < 0 ){
+		this.type="black";
+	} else if(this.retard < 5 ){
+		this.type="green";
+	} else if(this.retard < 15 ){
+		this.type="yellow";
+	} else if(this.retard < 30 ){
+		this.type="orange";
+	} else {
+		this.type="red";
+	} 
+	this.status = statuses[this.type];
 	
 	if(this.brand in train_types){
-		this.train_type = train_types[this.brand];
+		this.train_type = train_types[this.brand]
 	}else{
-		this.train_type = "unknown";
+		this.train_type = "unknown"
 	}
+	
+	this.lib_pos_type=position_type[this.pos_type];
+	this.human_last_check=moment(this.last_check).format("LLL");
 		
-};
+}
 
 Train.prototype.getTitle = function(){
 	return this.brand+" n°"+this.num+" en direction de "+this.terminus;
-};
-
+}
 Train.prototype.getPopup = function(){
 	return HandlebarsUtil.render('train_popup',this);
-};
-
+}
 Train.prototype.isVisible = function(){
 	var b = map.getBounds();
 	if(this.lng > b._southWest.lng && this.lng < b._northEast.lng){
-		if( Tracking && Tracking.running == 2 ){ //when tracking : hide other trains
-			return Tracking.id_mission == this.num;
-			
-		}else
-		 if($.trim($("#number_filter").val()).length >0){ //if filtering on train number show only matchin trains
+
+		if($.trim($("#number_filter").val()).length >0){
 			if(this.num.indexOf($.trim($("#number_filter").val()))>-1){
 				return true;
 			}
-			
-		}else{//filtering on train types and status
+		}else{
 			if(this.lat > b._southWest.lat && this.lat < b._northEast.lat){
 				if(($("input[name='"+this.train_type+"']:checked").length >0)){
 					if(($("input[name='"+this.status+"']:checked").length >0)){
@@ -73,7 +82,7 @@ Train.prototype.isVisible = function(){
 		}
 	}
 	return false;
-};
+}
 
 Train.prototype.updateAngle = function(){
 	if(this.id_mission in Missions.markers){
@@ -93,9 +102,7 @@ Train.prototype.updateAngle = function(){
 		}
 		//marker.css({"transform":"rotate("+angle+"deg)","display":"block"});
 	}
-};
-
-
+}
 //Show, update hide a train marker
 Train.prototype.drawMarker = function(forceUpdate){
 	if(this.id_mission in Missions.markers){
@@ -116,7 +123,6 @@ Train.prototype.drawMarker = function(forceUpdate){
 		}
 	}else{
 		if(this.isVisible()){
-			
 			//ajout du marker si visible
 			Missions.markers[this.id_mission] = L.marker(L.latLng(this.lat,this.lng),{
 				icon:Missions.icons[this.type],
@@ -141,11 +147,10 @@ Train.prototype.drawMarker = function(forceUpdate){
 			this.updateAngle();
 		}
 	}
-};
-
+}
 Train.prototype.removeMarker = function(){
 	if(this.id_mission in Missions.markers){
 		map.removeLayer(Missions.markers[this.id_mission]);
 		delete(Missions.markers[this.id_mission]);
 	}
-};
+}

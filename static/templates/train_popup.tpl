@@ -3,9 +3,10 @@
 <em>Mission n&deg; {{id_mission}}</em>
 <br/>
 {{#when type nequals='black'}}
-	Prochaine Gare : {{next_gare}}
+	Prochaine Gare : {{next_gare}} (dans {{minutes_to_next_gare}} min)
 	<br>
 {{/when}}
+<br>
 {{#when type equals='green'}}
 	Train &agrave; l'heure.
 {{else}}
@@ -15,6 +16,8 @@
 		En retard de {{retard}}min.
 	{{/when}}
 {{/when}}
-<br/>
-Position : {{pos_type}}
+<br>
+Position : {{lib_pos_type}}
+<br>
+Derni&eagrave;re v&eacute;rif : {{human_last_check}}
 
