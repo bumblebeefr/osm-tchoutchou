@@ -19,5 +19,5 @@
 <br>
 Position : {{lib_pos_type}}
 <br>
-Derni&eagrave;re v&eacute;rif : {{human_last_check}}
+Derni&egrave;re v&eacute;rif : {{human_last_check}}
 
