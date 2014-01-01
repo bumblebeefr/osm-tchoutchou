@@ -65,7 +65,7 @@ Handlebars.registerHelper('when', function(value, options) {
 			return options.inverse(this);
 		}
 	} else if ('nequals' in options.hash) {
-		if (value == options.hash.equals) {
+		if (value == options.hash.nequals) {
 			return options.inverse(this);
 		} else {
 			return options.fn(this);
