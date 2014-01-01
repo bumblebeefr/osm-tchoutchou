@@ -64,8 +64,7 @@
 		
 		#icon.loading #icon-fixed{
 			display:none;
-		}
-		
+		}	
 		
 		
 		
@@ -196,6 +195,12 @@
 		.centered{			
 			text-align:center;			
 		}
+		.error {
+			color:red;
+			font-weight: bold;
+			font-size:1.2em;
+			padding:0.5em 2em 0.5em 2em;
+		}
 		#mission_detail_help{
 			padding:3em;		
 		}
@@ -251,32 +256,36 @@
 			<div class="titleBlock"><i class="fa fa-magic"></i>   <strong>Filtres :</strong></div>
 			<br>
 			  Train n°<input type="text" id="number_filter" class="filter"/>
-			<br>
+			<br />
 			<label><input type="checkbox" class="filter" name="simple" checked="checked"/>TER / Intercités</label>
 			<label><input type="checkbox" class="filter" name="tgv" checked="checked"/>TGV</label>
 			<label><input type="checkbox" class="filter" name="thalys" checked="checked"/>Thalys</label>
 			<label><input type="checkbox" class="filter" name="unknown" checked="checked"/>Autres</label>
-			</br/>
+			<br />
 			<label><input type="checkbox" class="filter" name="ok"/>À l'heure</label>
 			<label><input type="checkbox" class="filter" name="delayed" checked="checked"/>En retard</label>
 			<label><input type="checkbox" class="filter" name="cancelled" checked="checked"/>Supprimé</label>
 		</div>
 		<div></div>
-		<div id="detail_block" class="block">
+		<div id="detail_block" class="block" >
 			<div class="titleBlock"><i class="fa fa-search"></i>  <strong>Détail du train :</strong></div>
 			<div id="details">
 				<div id="mission_detail_help" class="help centered" >Survolez un train pour en voir les détails</div>
 				<div id="mission_detail"></div>
 			</div>
 		</div>
-                <div id="histo_block" class="block toggle closed">
+		<div id="histo_block" class="block toggle closed">
 			<div class="titleBlock"> <i class="fa fa-book"></i>  <strong>Historique :</strong></div>
 			<div id="historique" class="blockContent">
-                                <div id="historique_help" class="help">Date à laquelle vous souhaitez voir l'état du traffic.<br> Le curseur règle le décalage en minutes entre chaque jeux de  données.  (1 = 1 minute ; 60 = 1 heure ; 1440 : 1 jour)<br><i class="fa fa-power-off" ></i> stoppe le mode historique et revient au présent</div>
+				<div id="historique_help" class="help">
+					Date à laquelle vous souhaitez voir l'état du traffic.
+					<br> Le curseur règle le décalage en minutes entre chaque jeux de  données.  (1 = 1 minute ; 60 = 1 heure ; 1440 : 1 jour)
+					<br><i class="fa fa-power-off" ></i> stoppe le mode historique et revient au présent
+				</div>
 				date : <input size="15" type="text" id="dateHistorique" class="datetimepicker" />
 				<button id="btnStopHisto" type="button" title="Stoppe le mode historique"><i class="fa fa-power-off" ></i></button>				
 				<br>		
-				Prochaines données : <input readOnly="true" size="6" type="text" id="multiplicateurVitesseHistorique" / >
+				Prochaines données : <input read size="6" type="text" id="multiplicateurVitesseHistorique" />
 				<div id="sliderHistoTime"></div>
 			</div>
 		</div>
@@ -321,14 +330,13 @@
 			strDate=$("#dateHistorique").val();
 			var dateH=moment(strDate, "DD-MM-YYYY HH:mm:ss");
 			return (dateH && dateH>0 && dateH.diff(moment())<0 )?dateH:null;
-                }
+		}
 		var get = function(obj,key,default_value){
-		    if( key in obj) return obj[key];
-		    else return default_value;
+			if( key in obj) return obj[key];
+			else return default_value;
 		}
 		
 		var Missions = {
-			idMissionsShowInterval:0,   //l'id du setInterval relancant périodiquement le show
 			icons:{
 				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_green.png" />'}),
 				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_yellow.png" />'}),
@@ -372,7 +380,7 @@
 				jQuery.ajax("http://www.raildar.fr/json/map_generic",{
 					async : true,
 					cache : false,
-					data : params,					
+					data : params,	
 					error : function(e){
 						$("#icon").removeClass("loading");
 						if(console && console.error){
@@ -404,9 +412,9 @@
 										if(getDateHistorique()){
 											Missions.statuses['hour'] =  getDateHistorique().format("LLLL")
 											var mult=parseInt($("#multiplicateurVitesseHistorique").val());
-											var oldTime=parseInt(getDateHistorique().format("X"));
+											var oldTime=parseInt(getDateHistorique().unix());
 											var newTimestamp=60*mult+oldTime; 
-											var newMoment=moment(newTimestamp.toString(),"X")
+											var newMoment=moment(newTimestamp*1000)
 											console.log("futur timestamp : " + newTimestamp + " = "+ newMoment.format("LLLL"));
 											$("#dateHistorique").val(newMoment.format("DD/MM/YYYY HH:mm:ss"));
 										} else {
@@ -457,6 +465,14 @@
 						    });
 				
 						$("#icon").removeClass("loading");
+						console.timeEnd("load");
+					},
+					error : function( jqXHR, textStatus, errorThrown){
+						$("#icon").removeClass("loading");
+						$("#stats").html("<div class='error centered'>Erreur de récupération des données ("+jqXHR.status+") <br>"+ errorThrown+"</div>")
+					},
+					// apres traitement succes ou erreur
+					complete : function(jqXHR, textStatus){
 						if (DEBUG.refreshMissions) {
 							var delai=10000 // Par défaut on relance le refresh toutes les 10s					
 							if(getDateHistorique()) {
@@ -464,7 +480,6 @@
 							} 
 							setTimeout(Missions.show,delai);
 						}
-						console.timeEnd("load");
 					}
 				});
 
