@@ -342,7 +342,7 @@
 			},
 			show : function(){
 				$("#icon").addClass("loading");
-				jQuery.ajax("http://www.raildar.fr/json/map_generic",{
+				jQuery.ajax("http://www.raildar.fr/json/get_circulation.json",{
 					async : true,
 					cache : false,
 					error : function(e){
