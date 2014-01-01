@@ -76,7 +76,6 @@ var Tracking = {
 						label : "Trains proches de ma position.",
 						className : " btn-primary",
 						callback : function() {
-							alert('Pas encore implémenté');
 							Tracking.askNeighborMission();
 						}
 					},
@@ -115,7 +114,7 @@ var Tracking = {
 				
 				bootbox.dialog({
 					message : html,
-					title : "Selectionner un train",
+					title : "Selectionner un train pres de vous",
 					closeButton : false,
 					buttons : {
 						cancel : {
