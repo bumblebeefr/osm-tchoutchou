@@ -1,4 +1,4 @@
-<strong>{{brand}} n&deg; <a target ="sncf" href="http://www.infolignes.com/recherche.php?date_num_train={{date '' 'YYYY|MM|DD'}}&num_train={{num}}">{{num}}</a> </strong> à destination de {{terminus}}
+<strong>{{brand}} n&deg; <a class="infoLigne" onClick="infoLigne({{id_mission}},'{{brand}} n° {{num}}')" id="mission{{id_mission}}" >{{num}}</a> </strong> à destination de {{terminus}}
 <br/>
 <em>Mission n&deg; {{id_mission}}</em>
 <br/>

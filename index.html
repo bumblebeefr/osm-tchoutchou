@@ -11,7 +11,8 @@
 	<!-- date time picker-->
 	<link rel="stylesheet" href="./static/jquery-ui-1.10.3.custom.css" />
 	<link rel="stylesheet" href="./static/jquery-ui-timepicker-addon.css" />
-        <!-- fin date time picker-->
+	<!-- fin date time picker-->
+	<link rel="stylesheet" href="./static/bootstrap3/css/bootstrap.min.css">
 	<link rel="shortcut icon" href="./static/train.ico" />
 	
 	<style>
@@ -318,9 +319,10 @@
 	<script src="./static/raildar/Train.js"></script>
 	<!-- date time picker-->
 	<script src="./static/jquery-ui-1.10.3.custom.min.js"></script>
-	<script src="./static/jquery-ui-timepicker-addon.js"></script>
-	
+	<script src="./static/jquery-ui-timepicker-addon.js"></script>	
 	<!-- fin date time picker-->
+	<script src="./static/bootstrap3/js/bootstrap.min.js"></script>
+	<script src="./static/bootstrap3/js/bootbox.js"></script>
 	
 
 	<script>
@@ -545,7 +547,26 @@
 		
 		Missions.show();
 
-
+		function infoLigne(idMission, txtInfoTrain){
+			//id=idMission.substr("mission".length)
+			jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
+					async : true,
+					cache : false,
+					data : {"id_mission":idMission},	
+					error : function(jqXHR,textStatus,errorThrown){
+							if(console && console.error){
+								console.error("Error when loading #jstchouchou data ",jqXHR);
+							}
+							bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")", function() {});
+					},
+					success : function(data, textStatus, jqXHR){
+						data["txtInfoTrain"]=txtInfoTrain;
+						bootbox.alert(HandlebarsUtil.render('mission',data), function() {
+						})
+					}
+			});
+			
+		}
 
 		// #####################################################################################
 		// #####################################################################################
@@ -570,6 +591,9 @@
 			$("#btnStopHisto").click(function(event) {
 				$("#dateHistorique").val("");
 			});
+			
+			
+			
 		
 			function traiteToggleBlock(elt){
 				if ($(elt).parent().hasClass("closed")){
@@ -604,6 +628,16 @@
  			//Missions.idMissionsShowInterval=setInterval(Missions.show,10000);
 		});
 		
+		// ############################# HANDLEBAR Helper ###########################
+		Handlebars.registerHelper('list', function(context, options) {
+			var ret = "<ul>";
+
+			for(var i=0, j=context.length; i<j; i++) {
+				ret = ret + "<li>" + options.fn(context[i]) + "</li>";
+			}
+
+			return ret + "</ul>";
+		});
 
 	</script>
 </body>
