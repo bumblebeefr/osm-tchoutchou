@@ -1,5 +1,7 @@
-<strong>{{ttl}}</strong> missions en cours 
-<div class="right"><strong>{{hour}}</strong></div>
+<strong>{{hour}}</strong></div>
+<br/><strong>{{ttl}}</strong> missions en cours 
+<br/>
+<br/>
 <div id="camembert"></div>
 <ul>
 	<li><img src="./static/images/fleche_green.png" width="13"/> <strong>{{ok}}</strong> trains &agrave; l'heure ({{percent ok ttl}})</li>
@@ -12,3 +14,4 @@
 	</li>
 	<li><img src="./static/images/fleche_black.png" width="13"/> <strong>{{cancelled}}</strong> trains supprim&eacute;s ({{percent cancelled ttl}})</li>
 </ul>
+<a id="stat_detail" href="http://www.raildar.fr/tools/rrd_circulation" target="_blank"><i class="fa fa-search-plus"></i> Plus de stats de circulation</a>

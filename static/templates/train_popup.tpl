@@ -1,8 +1,11 @@
-<strong>{{brand}} n&deg; <a class="infoLigne" onClick="infoLigne({{id_mission}},'{{brand}} n° {{num}}')" id="mission{{id_mission}}" >{{num}}</a> </strong> à destination de {{terminus}}
+<strong>{{brand}} n&deg; <a class="infoLigne" onClick="infoLigne({{id_mission}},'{{brand}} n° {{num}}')" id="mission{{id_mission}}" >{{num}}</a> </strong> &agrave; destination de {{terminus}}
 <br/>
 <em>Mission n&deg; {{id_mission}}</em>
 <br/>
-Prochaine Gare : {{next_gare}} (dans {{minutes_to_next_gare}} min)
+{{#when type nequals='black'}}
+	Prochaine Gare : {{next_gare}} (dans {{minutes_to_next_gare}} min)
+	<br>
+{{/when}}
 <br>
 {{#when type equals='green'}}
 	Train &agrave; l'heure.
@@ -16,5 +19,5 @@ Prochaine Gare : {{next_gare}} (dans {{minutes_to_next_gare}} min)
 <br>
 Position : {{lib_pos_type}}
 <br>
-Dernière vérif : {{human_last_check}}
+Derni&egrave;re v&eacute;rif : {{human_last_check}}
 

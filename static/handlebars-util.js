@@ -21,8 +21,9 @@ var HandlebarsUtil = {
 				return HandlebarsUtil.templates[template](context);
 
 		}
-}
+};
+
 jQuery.fn.render = function(template,context){
 	$(this).html(HandlebarsUtil.render(template,context));
 	return $(this);
-}
+};

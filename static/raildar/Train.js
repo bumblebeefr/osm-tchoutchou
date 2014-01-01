@@ -4,7 +4,8 @@ var statuses = {
     "orange": "delayed",
     "red": "delayed",
     "black": 'cancelled'
-}
+};
+
 var train_types = {
     'TGV/ICE': 'tgv',
     'TGV': 'tgv',
@@ -17,12 +18,12 @@ var train_types = {
     'LER': 'simple',
     'Intercite': 'simple',
     'TER': 'simple'
-}
+};
 
 var position_type = {
 	1:"GPS théorique",
 	2:"extrapolée"	
-}
+};
 
 
 var Train = function(mission){
@@ -53,16 +54,17 @@ var Train = function(mission){
 	}
 	
 	this.lib_pos_type=position_type[this.pos_type];
-	this.human_last_check=moment(this.last_check).format("LLL");
-		
-}
+	this.human_last_check=moment(this.last_check).format("LLL");	
+};
 
 Train.prototype.getTitle = function(){
 	return this.brand+" n°"+this.num+" en direction de "+this.terminus;
-}
+};
+
 Train.prototype.getPopup = function(){
 	return HandlebarsUtil.render('train_popup',this);
-}
+};
+
 Train.prototype.isVisible = function(){
 	var b = map.getBounds();
 	if(this.lng > b._southWest.lng && this.lng < b._northEast.lng){
@@ -82,7 +84,7 @@ Train.prototype.isVisible = function(){
 		}
 	}
 	return false;
-}
+};
 
 Train.prototype.updateAngle = function(){
 	if(this.id_mission in Missions.markers){
@@ -102,7 +104,8 @@ Train.prototype.updateAngle = function(){
 		}
 		//marker.css({"transform":"rotate("+angle+"deg)","display":"block"});
 	}
-}
+};
+
 //Show, update hide a train marker
 Train.prototype.drawMarker = function(forceUpdate){
 	if(this.id_mission in Missions.markers){
@@ -147,10 +150,11 @@ Train.prototype.drawMarker = function(forceUpdate){
 			this.updateAngle();
 		}
 	}
-}
+};
+
 Train.prototype.removeMarker = function(){
 	if(this.id_mission in Missions.markers){
 		map.removeLayer(Missions.markers[this.id_mission]);
 		delete(Missions.markers[this.id_mission]);
 	}
-}
+};
