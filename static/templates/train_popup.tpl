@@ -13,6 +13,8 @@ Prochaine Gare : {{next_gare}}
 		En retard de {{retard}}min.
 	{{/when}}
 {{/when}}
-<br/>
-Position : {{pos_type}}
+<br>
+Position : {{lib_pos_type}}
+<br>
+Dernière vérif : {{human_last_check}}
 

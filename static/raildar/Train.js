@@ -19,6 +19,11 @@ var train_types = {
     'TER': 'simple'
 }
 
+var position_type = {
+	1:"GPS théorique",
+	2:"extrapolée"	
+}
+
 
 var Train = function(mission){
 	this.lng = mission.geometry.coordinates[0];
@@ -28,17 +33,27 @@ var Train = function(mission){
 		this[k] = mission.properties[k];
 	}
 	
-	if(this.type in statuses){
-		this.status = statuses[this.type]
-	}else{
-		this.status = "unknown"
-	}
+	if(this.retard < 0 ){
+		this.type="black";
+	} else if(this.retard < 5 ){
+		this.type="green";
+	} else if(this.retard < 15 ){
+		this.type="yellow";
+	} else if(this.retard < 30 ){
+		this.type="orange";
+	} else {
+		this.type="red";
+	} 
+	this.status = statuses[this.type];
 	
 	if(this.brand in train_types){
 		this.train_type = train_types[this.brand]
 	}else{
 		this.train_type = "unknown"
 	}
+	
+	this.lib_pos_type=position_type[this.pos_type];
+	this.human_last_check=moment(this.last_check).format("LLL");
 		
 }
 
