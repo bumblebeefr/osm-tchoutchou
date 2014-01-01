@@ -9,6 +9,10 @@
 	<link rel="stylesheet" href="./static/bootstrap3/css/bootstrap.min.css">
 	<link rel="stylesheet" href="./static/jquery.jqplot.css">
 	<link rel="stylesheet" href="./static/leaflet.css" />
+	<!-- date time picker-->
+	<link rel="stylesheet" href="./static/jquery-ui-1.10.3.custom.css" />
+	<link rel="stylesheet" href="./static/jquery-ui-timepicker-addon.css" />
+        <!-- fin date time picker-->
 	<link rel="shortcut icon" href="./static/train.ico" />
 	
 	<style>
@@ -61,8 +65,7 @@
 		
 		#icon.loading #icon-fixed{
 			display:none;
-		}
-		
+		}	
 		
 		
 		
@@ -105,8 +108,8 @@
 			100% { opacity:0.5 }
 		} 
 		
-		
-		
+		.right {text-align:right}
+
 		.animated .circle-icon, .animated .leaflet-popup{
 			-webkit-transition: all 20s linear;
 			-moz-transition: all 20s linear;
@@ -115,7 +118,7 @@
 		}
 		.circle-icon{
 			border-radius:9px;
-			opacity:0.8;
+			opacity:0.9;
 			/* box-shadow: 0px 0px 2px #444; */
 			text-align:center;
 			line-height:18px;
@@ -125,8 +128,8 @@
 		}
 		
 		.circle-icon img{
-			width:18px;
-			height:18px;
+			width:22px;
+			height:22px;
 		}
 		
 		
@@ -199,12 +202,23 @@
 			border:solid 1px #888;
 			background-color: rgba(255,255,255,0.4);
 		}
-		#mission_detail_help{
+		.help{
 			color:#444;
-			text-align:center;
 			font-style: italic;
 			font-size:0.9em;
-			padding:3em;
+			padding:0.5em 2em 0.5em 2em;			
+		}
+		.centered{			
+			text-align:center;			
+		}
+		.error {
+			color:red;
+			font-weight: bold;
+			font-size:1.2em;
+			padding:0.5em 2em 0.5em 2em;
+		}
+		#mission_detail_help{
+			padding:3em;		
 		}
 		#mission_detail{
 			padding:0.5em 1em ;
@@ -214,6 +228,12 @@
 		}
 		#stats ul{
 			padding-left:15px;
+		}
+		#stat_detail{
+			display:block;
+			clear:right;
+			text-align:center;
+			font-size:0.8em;
 		}
 		#details{
 			height:120px;
@@ -235,6 +255,11 @@
 		.jqplot-grid-canvas{
 			display:none;
 		}
+
+		.titleBlock{
+			border-bottom: 1px solid #888888;
+		}
+
 		
 	</style>
 </head>
@@ -249,30 +274,47 @@
 			OSM Tchoutchou
 		</div>
 		<div id="stats"> </div>
-		<div id="type_selection">
-			<i class="fa fa-magic"></i>   <strong>Filtres :</strong>
+		<div id="type_selection" class="block">
+			<div class="titleBlock"><i class="fa fa-magic"></i>   <strong>Filtres :</strong></div>
 			<br>
 			  Train n°<input type="text" id="number_filter" class="filter"/>
-			<br>
+			<br />
 			<label><input type="checkbox" class="filter" name="simple" checked="checked"/>TER / Intercités</label>
 			<label><input type="checkbox" class="filter" name="tgv" checked="checked"/>TGV</label>
 			<label><input type="checkbox" class="filter" name="thalys" checked="checked"/>Thalys</label>
 			<label><input type="checkbox" class="filter" name="unknown" checked="checked"/>Autres</label>
-			<br/>
+			<br />
 			<label><input type="checkbox" class="filter" name="ok"/>À l'heure</label>
 			<label><input type="checkbox" class="filter" name="delayed" checked="checked"/>En retard</label>
 			<label><input type="checkbox" class="filter" name="cancelled" checked="checked"/>Supprimé</label>
 		</div>
 		<div></div>
-		<div id="detail_block">
-			<i class="fa fa-search"></i>  <strong>Detail du train :</strong>
+		<div id="detail_block" class="block" >
+			<div class="titleBlock"><i class="fa fa-search"></i>  <strong>Détail du train :</strong></div>
 			<div id="details">
-				<div id="mission_detail_help">Survolez un train pour en voir les détails</div>
+				<div id="mission_detail_help" class="help centered" >Survolez un train pour en voir les détails</div>
 				<div id="mission_detail"></div>
 			</div>
 		</div>
-		<div id="about">
-			<i class="fa fa-info-circle"></i> À propos
+		<div id="histo_block" class="block toggle closed">
+			<div class="titleBlock"> <i class="fa fa-book"></i>  <strong>Historique :</strong></div>
+			<div id="historique" class="blockContent">
+				<div id="historique_help" class="help">
+					Date à laquelle vous souhaitez voir l'état du traffic.
+					<br> Le curseur règle le décalage entre chaque jeux de  données..
+					<br><i class="fa fa-power-off" ></i> stoppe le mode historique et revient au présent
+				</div>
+				date : <input size="15" type="text" id="dateHistorique" class="datetimepicker" />
+				<button id="btnStopHisto" type="button" title="Stoppe le mode historique"><i class="fa fa-power-off" ></i></button>				
+				<br>		
+				Prochaines données : <span id="txtMultiplicateurVitesseHistorique" ></span>
+				<input type="hidden" id="multiplicateurVitesseHistorique" />
+				
+				<div id="sliderHistoTime"></div>
+			</div>
+		</div>
+		<div id="about" class="block">
+			<div class="titleBlock"><i class="fa fa-info-circle"></i> À propos</div>
 			<div>
 				Radar des trains, utilisant des cartes <a href="http://www.openstreetmap.org" target="_blank">Open Street Map</a>. 
 				<br/>
@@ -300,20 +342,35 @@
 	<script src="./static/handlebars-util.js"></script>
 	<script src="./static/raildar/Train.js"></script>
 	<script src="./static/raildar/Tracking.js"></script>
+	<!-- date time picker-->
+	<script src="./static/jquery-ui-1.10.3.custom.min.js"></script>
+	<script src="./static/jquery-ui-timepicker-addon.js"></script>
 	
+	<!-- fin date time picker-->
+	
+
 	<script>
+		//variable permettant d'agir dans la page sur certains traitements
+		//refreshMissions relance eriodiquement le traitement des missions (refresh data+carte)
+		var DEBUG ={refreshMissions:true};
+		
+		var getDateHistorique = function (){
+			strDate=$("#dateHistorique").val();
+			var dateH=moment(strDate, "DD-MM-YYYY HH:mm:ss");
+			return (dateH && dateH>0 && dateH.diff(moment())<0 )?dateH:null;
+		}
 		var get = function(obj,key,default_value){
-		    if( key in obj) return obj[key];
-		    else return default_value;
+			if( key in obj) return obj[key];
+			else return default_value;
 		}
 		
 		var Missions = {
 			icons:{
-				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_green.png" />'}),
-				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_yellow.png" />'}),
-				orange: L.divIcon({className: 'circle-icon circle-icon-orange',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_orange.png" />'}),
-				red: L.divIcon({className: 'circle-icon circle-icon-red',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_red.png" />'}),
-				black: L.divIcon({className: 'circle-icon circle-icon-black',iconSize:L.point(18,18), html:'<img src="./static/images/fleche_black.png" />'})
+				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_green.png" />'}),
+				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_yellow.png" />'}),
+				orange: L.divIcon({className: 'circle-icon circle-icon-orange',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_orange.png" />'}),
+				red: L.divIcon({className: 'circle-icon circle-icon-red',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_red.png" />'}),
+				black: L.divIcon({className: 'circle-icon circle-icon-black',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_black.png" />'})
 			},
 			markers:{},
 			missions:{},
@@ -342,14 +399,22 @@
 			},
 			show : function(){
 				$("#icon").addClass("loading");
+				var params={};
+				dateHisto=getDateHistorique();
+				if (getDateHistorique()){
+				  console.info("Mode historique : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
+				  params["date"]=dateHisto.format("X");
+				}
 				jQuery.ajax("http://www.raildar.fr/json/get_circulation.json",{
 					async : true,
 					cache : false,
-					error : function(e){
+					data : params,	
+					error : function(jqXHR,textStatus,errorThrown){
 						$("#icon").removeClass("loading");
 						if(console && console.error){
-							console.error("Error when loading #jstchouchou data ",e);
+							console.error("Error when loading #jstchouchou data ",jqXHR);
 						}
+						$("#stats").html("<div class='error centered'>Erreur de récupération des données ("+jqXHR.status+") <br>"+ errorThrown+"</div>")
 					},
 					success : function(data, textStatus, jqXHR){
 						Missions.statuses = {ttl:0}
@@ -373,10 +438,20 @@
 									}
 									Missions.statuses['ttl']  += 1;
 									if(Missions.statuses['hour'] == null){
-										Missions.statuses['hour'] = mission.last_check;
+										if(getDateHistorique()){
+											Missions.statuses['hour'] =  getDateHistorique().format("LLLL")
+											var mult=parseInt($("#multiplicateurVitesseHistorique").val());
+											var oldTime=parseInt(getDateHistorique().unix());
+											var newTimestamp=60*mult+oldTime; 
+											var newMoment=moment(newTimestamp*1000)
+											console.log("futur timestamp : " + newTimestamp + " = "+ newMoment.format("LLLL"));
+											$("#dateHistorique").val(newMoment.format("DD/MM/YYYY HH:mm:ss"));
+										} else {
+											Missions.statuses['hour'] = "aujourd'hui à "+moment(mission.last_update).format("HH:mm:ss");
+										}
 									}
 								} catch(e){
-									console.warn("Oups ya un probleme avec le point là ",this,e);
+									console.error("Oups ya un probleme avec le point là ",this,e);
 								} 
 						});
 						
@@ -399,6 +474,7 @@
 								pcts[k] = Math.round(Missions.statuses[k]/Missions.statuses.ttl*1000)/10;
 							}
 						}
+						console.log(pcts);
 						var data = [
 						   ['green',pcts.green], ['yellow',pcts.yellow], ['orange',pcts.orange], ['red',pcts.red], ['black',pcts.black]
 						  ];
@@ -422,6 +498,16 @@
 				
 						$("#icon").removeClass("loading");
 						console.timeEnd("load");
+					},
+					// apres traitement succes ou erreur
+					complete : function(jqXHR, textStatus){
+						if (DEBUG.refreshMissions) {
+							var delai=10000 // Par défaut on relance le refresh toutes les 10s					
+							if(getDateHistorique()) {
+								delai=1000 //en cas d'historique, on va plus vite
+							} stat_detail
+							setTimeout(Missions.show,delai);
+						}
 					}
 				});
 
@@ -431,7 +517,7 @@
 					if( mission_ids && !(k in mission_ids)){
 						Missions.missions[k].removeMarker();
 						delete(Missions.missions[k]);
-						console.info('Remove mission from map '+k);
+						//console.info('Remove mission from map '+k);
 					}else{
 						if(!Missions.missions[k].isVisible()){
 							Missions.missions[k].removeMarker();
@@ -484,15 +570,55 @@
 		L.control.scale({imperial:false}).addTo(map);
 		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
-	    var hash = new L.Hash(map);
-	    
-	  	//Sart leaflet geolocation.
-	    Tracking.init();
-		
+		 var hash = new L.Hash(map);
+		 
+		//Sart leaflet geolocation.
+		Tracking.init();
+
 		Missions.show();
 
-		
+
+
+		// #####################################################################################
+		// #####################################################################################
 		$(function(){
+			
+			$( ".datetimepicker" ).datetimepicker({minDate: moment("2013-11-25 05:00:00").toDate(), maxDate: "+0D"});
+
+			$( "#sliderHistoTime" ).slider({
+					range: "min",
+					value: 1,
+					min: 1,
+					max: 1440,
+					slide: function( event, ui ) {
+						$( "#multiplicateurVitesseHistorique" ).val( ui.value );
+						var txt=moment.duration(ui.value, 'minutes').humanize();						
+						$( "#txtMultiplicateurVitesseHistorique" ).html( txt );
+					}
+			});
+			$( "#multiplicateurVitesseHistorique" ).val($( "#sliderHistoTime" ).slider( "value" ) );
+			$( "#txtMultiplicateurVitesseHistorique" ).html(moment.duration( $( "#sliderHistoTime" ).slider( "value" ), 'minutes').humanize() );
+
+			$("#btnStopHisto").click(function(event) {
+				$("#dateHistorique").val("");
+			});
+		
+			function traiteToggleBlock(elt){
+				if ($(elt).parent().hasClass("closed")){
+					$(elt).next().slideUp();
+					$(elt).addClass("fa-plus-square").removeClass(" fa-minus-square");	
+				} else {
+					$(elt).next().slideDown();
+					$(elt).addClass("fa-minus-square").removeClass(" fa-plus-square");				
+				}
+			}
+			$(".block.toggle .titleBlock").each(function(index){traiteToggleBlock($(this))})			
+			$(".block.toggle .titleBlock").click(function(event){
+				$(this).parent().toggleClass("closed");
+				traiteToggleBlock($(this));
+				
+			});
+
 			if(L.Browser.touch){
 				$("body").addClass("touch");	
 				$("#detail_block").hide();
@@ -516,8 +642,16 @@
 	 				Tracking.start();
 	 			}
  			});
- 			
- 			setInterval(Missions.show,10000);
+ 			$("body").on('click','#stat_detail',function(e){
+ 				e.preventDefault();
+ 				var html = $("<div/>").html("<a href='"+$(this).attr('href')+"' target='rrd'><img src='"+$(this).attr('href')+"' style='max-width:100%'/></a>");
+ 				bootbox.dialog({
+ 					title : "Historique de ciculation :",
+ 					message: html
+ 				});
+ 			});
+			// plus d'interval stricte mais un delai lancer apres la fin du traitement (ce qui évite les engorgements)
+ 			//Missions.idMissionsShowInterval=setInterval(Missions.show,10000);
 		});
 		
 
