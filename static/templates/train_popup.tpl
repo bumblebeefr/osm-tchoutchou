@@ -1,7 +1,7 @@
 <strong>{{brand}} n&deg; <a class="infoLigne" onClick="infoLigne({{id_mission}},'{{brand}} n° {{num}}')" id="mission{{id_mission}}" >{{num}}</a> </strong> &agrave; destination de {{terminus}}
 <br/>
 {{#when type nequals='black'}}
-	Prochaine Gare : {{next_gare}} (dans {{minutes_to_next_gare}} min)
+	Prochaine Gare : {{next_gare}} (dans {{human_time_to_next_gare}})
 	<br>
 {{/when}}
 <br>
