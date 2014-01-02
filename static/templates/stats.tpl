@@ -1,4 +1,4 @@
-<strong>{{hour}}</strong></div>
+<strong>	<span class="indicateurHisto" title="mode historique ON">{{safe indicateur_histo}}</span> {{hour}} </strong>
 <br/><strong>{{ttl}}</strong> missions en cours 
 <br/>
 <br/>
