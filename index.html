@@ -480,6 +480,9 @@
 				  console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
 				  params["date"]=dateHisto.format("X");
 				}
+				if(Tracking.running == 2 && Tracking.id_mission !=null){
+					params['id_mission'] = Tracking.id_mission;
+				}
 				jQuery.ajax("http://www.raildar.fr/json/get_circulation.json",{
 					async : true,
 					cache : false,
