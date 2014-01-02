@@ -1,4 +1,13 @@
-importScripts('./Train.js','../moment.min.js')
+var window = {
+		location :"",
+		document : {
+			documentElement : {},
+			createElement : function(){}
+		}
+};
+var document = window.document;
+
+importScripts('./Train.js','../moment.min.js','../underscore-min.js');
 
 var train = {
 	"geometry" : {
@@ -26,18 +35,41 @@ var handlers = {
 	updateFilters : function(options) {
 		
 	},
-	load : function(options){
-		
+	
+	//options.params : parametre de la requete ajax
+	get_circulation : function(options){
+//		jQuery.ajax("http://www.raildar.fr/json/get_circulation.json",{
+//			async : true,
+//			cache : false,
+//			data : options.params,	
+//			error : function(jqXHR,textStatus,errorThrown){
+//				this.postMessage({
+//					type : "error",
+//					data : {
+//						'jqXHR' : jqXHR,
+//						'textStatus' : textStatus,
+//						'errorThrown' : errorThrown
+//					}
+//				});
+//			},
+//			success : function(data, textStatus, jqXHR){
+//				this.postMessage({
+//					type : "circulation",
+//					data : data
+//				});
+//				
+//			}
+//		});
 	}	
 };
 this.addEventListener('message', function(e) {
-	console.log(e.data);
+	console.log(e.data.cmd);
 //	var t = new Train(train);
 //	this.postMessage({
 //		train : t
 //	});
-	if(e.cmd in handlers){
-		handlers[e.cmd](e.parameter);
+	if(e.data.cmd in handlers){
+		handlers[e.data.cmd](e.data.parameter);
 	}else{
 		console.error("No handler defined for cmd "+e.cmd);
 	}
