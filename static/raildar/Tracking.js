@@ -1,6 +1,6 @@
 var Tracking = {
 	marker : null,
-	running : 0, // Indicate running state of the tracking
+	running : 0, // Indicate running state of the tracking 0 : desactvated, 1 configration ,2 running
 	started : false, // indicate if gps tracking is started
 	latlng : null,
 	id_mission : null,
@@ -9,14 +9,24 @@ var Tracking = {
 		closeButton : false,
 		show:false
 	}),
+	interval : null,
 	init : function() {
 		map.on('locationfound', Tracking.onLocationFound);
 		map.on('locationerror', Tracking.onLocationError);
+		
+		//INTERVAL LOOP TO FORCE TRACKING REFRESH
+		Tracking.interval = setInterval(function(){
+			map.locate({
+				maxZoom : 12,
+				enableHighAccuracy : true,
+				timeout : 500
+			});
+		},5000);
 		map.locate({
 			maxZoom : 12,
 			enableHighAccuracy : true,
-			enableHighAccuracy : true,
-			watch : true
+			timeout : 500,
+			watch:true
 		});
 	},
 	start : function() {
@@ -24,7 +34,16 @@ var Tracking = {
 		id_mission = null;
 		$("#tracking_button").addClass("enabled");
 		if(Tracking.latlng == null){
-			alert("Aucune localisation :  le gps est inactif ou pas encore fixé, le tracking ne peut être lancé.");
+			if(Tracking.locationError != null){
+				switch(Tracking.locationError.code) {
+					case 1 : 
+						alert('Vous devez autoriser la localisation de votre appareil, sinon le tracking ne peut fonctionner.');break;
+					default:
+						alert("Aucune localisation :  le gps est inactif ou pas encore fixé, le tracking ne peut être lancé.");break;
+				}
+			}else{
+				alert("Aucune localisation :  le gps est inactif ou pas encore fixé, le tracking ne peut être lancé.");
+			}
 			Tracking.stop();
 		}else{
 			Tracking.onStartTracking();
@@ -35,7 +54,6 @@ var Tracking = {
 		Tracking.started = false;
 		$("#tracking_button").removeClass("enabled");
 		map.stopLocate();
-		Tracking.marker = null;
 		Missions.redrawMarkers();
 	},
 	onStartTracking : function(){
@@ -59,6 +77,7 @@ var Tracking = {
 				html.append("<label><input name='tracking_gare' type='radio' "+(i == 0 ? "checked='checked' ":"")+" value='"+$(this).attr("id_gare")+"'/> "+$(this).attr("name")+"</label><br/>");
 				i++;
 			});
+			timeout : 3000
 			
 			bootbox.dialog({
 				message : html,
@@ -191,38 +210,39 @@ var Tracking = {
 	},
 	
 	onLocationFound : function(e) {
-		Tracking.latlng = e.latlng;
-		console.info("Localisation : ",e.latlng);
-		if(Tracking.marker != null){
-			Tracking.marker.setLatLng(e.latlng).update();
-		}else{
-			Tracking.marker = L.marker(e.latlng).addTo(map);
-		}
-		
-		if(Tracking.started ){
-			if (Tracking.running == 2) {
-				Tracking.running = true;
-				// /locator/gps_fix?auto_userid='+auto_userid+'&lat='+params[1]+'&lng='+params[2]+'&accur='+params[3]+'&alt='+params[4]+'&speed='+params[5]+'&heading='+params[6]+'&id_mission='+params[7]+'&timestamp='+params[8]
-				var data = {
-					lat : e.latlng.lat,
-					lng : e.latlng.lng,
-					accur : e.accuracy,
-					alt : e.altitude,
-					speed : e.speed,
-					heading : e.heading
-				};
-				
-				console.log("GPS FIX", data);
-				
-				//$.get("/position.dummy?", data, function() {});
+		Tracking.locationError = null;
+		if(Tracking.latlng == null || Tracking.latlng.lat != e.latlng.lat || Tracking.latlng.lng != e.latlng.lng){
+			Tracking.latlng = e.latlng;
+			
+			console.info("Localisation : ",e.latlng);
+			if(Tracking.marker != null){
+				Tracking.marker.setLatLng(e.latlng).update();
+			}else{
+				Tracking.marker = L.marker(e.latlng).addTo(map);
+			}
+			
+			if(Tracking.started ){
+				if (Tracking.running == 2) {
+					// /locator/gps_fix?auto_userid='+auto_userid+'&lat='+params[1]+'&lng='+params[2]+'&accur='+params[3]+'&alt='+params[4]+'&speed='+params[5]+'&heading='+params[6]+'&id_mission='+params[7]+'&timestamp='+params[8]
+					var data = {
+						lat : e.latlng.lat,
+						lng : e.latlng.lng,
+						accur : e.accuracy,
+						alt : e.altitude,
+						speed : e.speed,
+						heading : e.heading
+					};
+					
+					console.log("GPS FIX", data);
+					
+					//$.get("/position.dummy?", data, function() {});
+				}
 			}
 		}
 	},
 	onLocationError : function(e) {
-		console.error("Erreur de la localisation");		
-		if (Tracking.marker != null) {
-			map.removeLayer(Tracking.marker);
-		}
+		console.error("Erreur de la localisation",e);
+		Tracking.locationError = e;
 	}
 };
 
