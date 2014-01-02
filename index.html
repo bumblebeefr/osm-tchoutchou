@@ -190,16 +190,20 @@
 		.help{
 			color:#444;
 			font-style: italic;
-			font-size:0.9em;
+			font-size:90%;
 			padding:0.5em 2em 0.5em 2em;			
 		}
 		.centered{			
 			text-align:center;			
 		}
+		.indicateurHisto{color:#009900;
+			font-weight: bold;
+			font-size:110%; 
+		}
 		.error {
 			color:red;
 			font-weight: bold;
-			font-size:1.2em;
+			font-size:110%;
 			padding:0.5em 2em 0.5em 2em;
 		}
 		#mission_detail_help{
@@ -335,12 +339,29 @@
 			var dateH=moment(strDate, "DD-MM-YYYY HH:mm:ss");
 			return (dateH && dateH>0 && dateH.diff(moment())<0 )?dateH:null;
 		}
+		
+		var traiteDelaiHisto = function (){
+			var mult=parseInt($("#multiplicateurVitesseHistorique").val());
+			var oldTime=parseInt(getDateHistorique().unix());
+			var newTimestamp=60*mult+oldTime; 
+			var newMoment=moment(newTimestamp*1000)
+			console.log("futur timestamp : " + newTimestamp + " = "+ newMoment.format("LLLL"));
+			$("#dateHistorique").val(newMoment.format("DD/MM/YYYY HH:mm:ss"));
+		}
 		var get = function(obj,key,default_value){
 			if( key in obj) return obj[key];
 			else return default_value;
 		}
 		
 		var Missions = {
+			// en millisecondes (pour settimeout())
+			refreshDelays:{
+				live:10000,
+				histo:2000
+			},
+			modeHistorique:{
+				isOn:false
+			},
 			icons:{
 				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_green.png" />'}),
 				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_yellow.png" />'}),
@@ -373,12 +394,15 @@
 					$("body").addClass("animated");
 				} */
 			},
+			traiteHisto:function(){
+				
+			},
 			show : function(){
 				$("#icon").addClass("loading");
 				var params={};
-				dateHisto=getDateHistorique();
-				if (getDateHistorique()){
-				  console.info("Mode historique : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
+				var dateHisto=getDateHistorique();
+				if (Missions.modeHistorique.isOn || dateHisto){
+				  console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
 				  params["date"]=dateHisto.format("X");
 				}
 				jQuery.ajax("http://www.raildar.fr/json/get_circulation.json",{
@@ -391,9 +415,11 @@
 							console.error("Error when loading #jstchouchou data ",jqXHR);
 						}
 						$("#stats").html("<div class='error centered'>Erreur de récupération des données ("+jqXHR.status+") <br>"+ errorThrown+"</div>")
+						traiteDelaiHisto();
 					},
 					success : function(data, textStatus, jqXHR){
 						Missions.statuses = {ttl:0}
+						Missions.statuses['indicateur_histo'] =  (Missions.modeHistorique.isOn)?"<i class='fa fa-book'></i>":"";
 						var mission_ids ={};
 						Missions.statuses['hour'] = null;
 						$.each(data.features,function(){
@@ -414,22 +440,25 @@
 									}
 									Missions.statuses['ttl']  += 1;
 									if(Missions.statuses['hour'] == null){
-										if(getDateHistorique()){
-											Missions.statuses['hour'] =  getDateHistorique().format("LLLL")
-											var mult=parseInt($("#multiplicateurVitesseHistorique").val());
-											var oldTime=parseInt(getDateHistorique().unix());
-											var newTimestamp=60*mult+oldTime; 
-											var newMoment=moment(newTimestamp*1000)
-											console.log("futur timestamp : " + newTimestamp + " = "+ newMoment.format("LLLL"));
-											$("#dateHistorique").val(newMoment.format("DD/MM/YYYY HH:mm:ss"));
+										if( Missions.modeHistorique.isOn){
+											Missions.statuses['hour'] =  getDateHistorique().format("LLLL");
+											traiteDelaiHisto();
 										} else {
-											Missions.statuses['hour'] = "aujourd'hui à "+moment(mission.last_update).format("HH:mm:ss");
+											Missions.modeHistorique.isOn=false;
+											Missions.statuses['hour'] = "Aujourd'hui à "+moment(mission.last_update).format("HH:mm:ss");
 										}
 									}
 								} catch(e){
 									console.error("Oups ya un probleme avec le point là ",this,e);
 								} 
 						});
+						
+						// ici on ne doit jamais être rentré dans la boucle (aucune feature ramenée) car Missions.statuses['hour'] ==null
+						// dans ce cas il faut quand même, en cas d'histo, calculer la date histo suivante sinon on bloque au meme moment
+						if(Missions.statuses['hour'] == null && Missions.modeHistorique.isOn && getDateHistorique() ){
+							Missions.statuses['hour']=getDateHistorique().format("LLLL") +" Aucune donnée disponible";
+							traiteDelaiHisto();
+						} 
 						
 						//netoyage des mission terminées
 						Missions.clean(mission_ids);
@@ -475,9 +504,12 @@
 					// apres traitement succes ou erreur
 					complete : function(jqXHR, textStatus){
 						if (DEBUG.refreshMissions) {
-							var delai=10000 // Par défaut on relance le refresh toutes les 10s					
+							var delai=Missions.refreshDelays.live	//par defaut on rafraichit le live		
 							if(getDateHistorique()) {
-								delai=1000 //en cas d'historique, on va plus vite
+								Missions.modeHistorique.isOn=true;
+								delai=Missions.refreshDelays.histo //en cas d'historique, on va plus vite
+							} else {
+								Missions.modeHistorique.isOn=false;
 							} 
 							setTimeout(Missions.show,delai);
 						}
@@ -529,8 +561,12 @@
 		var map = L.map('map',{
 			center: new L.LatLng(46.354510837365254,3.33984375),
 			zoom:7,
-			layers: [mapquestLayer]
+			layers: [mapquestLayer],
+			//attributionControl: false
 		});
+		
+		//L.control.attribution({position: 'topleft'}).addTo(map);
+
 
 		var baseMaps = {
 			    "Mapquest": mapquestLayer,
@@ -589,6 +625,7 @@
 			$( "#txtMultiplicateurVitesseHistorique" ).html(moment.duration( $( "#sliderHistoTime" ).slider( "value" ), 'minutes').humanize() );
 
 			$("#btnStopHisto").click(function(event) {
+				Missions.modeHistorique.isOn=false;
 				$("#dateHistorique").val("");
 			});
 			
