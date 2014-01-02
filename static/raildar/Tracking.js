@@ -56,6 +56,18 @@ var Tracking = {
 		map.stopLocate();
 		Missions.redrawMarkers();
 	},
+	//Start sending fixes to the mspecified mission
+	run : function(id_mission){
+		if(id_mission != null && id_mission.length>0){
+			Tracking.running = 2;
+			Tracking.id_mission = id_mission;
+			Missions.redrawMarkers();
+			console.log('Start sending fixes for mission ',id_mission);
+		}else{
+			console.error("Unable to start tracking for this mission",id_mission);
+			Tracking.stop();
+		}
+	},
 	onStartTracking : function(){
 		Tracking.running = 1;
 		Tracking.askDeparture();
@@ -63,21 +75,21 @@ var Tracking = {
 	askDeparture : function(){
 		Tracking.loadingMessage.show();
 
-		var args = {lat : Tracking.latlng.lat,lng:Tracking.latlng.lng};
-		$.get("http://raildar.fr/xml/gares",args,function(data){
+		var args = {url : 'gares', lat : Tracking.latlng.lat,lng:Tracking.latlng.lng};
+		$.get("http://www.raildar.fr/json/convert",args,function(data){
 			Tracking.loadingMessage.hide();
 			console.log(data);
+			
+			
+			if(!$.isArray(data.markers.marker) && $.isPlainObject(data.markers.marker)){
+				data.markers.marker = [data.markers.marker];
+			}
 
 			var html = $("<fieldset />").css({
 				"max-height" : ($(window).height()*8/10)+"px",
 				"overflow" : "auto"
-			});
-			var i=0;
-			$(data).find("marker").each(function(){
-				html.append("<label><input name='tracking_gare' type='radio' "+(i == 0 ? "checked='checked' ":"")+" value='"+$(this).attr("id_gare")+"'/> "+$(this).attr("name")+"</label><br/>");
-				i++;
-			});
-			timeout : 3000
+			}).render('tracking_gares',data);
+
 			
 			bootbox.dialog({
 				message : html,
@@ -116,20 +128,19 @@ var Tracking = {
 		if(id_gare){
 			Tracking.loadingMessage.show();
 			console.log("Seaching mission",id_gare);
-			var args = { id_gare : id_gare};
-			$.get("http://www.raildar.fr/xml/next_missions",args,function(data){
+			var args = {url : "next_missions", id_gare : id_gare};
+			$.get("http://www.raildar.fr/json/convert",args,function(data){
 				Tracking.loadingMessage.hide();
 				console.log(data);
+				
+				if(!$.isArray(data.missions.mission) && $.isPlainObject(data.missions.mission)){
+					data.missions.mission = [data.missions.mission];
+				}
 				
 				var html = $("<fieldset />").css({
 					"max-height" : ($(window).height()*8/10)+"px",
 					"overflow" : "auto"
-				});
-				var i=0;
-				$(data).find("mission").each(function(){
-					html.append("<label><input name='tracking_mission' type='radio' "+(i == 0 ? "checked='checked' ":"")+" value='"+$(this).attr("id_mission")+"'/> "+$(this).attr("num_train")+" départ à"+$(this).attr('time_reel')+"</label><br/>");
-					i++;
-				});
+				}).render('tracking_gare_missions',data);
 				
 				bootbox.dialog({
 					message : html,
@@ -147,9 +158,7 @@ var Tracking = {
 							label : "Ok",
 							className : "btn-success",
 							callback : function() {
-								Tracking.id_mission = $("input[name='tracking_mission']:checked").val();
-								Tracking.running = 2;
-								Missions.redrawMarkers();
+								Tracking.run($("input[name='tracking_mission']:checked").val());
 							}
 						}
 					}
@@ -165,20 +174,19 @@ var Tracking = {
 	askNeighborMission : function(id_gare){
 		Tracking.loadingMessage.show();
 		console.log("Seaching mission",id_gare);
-		var args = {lat : Tracking.latlng.lat,lng:Tracking.latlng.lng,dist:20};
+		var args = {lat : Tracking.latlng.lat,lng:Tracking.latlng.lng,dist:50};
 		$.get("http://www.raildar.fr/xml/get_near_missions",args,function(data){
 			Tracking.loadingMessage.hide();
 			console.log(data);
 			
+			if(!$.isArray(data.missions.mission) && $.isPlainObject(data.missions.mission)){
+				data.missions.mission = [data.missions.mission];
+			}
+			
 			var html = $("<fieldset />").css({
 				"max-height" : ($(window).height()*8/10)+"px",
 				"overflow" : "auto"
-			});
-			var i=0;
-			$(data).find("mission").each(function(){
-				html.append("<label><input name='tracking_mission' type='radio' "+(i == 0 ? "checked='checked' ":"")+" value='"+$(this).attr("id_mission")+"'/> "+$(this).attr("num_train")+" départ à"+$(this).attr('time_reel')+"</label><br/>");
-				i++;
-			});
+			}).render('tracking_near_missions',data);
 			
 			bootbox.dialog({
 				message : html,
@@ -196,9 +204,7 @@ var Tracking = {
 						label : "Ok",
 						className : "btn-success",
 						callback : function() {
-							Tracking.id_mission = $("input[name='tracking_mission']:checked").val();
-							Tracking.running = 2;
-							Missions.redrawMarkers();
+							Tracking.run($("input[name='tracking_mission']:checked").val());
 						}
 					}
 				}
@@ -230,7 +236,8 @@ var Tracking = {
 						accur : e.accuracy,
 						alt : e.altitude,
 						speed : e.speed,
-						heading : e.heading
+						heading : e.heading,
+						id_mission : Tracking.id_mission
 					};
 					
 					console.log("GPS FIX", data);
