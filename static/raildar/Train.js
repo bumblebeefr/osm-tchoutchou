@@ -70,13 +70,14 @@ Train.prototype.getPopup = function(){
 Train.prototype.isVisible = function(){
 	var b = map.getBounds();
 	if(this.lng > b._southWest.lng && this.lng < b._northEast.lng){
-
-		if($.trim($("#number_filter").val()).length >0){
-			if(this.num.indexOf($.trim($("#number_filter").val()))>-1){
-				return true;
-			}
-		}else{
-			if(this.lat > b._southWest.lat && this.lat < b._northEast.lat){
+		if(this.lat > b._southWest.lat && this.lat < b._northEast.lat){
+			if(Tracking.running == 2 && Tracking.id_mission !=null){
+				return this.id_mission == Tracking.id_mission;
+			}else if($.trim($("#number_filter").val()).length >0){
+				if(this.num.indexOf($.trim($("#number_filter").val()))>-1){
+					return true;
+				}
+			}else{
 				if(($("input[name='"+this.train_type+"']:checked").length >0)){
 					if(($("input[name='"+this.status+"']:checked").length >0)){
 						return true;
