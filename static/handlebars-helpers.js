@@ -38,7 +38,8 @@ Handlebars.registerHelper('default', function(val, defaultvalue) {
 // allow to disaplay a default value if the specifieed property value is
 // unedefined false or null.
 Handlebars.registerHelper('percent', function(val, ttl) {
-	return new Handlebars.SafeString(Math.round(1.0 * val / ttl * 1000) / 10 + "%");
+	var pct = Math.round(1.0 * val / ttl * 1000) / 10;
+	return new Handlebars.SafeString((isNaN(pct) ? 0:pct) + "%");
 });
 
 // Translate a message with i18next.js lib.
