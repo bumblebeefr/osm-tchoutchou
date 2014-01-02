@@ -4,7 +4,6 @@
 	Prochaine Gare : {{next_gare}} (dans {{human_time_to_next_gare}})
 	<br>
 {{/when}}
-<br>
 {{#when type equals='green'}}
 	Train &agrave; l'heure.
 {{else}}
