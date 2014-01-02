@@ -4,14 +4,14 @@
 <br/>
 <div id="camembert"></div>
 <ul>
-	<li><img src="./static/images/fleche_green.png" width="13"/> <strong>{{ok}}</strong> trains &agrave; l'heure ({{percent ok ttl}})</li>
-	<li><img src="./static/images/fleche_orange.png" width="13"/> <strong>{{delayed}}</strong> trains en retard ({{percent delayed ttl}}) :
+	<li><img src="./static/images/fleche_green.png" width="13"/> <strong>{{default ok 0}}</strong> trains &agrave; l'heure ({{percent ok ttl}})</li>
+	<li><img src="./static/images/fleche_orange.png" width="13"/> <strong>{{default delayed 0}}</strong> trains en retard ({{percent delayed ttl}}) :
 		<ul>
-			<li><img src="./static/images/fleche_yellow.png" width="13"/>  Moins de 15min de retard : <strong>{{yellow}}</strong></li>
-			<li><img src="./static/images/fleche_orange.png" width="13"/> Entre 15 et 30min de retard : <strong>{{orange}}</strong></li>
-			<li><img src="./static/images/fleche_red.png" width="13"/> Plus de 30min de retard : <strong>{{red}}</strong></li>
+			<li><img src="./static/images/fleche_yellow.png" width="13"/>  Moins de 15min de retard : <strong>{{default yellow 0}}</strong></li>
+			<li><img src="./static/images/fleche_orange.png" width="13"/> Entre 15 et 30min de retard : <strong>{{default orange 0}}</strong></li>
+			<li><img src="./static/images/fleche_red.png" width="13"/> Plus de 30min de retard : <strong>{{default red 0}}</strong></li>
 		</ul>
 	</li>
-	<li><img src="./static/images/fleche_black.png" width="13"/> <strong>{{cancelled}}</strong> trains supprim&eacute;s ({{percent cancelled ttl}})</li>
+	<li><img src="./static/images/fleche_black.png" width="13"/> <strong>{{default cancelled 0}}</strong> trains supprim&eacute;s ({{percent cancelled ttl}})</li>
 </ul>
 <a id="stat_detail" href="http://www.raildar.fr/tools/rrd_circulation" target="_blank"><i class="fa fa-search-plus"></i> Plus de stats de circulation</a>
