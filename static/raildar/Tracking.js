@@ -21,14 +21,6 @@ var Tracking = {
 		map.on('locationfound', Tracking.onLocationFound);
 		map.on('locationerror', Tracking.onLocationError);
 		
-		//INTERVAL LOOP TO FORCE TRACKING REFRESH
-		Tracking.interval = setInterval(function(){
-			map.locate({
-				maxZoom : 12,
-				enableHighAccuracy : true,
-				timeout : 500
-			});
-		},5000);
 		map.locate({
 			maxZoom : 12,
 			enableHighAccuracy : true,
