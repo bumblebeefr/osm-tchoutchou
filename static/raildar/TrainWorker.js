@@ -22,10 +22,23 @@ var train = {
 		"id_terminus" : "1077"
 	}
 };
+var handlers = {
+	updateFilters : function(options) {
+		
+	},
+	load : function(options){
+		
+	}	
+};
 this.addEventListener('message', function(e) {
 	console.log(e.data);
-	var t = new Train(train);
-	this.postMessage({
-		train : t
-	});
+//	var t = new Train(train);
+//	this.postMessage({
+//		train : t
+//	});
+	if(e.cmd in handlers){
+		handlers[e.cmd](e.parameter);
+	}else{
+		console.error("No handler defined for cmd "+e.cmd);
+	}
 }, false);

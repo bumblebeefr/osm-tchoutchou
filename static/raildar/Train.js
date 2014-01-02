@@ -88,9 +88,6 @@ Train.prototype.isVisible = function(){
 	return false;
 };
 
-//Train.isVisible = function(train){
-//	return Train.prototype.isVisible(train);
-//};
 
 
 Train.prototype.updateAngle = function(){
@@ -116,7 +113,7 @@ Train.prototype.updateAngle = function(){
 //Show, update hide a train marker
 Train.prototype.drawMarker = function(forceUpdate){
 	if(this.id_mission in Missions.markers){
-		if(this.isVisible()){
+		if(Train.isVisible(this)){
 			//update du marker visible
 			if(forceUpdate){
 				Missions.markers[this.id_mission].setLatLng(L.latLng(this.lat,this.lng));
@@ -124,15 +121,15 @@ Train.prototype.drawMarker = function(forceUpdate){
 				if(Missions.markers[this.id_mission].getPopup()){
 					Missions.markers[this.id_mission].setPopupContent(this.getPopup());
 				}
-				this.updateAngle();
+				Train.updateAngle(this);
 				Missions.markers[this.id_mission].update();
 			}
 		}else{
 			//supression du marker puisque non visible
-			this.removeMarker();
+			Train.removeMarker(this);
 		}
 	}else{
-		if(this.isVisible()){
+		if(Train.isVisible(this)){
 			//ajout du marker si visible
 			Missions.markers[this.id_mission] = L.marker(L.latLng(this.lat,this.lng),{
 				icon:Missions.icons[this.type],
@@ -154,7 +151,7 @@ Train.prototype.drawMarker = function(forceUpdate){
 			}).on('remove',function(){
 				delete(train);
 			});
-			this.updateAngle();
+			Train.updateAngle(this);
 		}
 	}
 };
@@ -166,17 +163,24 @@ Train.prototype.removeMarker = function(){
 	}
 };
 
-//Permet d'appeler les methodes d'instace sur un objet qui ne les a pas de facon'statique' en passant l'objet en premier argument.
-//for(method in Train.prototype){
-//	console.log("Static method making "+method);
-//	Train[method] = function(){
-//		var k = method;
-//		var _this = arguments[0];
-//		var _arguments = [];
-//		for(var i=1;i<arguments.length;i++){
-//			_arguments[i-1] = arguments[i];
-//		}
-//		console.log("calling ",k," = ",Train.prototype[k]," on ",_this," with ",_arguments);
-//		return Train.prototype[k].apply(_this,_arguments);
-//	};	
-//}
+
+
+//Permet d'appeler les methodes d'instace sur un objet qui ne les a pas de facon 
+// 'statique' en passant l'objet en premier argument. Le but est de pouvoir facilement 
+// recuperer dans la pages des Train instanciés dans un webwoker, et d'appeler ses methode en faisant
+// par exemple Train.drawMarker(montrain,true); au lieu de montrain.drawMarker(true);
+
+function addTrainStaticMethod(methodName){
+	Train[methodName] = function(){
+		var _this = arguments[0];
+		var _arguments = [];
+		for(var i=1;i<arguments.length;i++){
+			_arguments[i-1] = arguments[i];
+		}
+		return Train.prototype[methodName].apply(_this,_arguments);
+	};	
+}
+
+for(method in Train.prototype){
+	addTrainStaticMethod(method);
+}

@@ -450,15 +450,15 @@
 			add : function(mission){
 				mission = new Train(mission);
 				Missions.missions[mission.id_mission] = mission;
-				mission.drawMarker(true);
+				Train.drawMarker(mission,true);
 				return mission;
 			},
 			//redraw each mission whithout changing data (after an UI event for example)
 			redrawMarkers : function(){
 				$("#icon").addClass("loading");
-				console.time("redraw")
+				console.time("redraw");
 				$.each(Missions.missions,function(){
-					this.drawMarker();
+					Train.drawMarker(this);
 				});
 				console.timeEnd("redraw")
 				$("#icon").removeClass("loading");
@@ -822,14 +822,14 @@
  			
  			//Essai de worker pour charger//filtrer le traffic
  			// On lance le worker de tracking
-			/*var trainWorker = new Worker('./static/raildar/TrainWorker.js');
+			/* var trainWorker = new Worker('./static/raildar/TrainWorker.js');
  			trainWorker.addEventListener("message", function (event) {
  				console.log("from woker : ",event.data.train);
  				console.log(event.data.train.isVisible);
  				console.log(Train.isVisible(event.data.train));
  			});
  			trainWorker.postMessage( {} );
- 			console.log(trainWorker); */
+ 			console.log(trainWorker);  */
  			
 			// plus d'interval stricte mais un delai lancer apres la fin du traitement (ce qui évite les engorgements)
  			//Missions.idMissionsShowInterval=setInterval(Missions.show,10000);
