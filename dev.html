@@ -807,6 +807,17 @@ function checkCookie()
  				});
  			});
  			
+ 			//Essai de worker pour charger//filtrer le traffic
+ 			// On lance le worker de tracking
+			/*var trainWorker = new Worker('./static/raildar/TrainWorker.js');
+ 			trainWorker.addEventListener("message", function (event) {
+ 				console.log("from woker : ",event.data.train);
+ 				console.log(event.data.train.isVisible);
+ 				console.log(Train.isVisible(event.data.train));
+ 			});
+ 			trainWorker.postMessage( {} );
+ 			console.log(trainWorker); */
+ 			
 			// plus d'interval stricte mais un delai lancer apres la fin du traitement (ce qui évite les engorgements)
  			//Missions.idMissionsShowInterval=setInterval(Missions.show,10000);
 		});

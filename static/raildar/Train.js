@@ -88,6 +88,11 @@ Train.prototype.isVisible = function(){
 	return false;
 };
 
+//Train.isVisible = function(train){
+//	return Train.prototype.isVisible(train);
+//};
+
+
 Train.prototype.updateAngle = function(){
 	if(this.id_mission in Missions.markers){
 		var angle = (180+parseInt(this.heading))%360;
@@ -138,7 +143,7 @@ Train.prototype.drawMarker = function(forceUpdate){
 				$("#mission_detail").html(train.getPopup()).show();
 				$("#mission_detail_help").hide();
 			}).on('mouseout',function(){
-				$("#mission_detail").html("").hide();
+				$("#mission_detail").html("").hide();	
 				$("#mission_detail_help").show();
 			}).on('click',function(){
 				if(!Missions.markers[train.id_mission].getPopup()){
@@ -160,3 +165,18 @@ Train.prototype.removeMarker = function(){
 		delete(Missions.markers[this.id_mission]);
 	}
 };
+
+//Permet d'appeler les methodes d'instace sur un objet qui ne les a pas de facon'statique' en passant l'objet en premier argument.
+//for(method in Train.prototype){
+//	console.log("Static method making "+method);
+//	Train[method] = function(){
+//		var k = method;
+//		var _this = arguments[0];
+//		var _arguments = [];
+//		for(var i=1;i<arguments.length;i++){
+//			_arguments[i-1] = arguments[i];
+//		}
+//		console.log("calling ",k," = ",Train.prototype[k]," on ",_this," with ",_arguments);
+//		return Train.prototype[k].apply(_this,_arguments);
+//	};	
+//}
