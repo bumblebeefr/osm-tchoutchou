@@ -206,6 +206,7 @@
 			font-size:110%;
 			padding:0.5em 2em 0.5em 2em;
 		}
+		
 		#mission_detail_help{
 			padding:3em;		
 		}
@@ -241,6 +242,31 @@
 
 		.titleBlock{
 			border-bottom: 1px solid #888888;
+		}
+		
+		table#detailInfoMission {
+			width:100%
+		}
+		table#detailInfoMission tr{
+			border-bottom: 1px solid #888888;
+		}
+		table#detailInfoMission th{
+			color:#339Fdd ;
+		}
+		
+		.arret_green{ background-color:#ccffcc}
+		.arret_yellow{ background-color:#ffffcc}
+		.arret_orange{ background-color:#ffeecc}
+		.arret_red{ background-color:#ffcccc}
+		.arret_black{ background-color:#aaaaaa}
+		.arret_depasse {
+			color:grey;
+			font-style: italic;
+			text-decoration: line-through;
+			background-color:#fff;
+		}
+		.arret_next {
+			font-weight:bold;background-color:none;
 		}
 
 		
@@ -583,7 +609,7 @@
 		
 		Missions.show();
 
-		function infoLigne(idMission, txtInfoTrain){
+		function infoLigne(idMission){
 			//id=idMission.substr("mission".length)
 			jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
 					async : true,
@@ -596,7 +622,39 @@
 							bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")", function() {});
 					},
 					success : function(data, textStatus, jqXHR){
-						data["txtInfoTrain"]=txtInfoTrain;
+						var mission=Missions.missions[idMission];
+						data["txtInfoTrain"]=mission.brand+" - "+mission.num ;
+						var nextGareAtteinte=false;
+						
+						
+						$.each(data.arrets.arret,function(index,arret){
+							//determine ou on en est dans le circuit
+							arret["arret_depasse"]=true;
+							if (! nextGareAtteinte && arret.id_gare== mission.id_next_gare){
+								nextGareAtteinte=true;
+								arret["is_next_gare"]=true;
+								arret["human_time_to_gare"]="(dans "+mission.human_time_to_next_gare+")";								;
+								arret["arret_depasse"]=false;
+								arret["minutes_to_gare"]=mission.minutes_to_next_gare
+							}
+							if (nextGareAtteinte){
+								arret["arret_depasse"]=false;
+							}
+							
+														
+							if (arret.minutes_retard<0){
+								arret["classe_retard"]="arret_black";
+							} else if (arret.minutes_retard<5){
+								arret["classe_retard"]="arret_green"
+							} else if (arret.minutes_retard<15){
+								arret["classe_retard"]="arret_yellow"
+							} else if (arret.minutes_retard<30){
+								arret["classe_retard"]="arret_orange"
+							} else {
+								arret["classe_retard"]="arret_red"
+							}
+						});
+						
 						bootbox.alert(HandlebarsUtil.render('mission',data), function() {
 						})
 					}
