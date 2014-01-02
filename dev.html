@@ -149,6 +149,10 @@
 			transition: width 0.3s;
 			max-width:100%;
 			display:none;
+			z-index:900;
+		}
+		.leaflet-bottom{
+			z-index:800!important;
 		}
 		
 		.button{
@@ -168,7 +172,8 @@
 			box-shadow: 0 1px 5px rgba(0,0,0,0.4);
 			background: #fff;
 			border-radius: 5px;
-		
+			
+			z-index:1000;
 		}
 		
 		.touch .button {
@@ -578,10 +583,15 @@
 		Missions.show();
 
 
-
+		function onResize(){
+			$("#sidebar").height($(window).height());
+		}
+		
 		// #####################################################################################
 		// #####################################################################################
 		$(function(){
+			onResize();
+			$(window).resize(onResize);
 			
 			$( ".datetimepicker" ).datetimepicker({minDate: moment("2013-11-25 05:00:00").toDate(), maxDate: "+0D"});
 
