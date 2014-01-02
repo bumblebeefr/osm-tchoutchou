@@ -1,3 +1,9 @@
+// Communication avec les workers
+function WorkerMessage(cmd, parameter) {
+	this.cmd = cmd;
+	this.parameter = parameter;
+}
+
 var Tracking = {
 	marker : null,
 	running : 0, // Indicate running state of the tracking 0 : desactvated, 1 configration ,2 running
@@ -10,6 +16,7 @@ var Tracking = {
 		show:false
 	}),
 	interval : null,
+	worker : new Worker('./static/raildar/TrackingWorker.js'),
 	init : function() {
 		map.on('locationfound', Tracking.onLocationFound);
 		map.on('locationerror', Tracking.onLocationError);
@@ -28,7 +35,27 @@ var Tracking = {
 			timeout : 500,
 			watch:true
 		});
+		
+		Tracking.auto_userid = Tracking.username();
+		
+		// On lance le worker de tracking
+		Tracking.worker.postMessage( new WorkerMessage('init', null) );
+		Tracking.worker.addEventListener("message", function (event) {
+			var infos = event.data.split("&");
+			$("#tracking_info").html("<strong>Tracking : "+infos[0]+"</strong> relevés, dont "+infos[1]+" encore en cache.");
+		});
+		
 	},
+	username : function(){
+		var username=getCookie("auto_userid");
+		if (username!=null && username!="") { return username; }
+		else
+		{
+			username=randomString(24);
+			setCookie("auto_userid",username,365);
+			return username;
+		}
+	}, 
 	start : function() {
 		Tracking.started = true;
 		id_mission = null;
@@ -48,13 +75,16 @@ var Tracking = {
 		}else{
 			Tracking.onStartTracking();
 		}
+		$("#tracking_info").text('Démarrage du tracking...').show();
 	},
 	stop : function() {
 		Tracking.running = 0;
 		Tracking.started = false;
+		Tracking.id_mission = null;
 		$("#tracking_button").removeClass("enabled");
 		map.stopLocate();
 		Missions.redrawMarkers();
+		$("#tracking_info").hide();
 	},
 	//Start sending fixes to the mspecified mission
 	run : function(id_mission){
@@ -230,17 +260,21 @@ var Tracking = {
 			if(Tracking.started ){
 				if (Tracking.running == 2) {
 					// /locator/gps_fix?auto_userid='+auto_userid+'&lat='+params[1]+'&lng='+params[2]+'&accur='+params[3]+'&alt='+params[4]+'&speed='+params[5]+'&heading='+params[6]+'&id_mission='+params[7]+'&timestamp='+params[8]
-					var data = {
-						lat : e.latlng.lat,
-						lng : e.latlng.lng,
-						accur : e.accuracy,
-						alt : e.altitude,
-						speed : e.speed,
-						heading : e.heading,
-						id_mission : Tracking.id_mission
-					};
-					
-					console.log("GPS FIX", data);
+//					var data = {
+//						lat : e.latlng.lat,
+//						lng : e.latlng.lng,
+//						accur : e.accuracy,
+//						alt : e.altitude,
+//						speed : e.speed,
+//						heading : e.heading,
+//						id_mission : Tracking.id_mission
+//					};
+					if(Tracking.id_mission != null){
+						var epoch_now = Math.floor(new Date() / 1000);
+						var worker_arguements = Tracking.auto_userid+'&'+e.latlng.lat+'&'+e.latlng.lng+'&'+ e.accuracy+'&'+e.altitude+'&'+e.speed+'&'+e.heading+'&'+Tracking.id_mission+'&'+epoch_now;
+						Tracking.worker.postMessage( new WorkerMessage('fix', worker_arguements));
+					}
+					//console.log("GPS FIX", data);
 					
 					//$.get("/position.dummy?", data, function() {});
 				}
