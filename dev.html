@@ -275,52 +275,7 @@
 			width:80px;
 			height:120px;
 			float:right;
-			opacity:0.8;function randomString(len, charSet) {
-	charSet = charSet || 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	var randomString = '';
-	for (var i = 0; i < len; i++) {
-		var randomPoz = Math.floor(Math.random() * charSet.length);
-		randomString += charSet.substring(randomPoz,randomPoz+1);
-	}
-	return randomString;
-}
-
-function setCookie(c_name,value,exdays)
-{
-	var exdate=new Date();
-	exdate.setDate(exdate.getDate() + exdays);
-	var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
-	document.cookie=c_name + "=" + c_value + "; path=/";
-}
-
-function getCookie(c_name)
-{
-	var c_value = document.cookie;
-	var c_start = c_value.indexOf(" " + c_name + "=");
-	if (c_start == -1) { c_start = c_value.indexOf(c_name + "="); }
-	if (c_start == -1) { c_value = null; }
-	else
-	{
-		c_start = c_value.indexOf("=", c_start) + 1;
-		var c_end = c_value.indexOf(";", c_start);
-		if (c_end == -1) { c_end = c_value.length; }
-		c_value = unescape(c_value.substring(c_start,c_end));
-	}
-	return c_value;
-}
-
-function checkCookie()
-{
-	var username=getCookie("auto_userid");
-	if (username!=null && username!="") { return username; }
-	else
-	{
-		username=randomString(24);
-		setCookie("auto_userid",username,365);
-		return username;
-	}
-}
-			
+			opacity:0.8;
 		}
 		
 		.jqplot-grid-canvas{
@@ -329,6 +284,31 @@ function checkCookie()
 
 		.titleBlock{
 			border-bottom: 1px solid #888888;
+		}
+		
+		table#detailInfoMission {
+			width:100%
+		}
+		table#detailInfoMission tr{
+			border-bottom: 1px solid #888888;
+		}
+		table#detailInfoMission th{
+			color:#339Fdd ;
+		}
+		
+		.arret_green{ background-color:#ccffcc}
+		.arret_yellow{ background-color:#ffffcc}
+		.arret_orange{ background-color:#ffeecc}
+		.arret_red{ background-color:#ffcccc}
+		.arret_black{ background-color:#aaaaaa}
+		.arret_depasse {
+			color:grey;
+			font-style: italic;
+			text-decoration: line-through;
+			background-color:#fff;
+		}
+		.arret_next {
+			font-weight:bold;background-color:none;
 		}
 
 		
@@ -691,7 +671,7 @@ function checkCookie()
 			$("#sidebar").height($(window).height());
 		}
 		
-		function infoLigne(idMission, txtInfoTrain){
+		function infoLigne(idMission){
 			//id=idMission.substr("mission".length)
 			jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
 					async : true,
@@ -704,7 +684,39 @@ function checkCookie()
 							bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")", function() {});
 					},
 					success : function(data, textStatus, jqXHR){
-						data["txtInfoTrain"]=txtInfoTrain;
+						var mission=Missions.missions[idMission];
+						data["txtInfoTrain"]=mission.brand+" - "+mission.num ;
+						var nextGareAtteinte=false;
+						
+						
+						$.each(data.arrets.arret,function(index,arret){
+							//determine ou on en est dans le circuit
+							arret["arret_depasse"]=true;
+							if (! nextGareAtteinte && arret.id_gare== mission.id_next_gare){
+								nextGareAtteinte=true;
+								arret["is_next_gare"]=true;
+								arret["human_time_to_gare"]="(dans "+mission.human_time_to_next_gare+")";								;
+								arret["arret_depasse"]=false;
+								arret["minutes_to_gare"]=mission.minutes_to_next_gare
+							}
+							if (nextGareAtteinte){
+								arret["arret_depasse"]=false;
+							}
+							
+														
+							if (arret.minutes_retard<0){
+								arret["classe_retard"]="arret_black";
+							} else if (arret.minutes_retard<5){
+								arret["classe_retard"]="arret_green"
+							} else if (arret.minutes_retard<15){
+								arret["classe_retard"]="arret_yellow"
+							} else if (arret.minutes_retard<30){
+								arret["classe_retard"]="arret_orange"
+							} else {
+								arret["classe_retard"]="arret_red"
+							}
+						});
+						
 						bootbox.alert(HandlebarsUtil.render('mission',data), function() {
 						})
 					}
