@@ -811,9 +811,17 @@
  			});
  			
  			
+ 			
 		});
 		
-
+		var trainWorker = new Worker('./static/raildar/TrainWorker.js');
+		trainWorker.addEventListener("message", function (event) {
+			console.log("from woker : ",event.data.train);
+			console.log(event.data.train.isVisible);
+			console.log(Train.isVisible(event.data.train));
+		});
+		trainWorker.postMessage( {} );
+		console.log(trainWorker); 
 	</script>
 </body>
 </html>
