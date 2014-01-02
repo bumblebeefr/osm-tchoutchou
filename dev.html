@@ -693,6 +693,15 @@
 	 			}else{
 	 				Tracking.start();
 	 			}
+ 			}).tooltip({
+ 				placement : 'left',
+ 				title : function(){
+ 					if($(this).hasClass('enabled')){
+ 						return "Stopper le tracking en cours";
+ 					}else{
+ 						return "Demarrer l'enregistrement et le tracking d'un train";
+ 					}
+ 				}
  			});
  			$("body").on('click','#stat_detail',function(e){
  				e.preventDefault();
@@ -702,6 +711,7 @@
  					message: html
  				});
  			});
+ 			
 			// plus d'interval stricte mais un delai lancer apres la fin du traitement (ce qui évite les engorgements)
  			//Missions.idMissionsShowInterval=setInterval(Missions.show,10000);
 		});
