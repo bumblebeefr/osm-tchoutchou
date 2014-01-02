@@ -25,6 +25,16 @@ Handlebars.registerHelper('escape', function(str) {
 	return new Handlebars.SafeString(escape(str));
 });
 
+
+//Esacpe (with javascript escape function) a string.
+Handlebars.registerHelper('escape', function(str) {
+	return new Handlebars.SafeString(escape(str));
+});
+
+Handlebars.registerHelper('safe', function(str) {
+	return new Handlebars.SafeString(str);
+});
+
 // allow to disaplay a default value if the specifieed property value is
 // unedefined false or null.
 Handlebars.registerHelper('default', function(val, defaultvalue) {
