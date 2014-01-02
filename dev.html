@@ -597,6 +597,27 @@
 			$("#sidebar").height($(window).height());
 		}
 		
+		function infoLigne(idMission, txtInfoTrain){
+			//id=idMission.substr("mission".length)
+			jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
+					async : true,
+					cache : false,
+					data : {"id_mission":idMission},	
+					error : function(jqXHR,textStatus,errorThrown){
+							if(console && console.error){
+								console.error("Error when loading #jstchouchou data ",jqXHR);
+							}
+							bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")", function() {});
+					},
+					success : function(data, textStatus, jqXHR){
+						data["txtInfoTrain"]=txtInfoTrain;
+						bootbox.alert(HandlebarsUtil.render('mission',data), function() {
+						})
+					}
+			});
+			
+		}
+
 		// #####################################################################################
 		// #####################################################################################
 		$(function(){
@@ -652,6 +673,17 @@
  			$("#sidebar_button" ).click(function(){
  				$("#sidebar").toggle();
  			});
+ 			
+ 			// ############################# HANDLEBAR Helper ###########################
+ 			Handlebars.registerHelper('list', function(context, options) {
+ 				var ret = "<ul>";
+
+ 				for(var i=0, j=context.length; i<j; i++) {
+ 					ret = ret + "<li>" + options.fn(context[i]) + "</li>";
+ 				}
+
+ 				return ret + "</ul>";
+ 			});
  			$("#tracking_button").click(function(){
  				$("#sidebar").hide();
  				if(Tracking.started){
@@ -672,6 +704,17 @@
  			});
 			// plus d'interval stricte mais un delai lancer apres la fin du traitement (ce qui évite les engorgements)
  			//Missions.idMissionsShowInterval=setInterval(Missions.show,10000);
+		});
+		
+		// ############################# HANDLEBAR Helper ###########################
+		Handlebars.registerHelper('list', function(context, options) {
+			var ret = "<ul>";
+
+			for(var i=0, j=context.length; i<j; i++) {
+				ret = ret + "<li>" + options.fn(context[i]) + "</li>";
+			}
+
+			return ret + "</ul>";
 		});
 		
 
