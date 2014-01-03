@@ -441,7 +441,7 @@
 					Missions.statuses['indicateur_histo'] =  (Missions.modeHistorique.isOn)?"<i class='fa fa-book'></i>":"";
 					var mission_ids ={};
 					Missions.statuses['hour'] = null;
-					$.each(data.features,function(){
+					$.each(data.missions,function(){
 							try{
 								var mission = Missions.add(this);
 								mission_ids[mission.id_mission] = true;
@@ -469,7 +469,7 @@
 								}
 							} catch(e){
 								console.error("Oups ya un probleme avec le point là ",this,e);
-							} 
+							}
 					});
 
 					// ici on ne doit jamais être rentré dans la boucle (aucune feature ramenée) car Missions.statuses['hour'] ==null
@@ -562,7 +562,6 @@
 			missions:{},
 			statuses:{ttl:0},
 			add : function(mission){
-				mission = new Train(mission);
 				Missions.missions[mission.id_mission] = mission;
 				Train.drawMarker(mission,true);
 				return mission;
@@ -606,12 +605,12 @@
 			clean : function(mission_ids){
 				for(k in Missions.missions){
 					if( mission_ids && !(k in mission_ids)){
-						Missions.missions[k].removeMarker();
+						Train.removeMarker(Missions.missions[k]);
 						delete(Missions.missions[k]);
 						//console.info('Remove mission from map '+k);
 					}else{
-						if(!Missions.missions[k].isVisible()){
-							Missions.missions[k].removeMarker();
+						if(!Train.isVisible(Missions.missions[k])){
+							Train.removeMarker(Missions.missions[k]);
 						};
 					}
 				}

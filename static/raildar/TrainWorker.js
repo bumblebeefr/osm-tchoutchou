@@ -2,14 +2,19 @@ var worker = this;
 
 importScripts('./Train.js', '../moment.min.js', '../underscore-min.js');
 
-var getJSON = function(url, options) {
-	if (options == null) {
-		options = {};
+var getJSON = function(url, _options) {
+	var options  = {
+		data : {},
+		cache:true,
+	};
+	for(var k in _options){
+		options[k] = _options[k];
 	}
-	if (!('data' in options) || options.data == undefined) {
-		options.data = {};
+	
+	if(options.cache == false){
+		options.data['_'] = (new Date()).getTime();
 	}
-	options.data['_'] = (new Date()).getTime();
+	
 	for (k in options.data) {
 		url += (url.indexOf("?") == -1) ? "?" : "&";
 		url += encodeURIComponent(k);
@@ -55,6 +60,7 @@ var handlers = {
 	get_circulation : function(options) {
 		 getJSON("http://www.raildar.fr/json/get_circulation.json", {
 			data : options.data,
+			cache : false,
 			error : function(jqXHR, textStatus, errorThrown) {
 				worker.postMessage({
 					type : "circulation_error",
@@ -65,9 +71,15 @@ var handlers = {
 				});
 			},
 			success : function(data, textStatus, jqXHR) {
+				var trains = [];
+				for(var i = 0; i< data.features.length; i++){
+					trains.push(new Train(data.features[i]));
+				}
 				worker.postMessage({
 					type : "circulation_success",
-					data : data
+					data : {
+						missions : trains
+					}
 				});
 
 			},

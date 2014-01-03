@@ -135,7 +135,7 @@ Train.prototype.drawMarker = function(forceUpdate){
 			//ajout du marker si visible
 			Missions.markers[this.id_mission] = L.marker(L.latLng(this.lat,this.lng),{
 				icon:Missions.icons[this.type],
-				title : this.getTitle(),
+				title : Train.getTitle(this),
 			}).addTo(map);
 			var train = this;
 			Missions.markers[train.id_mission].on('mouseover',function(){
