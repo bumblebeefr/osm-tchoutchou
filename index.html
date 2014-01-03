@@ -428,6 +428,120 @@
 			else return default_value;
 		};
 		
+		//Webwoker tha wil get and filter circulation/trains
+		var callbacks = {
+				circulation_error : function(data){
+					if(console && console.error){
+						console.error("Error when loading #jstchouchou data ",data.textStatus);
+					}
+					bootbox.alert("Erreur de récupération des données de la mission ("+data.textStatus+")", function() {});
+				},
+				circulation_success : function(data){
+					Missions.statuses = {ttl:0};
+					Missions.statuses['indicateur_histo'] =  (Missions.modeHistorique.isOn)?"<i class='fa fa-book'></i>":"";
+					var mission_ids ={};
+					Missions.statuses['hour'] = null;
+					$.each(data.features,function(){
+							try{
+								var mission = Missions.add(this);
+								mission_ids[mission.id_mission] = true;
+								if(!(mission.status in Missions.statuses)){
+									//console.info("Nouveau type : ",mission.type);
+									Missions.statuses[mission.status] = 1;
+								}else{
+									Missions.statuses[mission.status]  += 1;
+								}
+								if(!(mission.type in Missions.statuses)){
+									//console.info("Nouveau type : ",mission.type);
+									Missions.statuses[mission.type] = 1;
+								}else{
+									Missions.statuses[mission.type]  += 1;
+								}
+								Missions.statuses['ttl']  += 1;
+								if(Missions.statuses['hour'] == null){
+									if( Missions.modeHistorique.isOn){
+										Missions.statuses['hour'] =  getDateHistorique().format("LLLL");
+										traiteDelaiHisto();
+									} else {
+										Missions.modeHistorique.isOn=false;
+										Missions.statuses['hour'] = "Aujourd'hui à "+moment(mission.last_update).format("HH:mm:ss");
+									}
+								}
+							} catch(e){
+								console.error("Oups ya un probleme avec le point là ",this,e);
+							} 
+					});
+
+					// ici on ne doit jamais être rentré dans la boucle (aucune feature ramenée) car Missions.statuses['hour'] ==null
+					// dans ce cas il faut quand même, en cas d'histo, calculer la date histo suivante sinon on bloque au meme moment
+					if(Missions.statuses['hour'] == null && Missions.modeHistorique.isOn && getDateHistorique() ){
+						Missions.statuses['hour']=getDateHistorique().format("LLLL") +" Aucune donnée disponible";
+						traiteDelaiHisto();
+					} 
+					
+					//netoyage des mission terminées
+					Missions.clean(mission_ids);
+					delete(mission_ids);
+					
+					//Affichage des stats
+					$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
+					
+					var pcts = {
+							"green" : 0,
+							"yellow" : 0,
+							"orange" :0,
+							"red":0,
+							"black":0
+					}
+					for(k in pcts){
+						if(k in Missions.statuses){
+							pcts[k] = Math.round(Missions.statuses[k]/Missions.statuses.ttl*1000)/10;
+						}
+					}
+					var data = [
+					   ['green',pcts.green], ['yellow',pcts.yellow], ['orange',pcts.orange], ['red',pcts.red], ['black',pcts.black]
+					  ];
+					  var plot1 = jQuery.jqplot ('camembert', [data],
+					    {
+						  seriesColors:['#35a619','#b7c916','#c79516','#c71818','#575757'],
+					      seriesDefaults: {
+					    	fillAlpha :0,
+					        // Make this a pie chart.
+					        renderer: jQuery.jqplot.PieRenderer,
+					        rendererOptions: {
+						        padding:3,
+						        shadowOffset:0.9,
+					             startAngle: -90
+					        }
+					      }
+					    });
+					  delete(pcts);
+					  delete(data);
+					  delete(plot1);
+			
+					$("#icon").removeClass("loading");
+					console.timeEnd("load");
+				},
+				// apres traitement succes ou erreur
+				circulation_complete : function(jqXHR, textStatus){
+					if (DEBUG.refreshMissions) {
+						var delai=Missions.refreshDelays.live	//par defaut on rafraichit le live		
+						if(getDateHistorique()) {
+							Missions.modeHistorique.isOn=true;
+							delai=Missions.refreshDelays.histo //en cas d'historique, on va plus vite
+						} else {
+							Missions.modeHistorique.isOn=false;
+						} 
+						setTimeout(Missions.show,delai);
+					}
+				}
+			};
+		var trainWorker = new Worker('./static/raildar/TrainWorker.js');
+		trainWorker.addEventListener("message", function (event) {
+			callbacks[event.data.type](event.data.data);
+		});
+		
+		
 		var Missions = {
 			// en millisecondes (pour settimeout())
 			refreshDelays:{
@@ -483,118 +597,10 @@
 				if(Tracking.running == 2 && Tracking.id_mission !=null){
 					params['id_mission'] = Tracking.id_mission;
 				}
-				jQuery.ajax("http://www.raildar.fr/json/get_circulation.json",{
-					async : true,
-					cache : false,
-					data : params,	
-					error : function(jqXHR,textStatus,errorThrown){
-						$("#icon").removeClass("loading");
-						if(console && console.error){
-							console.error("Error when loading #jstchouchou data ",jqXHR);
-						}
-						$("#stats").html("<div class='error centered'>Erreur de récupération des données ("+jqXHR.status+") <br>"+ errorThrown+"</div>")
-						traiteDelaiHisto();
-					},
-					success : function(data, textStatus, jqXHR){
-						Missions.statuses = {ttl:0};
-						Missions.statuses['indicateur_histo'] =  (Missions.modeHistorique.isOn)?"<i class='fa fa-book'></i>":"";
-						var mission_ids ={};
-						Missions.statuses['hour'] = null;
-						$.each(data.features,function(){
-								try{
-									var mission = Missions.add(this);
-									mission_ids[mission.id_mission] = true;
-									if(!(mission.status in Missions.statuses)){
-										//console.info("Nouveau type : ",mission.type);
-										Missions.statuses[mission.status] = 1;
-									}else{
-										Missions.statuses[mission.status]  += 1;
-									}
-									if(!(mission.type in Missions.statuses)){
-										//console.info("Nouveau type : ",mission.type);
-										Missions.statuses[mission.type] = 1;
-									}else{
-										Missions.statuses[mission.type]  += 1;
-									}
-									Missions.statuses['ttl']  += 1;
-									if(Missions.statuses['hour'] == null){
-										if( Missions.modeHistorique.isOn){
-											Missions.statuses['hour'] =  getDateHistorique().format("LLLL");
-											traiteDelaiHisto();
-										} else {
-											Missions.modeHistorique.isOn=false;
-											Missions.statuses['hour'] = "Aujourd'hui à "+moment(mission.last_update).format("HH:mm:ss");
-										}
-									}
-								} catch(e){
-									console.error("Oups ya un probleme avec le point là ",this,e);
-								} 
-						});
-
-						// ici on ne doit jamais être rentré dans la boucle (aucune feature ramenée) car Missions.statuses['hour'] ==null
-						// dans ce cas il faut quand même, en cas d'histo, calculer la date histo suivante sinon on bloque au meme moment
-						if(Missions.statuses['hour'] == null && Missions.modeHistorique.isOn && getDateHistorique() ){
-							Missions.statuses['hour']=getDateHistorique().format("LLLL") +" Aucune donnée disponible";
-							traiteDelaiHisto();
-						} 
-						
-						//netoyage des mission terminées
-						Missions.clean(mission_ids);
-						delete(mission_ids);
-						
-						//Affichage des stats
-						$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
-						
-						var pcts = {
-								"green" : 0,
-								"yellow" : 0,
-								"orange" :0,
-								"red":0,
-								"black":0
-						}
-						for(k in pcts){
-							if(k in Missions.statuses){
-								pcts[k] = Math.round(Missions.statuses[k]/Missions.statuses.ttl*1000)/10;
-							}
-						}
-						var data = [
-						   ['green',pcts.green], ['yellow',pcts.yellow], ['orange',pcts.orange], ['red',pcts.red], ['black',pcts.black]
-						  ];
-						  var plot1 = jQuery.jqplot ('camembert', [data],
-						    {
-							  seriesColors:['#35a619','#b7c916','#c79516','#c71818','#575757'],
-						      seriesDefaults: {
-						    	fillAlpha :0,
-						        // Make this a pie chart.
-						        renderer: jQuery.jqplot.PieRenderer,
-						        rendererOptions: {
-							        padding:3,
-							        shadowOffset:0.9,
-						             startAngle: -90
-						        }
-						      }
-						    });
-						  delete(pcts);
-						  delete(data);
-						  delete(plot1);
 				
-						$("#icon").removeClass("loading");
-						console.timeEnd("load");
-					},
-					// apres traitement succes ou erreur
-					complete : function(jqXHR, textStatus){
-						if (DEBUG.refreshMissions) {
-							var delai=Missions.refreshDelays.live	//par defaut on rafraichit le live		
-							if(getDateHistorique()) {
-								Missions.modeHistorique.isOn=true;
-								delai=Missions.refreshDelays.histo //en cas d'historique, on va plus vite
-							} else {
-								Missions.modeHistorique.isOn=false;
-							} 
-							setTimeout(Missions.show,delai);
-						}
-					}
-				});
+				//Call the web worker that will load and filter data.
+				//See trainWorker configuration for callbacks
+				trainWorker.postMessage(new WorkerMessage('get_circulation', { data : params}));
 
 			},
 			clean : function(mission_ids){
@@ -821,19 +827,8 @@
  			
 		});
 		
-		var trainWorker = new Worker('./static/raildar/TrainWorker.js');
-		trainWorker.addEventListener("message", function (event) {
-			var out = {
-				'error' : function(data){
-					console.error("worker : ",data);
-				},
-				'circulation' : function(data){
-					console.info("worker : ",data);
-				}
-			}[event.type](event.data);
-			delete(out);
-		});
-		trainWorker.postMessage(new WorkerMessage('get_circulation', {}));
+		
+
 			
 	</script>
 </body>
