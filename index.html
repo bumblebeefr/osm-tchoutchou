@@ -383,6 +383,7 @@
 	<script src="./static/leaflet.js"></script>
 	<script src="./static/leaflet-hash.js"></script>
 	<script src="./static/jquery-2.0.3.js"></script>
+	<script src="./static/underscore-min.js"></script>
 	<script src="./static/jquery.jqplot.js"></script>
 	<script src="./static/jqplot.pieRenderer.js"></script>
 	<script src="./static/bootstrap3/js/bootstrap.min.js"></script>
@@ -394,6 +395,7 @@
 	<script src="./static/handlebars-util.js"></script>
 	<script src="./static/raildar/library.js"></script>
 	<script src="./static/raildar/Train.js"></script>
+	<script src="./static/raildar/TrainFilters.js"></script>
 	<script src="./static/raildar/Tracking.js"></script>
 	<!-- date time picker-->
 	<script src="./static/jquery-ui-1.10.3.custom.min.js"></script>
@@ -437,27 +439,20 @@
 					bootbox.alert("Erreur de récupération des données de la mission ("+data.textStatus+")", function() {});
 				},
 				circulation_success : function(data){
-					Missions.statuses = {ttl:0};
+					console.timeEnd("worker");
+					console.time("view");
+					Missions.statuses = data.stats;
 					Missions.statuses['indicateur_histo'] =  (Missions.modeHistorique.isOn)?"<i class='fa fa-book'></i>":"";
-					var mission_ids ={};
 					Missions.statuses['hour'] = null;
+
+					//netoyage des mission terminées
+					Missions.clean(data.remove);
+					
+					//affichage/maj des autres markers
 					$.each(data.missions,function(){
 							try{
 								var mission = Missions.add(this);
-								mission_ids[mission.id_mission] = true;
-								if(!(mission.status in Missions.statuses)){
-									//console.info("Nouveau type : ",mission.type);
-									Missions.statuses[mission.status] = 1;
-								}else{
-									Missions.statuses[mission.status]  += 1;
-								}
-								if(!(mission.type in Missions.statuses)){
-									//console.info("Nouveau type : ",mission.type);
-									Missions.statuses[mission.type] = 1;
-								}else{
-									Missions.statuses[mission.type]  += 1;
-								}
-								Missions.statuses['ttl']  += 1;
+								
 								if(Missions.statuses['hour'] == null){
 									if( Missions.modeHistorique.isOn){
 										Missions.statuses['hour'] =  getDateHistorique().format("LLLL");
@@ -479,9 +474,6 @@
 						traiteDelaiHisto();
 					} 
 					
-					//netoyage des mission terminées
-					Missions.clean(mission_ids);
-					delete(mission_ids);
 					
 					//Affichage des stats
 					$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
@@ -518,21 +510,22 @@
 					  delete(pcts);
 					  delete(data);
 					  delete(plot1);
-			
-					$("#icon").removeClass("loading");
-					console.timeEnd("load");
 				},
 				// apres traitement succes ou erreur
 				circulation_complete : function(jqXHR, textStatus){
+					$("#icon").removeClass("loading");
+					console.timeEnd("view");
+					console.timeEnd("get_circulation");
 					if (DEBUG.refreshMissions) {
-						var delai=Missions.refreshDelays.live	//par defaut on rafraichit le live		
+						var delai=Missions.refreshDelays.live;	//par defaut on rafraichit le live		
 						if(getDateHistorique()) {
 							Missions.modeHistorique.isOn=true;
-							delai=Missions.refreshDelays.histo //en cas d'historique, on va plus vite
+							delai=Missions.refreshDelays.histo; //en cas d'historique, on va plus vite
 						} else {
 							Missions.modeHistorique.isOn=false;
 						} 
-						setTimeout(Missions.show,delai);
+						clearTimeout(Missions.get_circulation_timeout);
+						Missions.get_circulation_timeout = setTimeout(Missions.show,delai);
 					}
 				}
 			};
@@ -543,6 +536,7 @@
 		
 		
 		var Missions = {
+			get_circulation_timeout : null,
 			// en millisecondes (pour settimeout())
 			refreshDelays:{
 				live:10000,
@@ -566,26 +560,24 @@
 				Train.drawMarker(mission,true);
 				return mission;
 			},
+			setFilters : function() {
+				TrainFilters.bounds = map.getBounds();
+				var visible = [];
+				$("input.filter:checked").each(function(){
+					visible.push($(this).attr('name'));
+				});
+				TrainFilters.visible = visible;
+				TrainFilters.num_train = $.trim($("#number_filter").val());
+				trainWorker.postMessage(new WorkerMessage('update_filters', TrainFilters));
+			},
 			//redraw each mission whithout changing data (after an UI event for example)
 			redrawMarkers : function(){
-				$("#icon").addClass("loading");
-				console.time("redraw");
-				$.each(Missions.missions,function(){
-					Train.drawMarker(this);
-				});
-				console.timeEnd("redraw")
-				$("#icon").removeClass("loading");
-				
-				/* if(Missions.markers.length >10){
-					$("body").removeClass("animated");
-				}else{
-					$("body").addClass("animated");
-				} */
-			},
-			traiteHisto:function(){
-				
+				Missions.setFilters();
+				Missions.show();
 			},
 			show : function(){
+				console.time("get_circulation");
+				console.time("worker");
 				$("#icon").addClass("loading");
 				var params={};
 				var dateHisto=getDateHistorique();
@@ -602,23 +594,19 @@
 				trainWorker.postMessage(new WorkerMessage('get_circulation', { data : params}));
 
 			},
-			clean : function(mission_ids){
-				for(k in Missions.missions){
-					if( mission_ids && !(k in mission_ids)){
-						Train.removeMarker(Missions.missions[k]);
-						delete(Missions.missions[k]);
-						//console.info('Remove mission from map '+k);
-					}else{
-						if(!Train.isVisible(Missions.missions[k])){
-							Train.removeMarker(Missions.missions[k]);
-						};
-					}
+			remove : function(id_mission){
+				if(id_mission in Missions.markers){
+					map.removeLayer(Missions.markers[id_mission]);
+					delete(Missions.markers[id_mission]);
+					delete(Missions.missions[id_mission]);
 				}
-				/* if(Missions.markers.length >10){
-					$("body").removeClass("animated");
-				}else{
-					$("body").addClass("animated");
-				} */
+			},
+			clean : function(remove){
+				for(id_mission in remove){
+					console.log("removing",id_mission);
+					Missions.remove(id_mission);
+				}
+				delete(remove);
 			}
 		};
 
@@ -672,8 +660,11 @@
 		}
 		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
-		 var hash = new L.Hash(map);
-		 
+		var hash = new L.Hash(map);
+		
+		//Initialise filters
+		Missions.setFilters();
+		
 		//Sart leaflet geolocation.
 		Tracking.init();
 
@@ -682,6 +673,7 @@
 
 		function onResize(){
 			$("#sidebar").height($(window).height());
+			Missions.redrawMarkers();
 		}
 		
 		function infoLigne(idMission){
@@ -730,8 +722,7 @@
 							}
 						});
 						
-						bootbox.alert(HandlebarsUtil.render('mission',data), function() {
-						})
+						bootbox.alert(HandlebarsUtil.render('mission',data), function() {});
 					}
 			});
 			

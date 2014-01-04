@@ -1,6 +1,6 @@
 var worker = this;
 
-importScripts('./Train.js', '../moment.min.js', '../underscore-min.js');
+importScripts('./Train.js', './TrainFilters.js', '../spark-md5.min.js', '../moment.min.js', '../underscore-min.js');
 
 var getJSON = function(url, _options) {
 	var options  = {
@@ -25,12 +25,12 @@ var getJSON = function(url, _options) {
 	var req = new XMLHttpRequest();
 	try{
 		req.open('GET', url, true);
-		req.responseType = "json";
+		//req.responseType = "json";
 		req.onreadystatechange = function(aEvt) {
 			if (req.readyState == 4) {
 				if (req.status == 200) {
 					if(typeof options.success == 'function'){
-						options.success(req.response,req.statusText,req);
+						options.success(JSON.parse(req.response),req.statusText,req);
 					}
 				} else {
 					if(typeof options.error == 'function'){
@@ -50,14 +50,22 @@ var getJSON = function(url, _options) {
 		console.error(e);
 	}
 };
-
+var Trains = {};
+var lastCirculationMD5 = null;
+var filtersUpdated = false;
+var runningXHR = null;
 var handlers = {
-	updateFilters : function(options) {
-
+	update_filters : function(filters) {
+		TrainFilters = filters;
+		filtersUpdated = true;
 	},
 
 	// options.params : parametre de la requete ajax
 	get_circulation : function(options) {
+		if(runningXHR){
+			runningXHR.abort();
+		}
+		var d = new Date();
 		 getJSON("http://www.raildar.fr/json/get_circulation.json", {
 			data : options.data,
 			cache : false,
@@ -71,17 +79,53 @@ var handlers = {
 				});
 			},
 			success : function(data, textStatus, jqXHR) {
-				var trains = [];
-				for(var i = 0; i< data.features.length; i++){
-					trains.push(new Train(data.features[i]));
-				}
-				worker.postMessage({
-					type : "circulation_success",
-					data : {
-						missions : trains
+				console.log("request : "+(new Date().getTime() - d.getTime())+'ms');
+				var md5 = SparkMD5.hash(jqXHR.responseText);
+				if(md5 != lastCirculationMD5 || filtersUpdated) {
+					lastCirculationMD5 = md5;
+					filtersUpdated = false;
+					var missions = [];
+					var trains = {};
+					var stats = {ttl:0};
+					for(var i = 0; i< data.features.length; i++){
+						var mission = new Train(data.features[i]);
+						
+						if(!(mission.status in stats)){
+							//console.info("Nouveau type : ",mission.type);
+							stats[mission.status] = 1;
+						}else{
+							stats[mission.status]  += 1;
+						}
+						if(!(mission.type in stats)){
+							//console.info("Nouveau type : ",mission.type);
+							stats[mission.type] = 1;
+						}else{
+							stats[mission.type]  += 1;
+						}
+						stats['ttl']  += 1;
+						
+						if(Train.isVisible(mission,TrainFilters)){
+							missions.push(mission);
+							trains[mission.id_mission] = true;
+							delete(Trains[mission.id_mission]);
+						}else{
+							delete(mission);
+						}
 					}
-				});
-
+					worker.postMessage({
+						type : "circulation_success",
+						data : {
+							missions : missions,
+							remove : Trains,
+							stats : stats
+						}
+					});
+					delete(Trains);
+					Trains = trains;
+					delete(stats);
+				}else{
+					console.info("Nothing to update");
+				}
 			},
 			complete : function(jqXHR, textStatus) {
 				worker.postMessage({
