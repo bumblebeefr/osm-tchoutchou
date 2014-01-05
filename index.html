@@ -664,7 +664,11 @@
 		}
 		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
+		$("body").on("hashchange",function(event,args,old_args){
+			console.log("Hash has changed", args,old_args);
+		});
 		var hash = new L.Hash(map);
+		
 		
 		//Initialise filters
 		Missions.setFilters();
