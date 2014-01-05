@@ -505,7 +505,7 @@
 			];
 			var plot1 = jQuery.jqplot (cssId, [dataGraph],
 				{
-				  seriesColors:['#35a619','#b7c916','#c79516','#c71818','#575757'],
+				  seriesColors:['#19b419','#e9d91c','#fe7317','#f40000','#252525'],
 			    seriesDefaults: {
 			    	fillAlpha :0,
 			      // Make this a pie chart.
@@ -695,7 +695,7 @@
 									var mission = Missions.add(this);
 									mission_ids[mission.id_mission] = true;
 									if(!(mission.status in Missions.statuses)){
-										//console.info("Nouveau type : ",mission.type);bref je vais committer ce que j'ai la meme si c'est pourri
+										//console.info("Nouveau type : ",mission.type);
 										Missions.statuses[mission.status] = 1;
 									}else{
 										Missions.statuses[mission.status]  += 1;
