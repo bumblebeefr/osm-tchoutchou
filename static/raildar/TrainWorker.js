@@ -47,7 +47,7 @@ var getJSON = function(url, _options) {
 		if(typeof options.error == 'function'){
 			options.error(req.statusText, req,e);
 		}
-		console.error(e);
+		//console.error(e);
 	}
 };
 var Trains = {};
@@ -79,8 +79,10 @@ var handlers = {
 				});
 			},
 			success : function(data, textStatus, jqXHR) {
-				console.log("request : "+(new Date().getTime() - d.getTime())+'ms');
+				//console.log("request : "+(new Date().getTime() - d.getTime())+'ms');
+				//var d2 = new Date();
 				var md5 = SparkMD5.hash(jqXHR.responseText);
+				//console.log("md5 : "+(new Date().getTime() - d2.getTime())+'ms');
 				if(md5 != lastCirculationMD5 || filtersUpdated) {
 					lastCirculationMD5 = md5;
 					filtersUpdated = false;
@@ -124,7 +126,7 @@ var handlers = {
 					Trains = trains;
 					delete(stats);
 				}else{
-					console.info("Nothing to update");
+					//console.info("Nothing to update");
 				}
 			},
 			complete : function(jqXHR, textStatus) {
@@ -141,6 +143,6 @@ this.addEventListener('message', function(e) {
 	if (e.data.cmd in handlers) {
 		handlers[e.data.cmd](e.data.parameter);
 	} else {
-		console.error("No handler defined for cmd " + e.cmd);
+		//console.error("No handler defined for cmd " + e.cmd);
 	}
 }, false);
