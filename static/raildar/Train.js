@@ -54,7 +54,7 @@ var Train = function(mission){
 	}
 	
 	this.lib_pos_type=position_type[this.pos_type];
-	this.human_last_check=moment(this.last_check).format("LLL");	
+	this.human_last_check=(this.last_check)?moment(this.last_check).format("LLL"):"Inconnue";	
 	var minutes=parseInt(this.minutes_to_next_gare);
 	this.human_time_to_next_gare=moment.duration(minutes,"minutes").humanize();
 };
