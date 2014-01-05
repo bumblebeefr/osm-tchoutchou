@@ -421,7 +421,7 @@
 			var mult=parseInt($("#multiplicateurVitesseHistorique").val());
 			var oldTime=parseInt(getDateHistorique().unix());
 			var newTimestamp=60*mult+oldTime; 
-			var newMoment=moment(newTimestamp*1000)
+			var newMoment=moment(newTimestamp*1000);
 			console.log("futur timestamp : " + newTimestamp + " = "+ newMoment.format("LLLL"));
 			$("#dateHistorique").val(newMoment.format("DD/MM/YYYY HH:mm:ss"));
 		};
@@ -442,8 +442,8 @@
 					console.timeEnd("worker");
 					console.time("view");
 					Missions.statuses = data.stats;
-					Missions.statuses['indicateur_histo'] =  (Missions.modeHistorique.isOn)?"<i class='fa fa-book'></i>":"";
 					Missions.statuses['hour'] = null;
+					Missions.statuses['indicateur_histo'] =  (Missions.modeHistorique.isOn)?"<i class='fa fa-book'></i>":"";
 
 					//netoyage des mission terminées
 					Missions.clean(data.remove);
@@ -467,14 +467,6 @@
 							}
 					});
 
-					// ici on ne doit jamais être rentré dans la boucle (aucune feature ramenée) car Missions.statuses['hour'] ==null
-					// dans ce cas il faut quand même, en cas d'histo, calculer la date histo suivante sinon on bloque au meme moment
-					if(Missions.statuses['hour'] == null && Missions.modeHistorique.isOn && getDateHistorique() ){
-						Missions.statuses['hour']=getDateHistorique().format("LLLL") +" Aucune donnée disponible";
-						traiteDelaiHisto();
-					} 
-					
-					
 					//Affichage des stats
 					$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
 					
@@ -516,6 +508,15 @@
 					$("#icon").removeClass("loading");
 					console.timeEnd("view");
 					console.timeEnd("get_circulation");
+					
+					
+					// ici on ne doit jamais être rentré dans la boucle (aucune feature ramenée) car Missions.statuses['hour'] ==null
+					// dans ce cas il faut quand même, en cas d'histo, calculer la date histo suivante sinon on bloque au meme moment
+					if(Missions.statuses['hour'] == null && Missions.modeHistorique.isOn && getDateHistorique() ){
+						Missions.statuses['hour']=getDateHistorique().format("LLLL") +" Aucune donnée disponible";
+						traiteDelaiHisto();
+					}					
+					
 					if (DEBUG.refreshMissions) {
 						var delai=Missions.refreshDelays.live;	//par defaut on rafraichit le live		
 						if(getDateHistorique()) {
@@ -582,12 +583,14 @@
 				var params={};
 				var dateHisto=getDateHistorique();
 				if (Missions.modeHistorique.isOn || dateHisto){
-				  console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
-				  params["date"]=dateHisto.format("X");
+					console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
+					params["date"]=dateHisto.format("X");
 				}
 				if(Tracking.running == 2 && Tracking.id_mission !=null){
 					params['id_mission'] = Tracking.id_mission;
 				}
+
+				Missions.statuses['hour'] = null;
 				
 				//Call the web worker that will load and filter data.
 				//See trainWorker configuration for callbacks
