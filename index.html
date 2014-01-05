@@ -583,6 +583,7 @@
 				var params={};
 				var dateHisto=getDateHistorique();
 				if (Missions.modeHistorique.isOn || dateHisto){
+					Missions.modeHistorique.isOn = true;
 					console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
 					params["date"]=dateHisto.format("X");
 				}
