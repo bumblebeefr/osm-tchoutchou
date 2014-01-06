@@ -4,12 +4,14 @@
 <table id="detailInfoMission">
 	<tr>
 		<th>Gare</th>
+		<th>Heure&nbsp;&nbsp;</th>
 		<th>Info horaire</th>
 	</tr>
 
 {{#each arrets.arret}}
 	<tr class="{{classe_retard}} {{#if arret_depasse}}arret_depasse{{/if}} {{#if is_next_gare}}arret_next{{/if}}">
 		<td>{{gare_name}} {{human_time_to_gare}}</td>
+		<td>{{horaire}}</td>
 		<td>{{info}}</td>
 	</tr>
 {{else}}

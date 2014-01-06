@@ -329,7 +329,7 @@
 		}
 		
 		table#detailInfoMission {
-			width:100%
+			width:100%;
 		}
 		table#detailInfoMission tr{
 			border-bottom: 1px solid #888888;
@@ -337,17 +337,17 @@
 		table#detailInfoMission th{
 			color:#339Fdd ;
 		}
+
 		
 		.arret_green{ background-color:#ccffcc}
 		.arret_yellow{ background-color:#ffffcc}
 		.arret_orange{ background-color:#ffeecc}
 		.arret_red{ background-color:#ffcccc}
-		.arret_black{ background-color:#aaaaaa}
+		.arret_black{ background-color:#aaaaaa;text-decoration: line-through;}
 		.arret_depasse {
 			color:grey;
-			font-style: italic;
-			text-decoration: line-through;
-			background-color:#fff;
+			font-style: italic;			
+			background-color:#eee;
 		}
 		.arret_next {
 			font-weight:bold;background-color:none;
@@ -946,6 +946,16 @@
 								arret["classe_retard"]="arret_orange"
 							} else {
 								arret["classe_retard"]="arret_red"
+							}
+							
+							if (arret["time_theorique"]){
+								var retard=0;
+								if (arret["minutes_retard"] && arret["minutes_retard"]>=0){
+									retard=moment.duration(parseInt( arret["minutes_retard"]),"minutes");
+								}
+								arret["horaire"]=moment(arret["time_theorique"]).add(retard).format("HH:mm");							  
+							} else {
+								arret["horaire"]="NC";
 							}
 						});
 						
