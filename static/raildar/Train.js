@@ -17,7 +17,8 @@ var train_types = {
     'Lunea': 'simple',
     'LER': 'simple',
     'Intercite': 'simple',
-    'TER': 'simple'
+    'TER': 'simple',
+    'Eurostar': 'eurostar'
 };
 
 var position_type = {

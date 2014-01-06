@@ -377,6 +377,7 @@
 			<label><input type="checkbox" class="filter" name="simple" checked="checked"/>TER / Intercités</label>
 			<label><input type="checkbox" class="filter" name="tgv" checked="checked"/>TGV</label>
 			<label><input type="checkbox" class="filter" name="thalys" checked="checked"/>Thalys</label>
+			<label><input type="checkbox" class="filter" name="eurostar" checked="checked"/>Eurostar</label>
 			<label><input type="checkbox" class="filter" name="unknown" checked="checked"/>Autres</label>
 			<br />
 			<label><input type="checkbox" class="filter" name="ok"/>À l'heure</label>
@@ -845,7 +846,7 @@
 		Tracking.init();
 
 		
-		map.on('zoomend', function(e) {
+/*		map.on('zoomend', function(e) {
 			if (map.getZoom()<9){
 				Missions.clear();
 				GraphsRegions.clear();
@@ -853,8 +854,10 @@
 			} else {
 				GraphsRegions.clear();
 			 	Missions.show();
-			}
+			}			
 		});
+*/
+Missions.show();
 		
 		
 		//=========================================
@@ -1002,10 +1005,10 @@
  				});
  			});
  			
- 			if (map.getZoom()==6){
+/* 			if (map.getZoom()==6){
 			 	GraphsRegions.show();
 			}
-		
+*/		
 		});
 		
 
