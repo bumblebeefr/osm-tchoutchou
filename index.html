@@ -765,8 +765,18 @@
 					console.time("get_circulation");
 					console.time("worker");
 					$("#icon").addClass("loading");
-					var params={};
+					var b = map.getBounds();
+					var params={
+/* 						south_west_lng : b._southWest.lng,
+						north_east_lng :  b._northEast.lng,
+						south_west_lat : b._southWest.lat,
+						north_east_lat : b._northEast.lat, */
+						zoom : map.getZoom(),
+						lat : map.getCenter().lat,
+						lng : map.getCenter().lng
+					};
 					var dateHisto=getDateHistorique();
+					
 					if (Missions.modeHistorique.isOn || dateHisto){
 						Missions.modeHistorique.isOn = true;
 						console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
