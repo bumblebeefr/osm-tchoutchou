@@ -872,6 +872,11 @@
 		
 		$("body").on("hashchange",function(event,args,old_args){
 			console.log("Hash has changed", args,old_args);
+			if('date' in  args){
+				if(args.date != old_args.date) {
+					$("#dateHistorique").val(moment(args.date,"YYYYMMDDHHMMSS").format("DD-MM-YYYY HH:mm:ss"));
+				}
+			}
 		});
 		var hash = new L.Hash(map);
 		
