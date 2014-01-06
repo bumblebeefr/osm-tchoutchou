@@ -35,16 +35,28 @@
 			padding-top:0!important;
 			border-bottom:solid 1px #888;
 			overflow:auto;
+			magin-left:1em;
+
 		}
-		#title img{
-			height:1.8em;
+
+		#title .titre{
+			margin-top:0.2em;
 		}
+		#title .poweredBy{
+			font-style: italic;
+			font-size :60%;
+			margin-left:8em;
+			margin-top:-0.5em;
+		}
+		
 		#icon{
-			display:inline-block;
+			float:left;
+			
 			width:43px;
 			height:43px;
-			position:relative;
-			top:0.5em;
+
+			margin-top:0.1em;
+			margin-right:0.5em;
 		}
 		
 		#icon #icon-loading{
@@ -270,12 +282,41 @@
 			font-size:0.9em;
 		}
 		
+		/*camembert général dans la sidebar (stats)*/
 		#camembert {
 		margin-top:20px;
 			width:80px;
 			height:120px;
 			float:right;
+			opacity:1;
+		}
+		
+		.statRegionIcon {
+		  --border:1px black solid; 
+		  --background-color: #FFFFF0;
+			---border-radius: 10px;
 			opacity:0.8;
+			---moz-box-shadow:    3px 3px 5px 6px #aaa;
+      ---webkit-box-shadow: 3px 3px 5px 6px #aaa;
+      ---box-shadow:         10px 10px 10px 0px rgba(0,0,0,0.5);	
+      margin-bottom:-1em;	}
+		
+		.camembert_region  {
+			width:80px;height:80px;
+			text-align: center;
+			margin-top:-1em;
+			opacity:1;
+			
+		}
+		
+		.region_titre {
+		margin:0.3em;
+			---color:#1163B0;
+			color:red;
+			font-weight:bold;
+			opacity:1;
+			text-align:center;
+			
 		}
 		
 		.jqplot-grid-canvas{
@@ -319,13 +360,15 @@
 	<div id="map"></div>
 	<div id="sidebar">
 		<div id="title">
-			<span id="icon">
+		  <div id="icon">
 				<img id="icon-loading" src="./static/images/train_loading.gif"/>
 				<img id="icon-fixed" src="./static/images/train_full.png"/>
-			</span>
-			OSM Tchoutchou
+			</div>
+			<div class="titre">OSM Tchoutchou</div>
+			<div class="poweredBy">Powered by Raildar.fr</div>
 		</div>
 		<div id="stats"> </div>
+		<div id="tmp_camemberts"></div>
 		<div id="type_selection" class="block">
 			<div class="titleBlock"><i class="fa fa-magic"></i>   <strong>Filtres :</strong></div>
 			<br>
@@ -366,15 +409,7 @@
 			</div>
 		</div>
 		<div id="about" class="block">
-			<div class="titleBlock"><i class="fa fa-info-circle"></i> À propos</div>
-			<div>
-				Radar des trains, utilisant des cartes <a href="http://www.openstreetmap.org" target="_blank">Open Street Map</a>. 
-				<br/>
-				Données provenant du <a href="http://raildar.fr" target="_blank">raildar.fr</a> 
-				de <a href="http://blog.spyou.org/wordpress-mu/2013/11/30/jstchoutchou/" target="_blank">@Turblog</a>. 
-				<br/>
-				Sources et détails sur <a href="https://github.com/bumblebeefr/osm-tchoutchou" target="_blank">github</a>.
-			</div>
+			<div ><i class="fa fa-info-circle"></i> À propos : Voir le <a href="http://wiki.raildar.fr" target="_blank">wiki</a> du projet</div>
 		</div> 
 	</div>
 	<div id="sidebar_button" class="button"><i class="fa fa-cogs"></i></div>
@@ -412,11 +447,14 @@
 			DEBUG.nocontrols = true;
 		}
 		
+		//=========================================
 		var getDateHistorique = function (){
 			strDate=$("#dateHistorique").val();
 			var dateH=moment(strDate, "DD-MM-YYYY HH:mm:ss");
 			return (dateH && dateH>0 && dateH.diff(moment())<0 )?dateH:null;
 		};
+		
+		//=========================================
 		var traiteDelaiHisto = function (){
 			var mult=parseInt($("#multiplicateurVitesseHistorique").val());
 			var oldTime=parseInt(getDateHistorique().unix());
@@ -425,6 +463,68 @@
 			console.log("futur timestamp : " + newTimestamp + " = "+ newMoment.format("LLLL"));
 			$("#dateHistorique").val(newMoment.format("DD/MM/YYYY HH:mm:ss"));
 		};
+		
+		//=========================================
+		//fabrique et affiche dans l'element d'id  "cssId" un graph "camembert de retard"
+		//data est de la forme : 
+		//  {"green":nb_retard<5min , 
+		//	 "yellow":nb_retard<15min , 
+		//   "orange":nb_retard<30min , 
+		//   "red":nb_retard>30min,
+		//   "black":nb_annulation
+		//   }
+		var makeCamembertStat=function(cssId,data){			
+			var total=0;
+			for(k in data){ //calcul du total des trains
+				if (data[k]){
+					total+=data[k];
+				}
+			}
+			
+			var pourcentages={
+					"green" : 0,
+					"yellow" : 0,
+					"orange" :0,
+					"red":0,
+					"black":0
+			};
+			
+			for(k in pourcentages){
+				if(k in data){
+					if (data[k]){
+					  pourcentages[k] = Math.round(data[k]/total*1000)/10;
+					} else {
+						pourcentages[k]=0;
+					}
+				}
+			}
+			var dataGraph = [
+				['green',pourcentages.green], 
+				['yellow',pourcentages.yellow], 
+				['orange',pourcentages.orange], 
+				['red',pourcentages.red], 
+				['black',pourcentages.black]
+			];
+			var plot1 = jQuery.jqplot (cssId, [dataGraph],
+				{
+				  seriesColors:['#19b419','#e9d91c','#fe7317','#f40000','#252525'],
+			    seriesDefaults: {
+			    	fillAlpha :0,
+			      // Make this a pie chart.
+			      renderer: jQuery.jqplot.PieRenderer,
+			      rendererOptions: {
+				      padding:3,
+				      shadowOffset:0.9,
+			        startAngle: -90
+			      }
+			    }
+				});
+			  /*delete(pourcentages);
+			  delete(dataGraph);
+			  delete(plot1);*/
+		}
+		
+		//=========================================
 		var get = function(obj,key,default_value){
 			if( key in obj) return obj[key];
 			else return default_value;
@@ -482,26 +582,7 @@
 							pcts[k] = Math.round(Missions.statuses[k]/Missions.statuses.ttl*1000)/10;
 						}
 					}
-					var data = [
-					   ['green',pcts.green], ['yellow',pcts.yellow], ['orange',pcts.orange], ['red',pcts.red], ['black',pcts.black]
-					  ];
-					  var plot1 = jQuery.jqplot ('camembert', [data],
-					    {
-						  seriesColors:['#35a619','#b7c916','#c79516','#c71818','#575757'],
-					      seriesDefaults: {
-					    	fillAlpha :0,
-					        // Make this a pie chart.
-					        renderer: jQuery.jqplot.PieRenderer,
-					        rendererOptions: {
-						        padding:3,
-						        shadowOffset:0.9,
-					             startAngle: -90
-					        }
-					      }
-					    });
-					  delete(pcts);
-					  delete(data);
-					  delete(plot1);
+					makeCamembertStat("camembert", {"green":Missions.statuses["green"],"yellow":Missions.statuses["yellow"],"orange":Missions.statuses["orange"],"red":Missions.statuses["red"],"black":Missions.statuses["black"]});
 				},
 				// apres traitement succes ou erreur
 				circulation_complete : function(jqXHR, textStatus){
@@ -525,8 +606,12 @@
 						} else {
 							Missions.modeHistorique.isOn=false;
 						} 
-						clearTimeout(Missions.get_circulation_timeout);
-						Missions.get_circulation_timeout = setTimeout(Missions.show,delai);
+						if(Missions.isActive){
+							clearTimeout(Missions.timeoutId);
+							Missions.timeoutId = setTimeout(Missions.show,delai);
+						}else{
+							Missions.clear();
+						}
 					}
 				}
 			};
@@ -536,8 +621,102 @@
 		});
 		
 		
+		//=========================================
+		var GraphsRegions={
+				isActive : false,
+				url:"http://www.raildar.fr/json/convert?url=get_circulation.json&regions=yes",
+				markers:[],
+				addMarker:function(){
+					
+				},
+				removeMarker:function(){
+					
+				},
+				getMarkers:function(){
+					return GraphsRegions.markers;
+				},
+				show:function(layerGroup){
+					GraphsRegions.isActive = true;
+					$("#icon").addClass("loading");
+					$.ajax(GraphsRegions.url,{
+						async : true,
+						cache : false,
+						error : function(jqXHR,textStatus,errorThrown){
+							
+							if(console && console.error){
+								console.error("Error when loading statistiques regions",jqXHR);
+							}
+							$("#tmp_camemberts").html("<div class='error centered'>Erreur de récupération des stats region ("+jqXHR.status+") <br>"+ errorThrown+"</div>")
+							traiteDelaiHisto();
+						},
+						success : function(data, textStatus, jqXHR){
+							$.each(data.markers.regions.region,function(index,region){							
+								/*var southWest = L.latLng(region.lat_sw,region.lng_sw);
+								var northEast = L.latLng(region.lat_ne, region.lng_ne);
+								var bounds = L.latLngBounds(southWest, northEast);
+								region["bbox"]=bounds;
+								*/
+								region["latLgn"]=L.latLng(region.lat,region.lng);
+								
+								var dataGraph ={"green":0,"yellow":0,"orange":0,"red":0,"black":0};
+								if (! (region.trains instanceof Array) ){
+									region.trains=[region.trains]
+								}
+								$.each(region.trains,function(index,retardCount){
+									var r=0;
+									var c=0;									
+									r=retardCount.retard;
+									c=parseInt(retardCount.count);
+									if (r<0) {
+										dataGraph["black"]+=c;
+									} else if (r<5) {
+										dataGraph["green"]+=c;
+									} else if (r<15) {
+										dataGraph["yellow"]+=c;
+									} else if (r<30) {
+										dataGraph["orange"]+=c;
+									} else {
+										dataGraph["red"]+=c;
+									}
+								});
+																
+ 								
+ 								var myIcon= L.divIcon({className: '',iconSize:L.point(80,80), html:"<div class='statRegionIcon'><div class='region_titre'>"+region.name+"</div><div  class='camembert_region' id='camembert_region_"+region.id_region+"'></div></div>"});
+ 								var mark=L.marker(region["latLgn"], {icon: myIcon});
+ 								GraphsRegions.markers.push(mark);
+ 								mark.addTo(map);
+								//L.marker(region["latLgn"]).addTo(map);
+ 								makeCamembertStat("camembert_region_"+region.id_region,dataGraph);
+								if(console && console.error){
+									console.log("camembert calculé pour "+ region.id_region +"-"+region.name )
+								}
+							});
+						},
+						complete : function(jqXHR, textStatus){
+							$("#icon").removeClass("loading");
+						}
+							
+					});
+				},
+				refresh : function(){
+					$.each(GraphsRegions.markers,function(index,marker){
+						map.removeLayer(marker);							
+					});
+					GraphsRegions.markers=[];
+				},
+				clear : function(){
+					GraphsRegions.isActive = false;
+					$.each(GraphsRegions.markers,function(index,marker){
+						map.removeLayer(marker);							
+					});
+					GraphsRegions.markers=[];
+				}
+		}
+		
+		//=========================================
 		var Missions = {
-			get_circulation_timeout : null,
+			isActive : false,
+			timeoutId : null,
 			// en millisecondes (pour settimeout())
 			refreshDelays:{
 				live:10000,
@@ -574,28 +753,34 @@
 			//redraw each mission whithout changing data (after an UI event for example)
 			redrawMarkers : function(){
 				Missions.setFilters();
-				Missions.show();
+				Missions.draw();
 			},
 			show : function(){
-				console.time("get_circulation");
-				console.time("worker");
-				$("#icon").addClass("loading");
-				var params={};
-				var dateHisto=getDateHistorique();
-				if (Missions.modeHistorique.isOn || dateHisto){
-					Missions.modeHistorique.isOn = true;
-					console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
-					params["date"]=dateHisto.format("X");
+				Missions.isActive = true;
+				Missions.draw();
+			},
+			draw : function(){
+				if(Missions.isActive) {
+					console.time("get_circulation");
+					console.time("worker");
+					$("#icon").addClass("loading");
+					var params={};
+					var dateHisto=getDateHistorique();
+					if (Missions.modeHistorique.isOn || dateHisto){
+						Missions.modeHistorique.isOn = true;
+						console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
+						params["date"]=dateHisto.format("X");
+					}
+					if(Tracking.running == 2 && Tracking.id_mission !=null){
+						params['id_mission'] = Tracking.id_mission;
+					}
+	
+					Missions.statuses['hour'] = null;
+					
+					//Call the web worker that will load and filter data.
+					//See trainWorker configuration for callbacks
+					trainWorker.postMessage(new WorkerMessage('get_circulation', { data : params}));
 				}
-				if(Tracking.running == 2 && Tracking.id_mission !=null){
-					params['id_mission'] = Tracking.id_mission;
-				}
-
-				Missions.statuses['hour'] = null;
-				
-				//Call the web worker that will load and filter data.
-				//See trainWorker configuration for callbacks
-				trainWorker.postMessage(new WorkerMessage('get_circulation', { data : params}));
 
 			},
 			remove : function(id_mission){
@@ -611,9 +796,17 @@
 					Missions.remove(id_mission);
 				}
 				delete(remove);
+			},
+			clear : function(){
+				Missions.isActive = false;
+				clearTimeout(Missions["timeoutId"]);
+				for(k in Missions.missions){
+						Missions.remove(k);					
+				}
 			}
 		};
 
+		//=========================================
 		var cloudmadeLayer = L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
 			maxZoom: 18,
 			minZoom: 6,
@@ -638,6 +831,7 @@
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.openstreetmap.org/">OpenStreetMap</a>'
 		});
 		
+		var mode = Missions;
 
 		var map = L.map('map',{
 			center: new L.LatLng(46.354510837365254,3.33984375),
@@ -669,21 +863,34 @@
 		});
 		var hash = new L.Hash(map);
 		
-		
 		//Initialise filters
 		Missions.setFilters();
 		
 		//Sart leaflet geolocation.
 		Tracking.init();
 
-		Missions.show();
-
-
+		
+		map.on('zoomend', function(e) {
+			if (map.getZoom()<9){
+				mode = GraphsRegions;
+				Missions.clear();
+				GraphsRegions.clear();
+				GraphsRegions.show();
+			} else {
+				mode = Missions;
+				GraphsRegions.clear();
+			 	Missions.show();
+			}
+		});
+		
+		
+		//=========================================
 		function onResize(){
 			$("#sidebar").height($(window).height());
 			Missions.redrawMarkers();
 		}
 		
+		//=========================================
 		function infoLigne(idMission){
 			//id=idMission.substr("mission".length)
 			jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
@@ -737,6 +944,7 @@
 		}
 
 		// #####################################################################################
+		//                                  DOCUMENT READY
 		// #####################################################################################
 		$(function(){
 			onResize();
@@ -821,7 +1029,15 @@
  				});
  			});
  			
- 			
+ 			if (map.getZoom()<9){
+				Missions.clear();
+				GraphsRegions.clear();
+				GraphsRegions.show();
+			} else {
+				GraphsRegions.clear();
+			 	Missions.show();
+			}
+		
  			
 		});
 		
