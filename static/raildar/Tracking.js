@@ -17,16 +17,23 @@ var Tracking = {
 	}),
 	interval : null,
 	worker : new Worker('./static/raildar/TrackingWorker.js'),
+	initLocator : function(){
+		if(Tracking.latlng == null){
+			map.stopLocate();
+			map.locate({
+				maxZoom : 12,
+				enableHighAccuracy : true,
+				timeout : 500,
+				watch:true
+			});
+			setTimeout(Tracking.initLocator, 8000);
+		}
+	},
 	init : function() {
 		map.on('locationfound', Tracking.onLocationFound);
 		map.on('locationerror', Tracking.onLocationError);
 		
-		map.locate({
-			maxZoom : 12,
-			enableHighAccuracy : true,
-			timeout : 500,
-			watch:true
-		});
+		Tracking.initLocator();
 		
 		Tracking.auto_userid = Tracking.username();
 		
