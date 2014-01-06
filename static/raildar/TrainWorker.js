@@ -1,6 +1,8 @@
 var worker = this;
 
-importScripts('./Train.js', './TrainFilters.js', '../spark-md5.min.js', '../moment.min.js', '../underscore-min.js');
+importScripts('./Train.js', './TrainFilters.js', '../spark-md5.min.js', '../moment.min.js', '../moment.fr.js', '../underscore-min.js');
+
+moment.lang('fr');
 
 var getJSON = function(url, _options) {
 	var options  = {
