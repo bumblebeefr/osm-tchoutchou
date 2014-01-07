@@ -889,11 +889,17 @@
 		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
 		$("body").on("hashchange",function(event,args,old_args,external){
-			console.log("Hash has changed ",(external ? "from outside" : "from inside"), args,old_args);
 			if(external){
+				console.log("Hash has changed ",(external ? "from outside" : "from inside"), args,old_args);
 				if('date' in  args){
 					if(args.date != old_args.date) {
 						$("#dateHistorique").val(moment(args.date,"YYYYMMDDHHmm").format("DD/MM/YYYY HH:mm:ss"));
+					}
+				}
+				if('increment' in  args){
+					if(args.increment != old_args.increment) {
+						$('#multiplicateurVitesseHistorique').val(args.increment);
+						console.error($('#multiplicateurVitesseHistorique').val());
 					}
 				}
 				var redraw = false;
@@ -1062,13 +1068,16 @@
 			
 			$( ".datetimepicker" ).datetimepicker({minDate: moment("2013-11-25 05:00:00").toDate(), maxDate: "+0D"});
 
+			var inc = parseInt($( "#multiplicateurVitesseHistorique" ).val());
+			if(isNaN(inc)) inc = 1;
 			$( "#sliderHistoTime" ).slider({
 					range: "min",
-					value: 1,
+					value: inc,
 					min: 1,
 					max: 1440,
 					slide: function( event, ui ) {
 						$( "#multiplicateurVitesseHistorique" ).val( ui.value );
+						L.Hash.setArg("increment",ui.value);
 						var txt=moment.duration(ui.value, 'minutes').humanize();						
 						$( "#txtMultiplicateurVitesseHistorique" ).html( txt );
 					}
@@ -1091,7 +1100,7 @@
 					$(elt).addClass("fa-minus-square").removeClass(" fa-plus-square");				
 				}
 			}
-			$(".block.toggle .titleBlock").each(function(index){traiteToggleBlock($(this))})			
+			$(".block.toggle .titleBlock").each(function(index){traiteToggleBlock($(this));});
 			$(".block.toggle .titleBlock").click(function(event){
 				$(this).parent().toggleClass("closed");
 				traiteToggleBlock($(this));
