@@ -617,13 +617,13 @@
 					}					
 					
 					if (DEBUG.refreshMissions) {
-						var delai=Missions.refreshDelays.live;	//par defaut on rafraichit le live		
+						var delai=Math.max(Missions.refreshDelays.force,Missions.refreshDelays.live);	//par defaut on rafraichit le live		
 						if(getDateHistorique()) {
 							Missions.modeHistorique.isOn=true;
-							delai=Missions.refreshDelays.histo; //en cas d'historique, on va plus vite
+							delai=Math.max(Missions.refreshDelays.force,Missions.refreshDelays.histo); //en cas d'historique, on va plus vite
 						} else {
 							Missions.modeHistorique.isOn=false;
-						} 
+						}
 						if(Missions.isActive){
 							clearTimeout(Missions.timeoutId);
 							Missions.timeoutId = setTimeout(Missions.show,delai);
@@ -738,7 +738,8 @@
 			// en millisecondes (pour settimeout())
 			refreshDelays:{
 				live:10000,
-				histo:2000
+				histo:2000,
+				force:0
 			},
 			modeHistorique:{
 				isOn:false
@@ -901,6 +902,17 @@
 						$('#multiplicateurVitesseHistorique').val(args.increment);
 					}
 				}
+
+				if('delay' in  args){
+					if(args.delay != old_args.delay) {
+						var d = parseInt(args.delay);
+						if(!isNaN(d)){
+							Missions.refreshDelays.force = 1000*d;
+						}else{
+							Missions.refreshDelays.force = 0;
+						}
+					}
+				}
 				var redraw = false;
 				if('visible' in args){
 					if(args.visible != old_args.visible) {
@@ -929,6 +941,7 @@
 				}
 				if( args.nocontrol != old_args.nocontrol){
 					if('nocontrol' in args){
+						DEBUG.refreshMissions = false;
 						$("body").addClass('nocontrols');
 						$(".button").hide();
 						$("#detail_block").hide();
@@ -943,6 +956,7 @@
 							zoomControl.removeFrom(map);
 						}catch (e){}
 					}else{
+						DEBUG.refreshMissions = true;
 						$("body").removeClass('nocontrols');
 						$(".button").show();
 						$("#histo_block").show();
