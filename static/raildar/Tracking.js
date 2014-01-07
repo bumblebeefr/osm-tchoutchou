@@ -10,29 +10,31 @@ var Tracking = {
 	started : false, // indicate if gps tracking is started
 	latlng : null,
 	id_mission : null,
+	
 	loadingMessage : bootbox.dialog({
 		message : "Chargement ...",
 		closeButton : false,
 		show:false
 	}),
-	interval : null,
+	timer : null,
 	worker : new Worker('./static/raildar/TrackingWorker.js'),
 	initLocator : function(){
-		if(Tracking.latlng == null){
+		
 			map.stopLocate();
-			map.locate({
-				maxZoom : 12,
-				enableHighAccuracy : true,
-				timeout : 500,
-				watch:true
-			});
-			setTimeout(Tracking.initLocator, 8000);
-		}
+			map.locate();
+
 	},
 	init : function() {
-		map.on('locationfound', Tracking.onLocationFound);
-		map.on('locationerror', Tracking.onLocationError);
 		
+
+		if (navigator.geolocation) { 
+			Tracking.timer = navigator.geolocation.watchPosition(Tracking.onLocationFound,Tracking.onLocationError,{
+				enableHighAccuracy: true,
+				maximumAge: 1000,
+				timeout: 2000 }
+			);
+		}
+
 		Tracking.initLocator();
 		
 		Tracking.auto_userid = Tracking.username();
@@ -245,39 +247,33 @@ var Tracking = {
 	},
 	
 	onLocationFound : function(e) {
-		Tracking.locationError = null;
-		if(Tracking.latlng == null || Tracking.latlng.lat != e.latlng.lat || Tracking.latlng.lng != e.latlng.lng){
-			Tracking.latlng = e.latlng;
-			
-			console.info("Localisation : ",e.latlng);
-			if(Tracking.marker != null){
-				Tracking.marker.setLatLng(e.latlng).update();
-			}else{
-				Tracking.marker = L.marker(e.latlng).addTo(map);
-			}
-			
-			if(Tracking.started ){
-				if (Tracking.running == 2) {
-					// /locator/gps_fix?auto_userid='+auto_userid+'&lat='+params[1]+'&lng='+params[2]+'&accur='+params[3]+'&alt='+params[4]+'&speed='+params[5]+'&heading='+params[6]+'&id_mission='+params[7]+'&timestamp='+params[8]
-//					var data = {
-//						lat : e.latlng.lat,
-//						lng : e.latlng.lng,
-//						accur : e.accuracy,
-//						alt : e.altitude,
-//						speed : e.speed,
-//						heading : e.heading,
-//						id_mission : Tracking.id_mission
-//					};
-					if(Tracking.id_mission != null){
-						var epoch_now = Math.floor(new Date() / 1000);
-						var worker_arguements = Tracking.auto_userid+'&'+e.latlng.lat+'&'+e.latlng.lng+'&'+ e.accuracy+'&'+e.altitude+'&'+e.speed+'&'+e.heading+'&'+Tracking.id_mission+'&'+epoch_now;
-						Tracking.worker.postMessage( new WorkerMessage('fix', worker_arguements));
+		try{
+			Tracking.locationError = null;
+			if(Tracking.latlng == null || Tracking.latlng.lat != e.coords.latitude || Tracking.latlng.lng != e.coords.longitude){
+				Tracking.latlng = L.latLng(e.coords.latitude,e.coords.longitude);
+				
+				console.info("Localisation : ",Tracking.latlng);
+				if(Tracking.marker != null){
+					Tracking.marker.setLatLng(Tracking.latlng).update();
+				}else{
+					Tracking.marker = L.marker(Tracking.latlng).addTo(map);
+				}
+				
+				if(Tracking.started ){
+					if (Tracking.running == 2) {
+						if(Tracking.id_mission != null){
+							var epoch_now = Math.floor(new Date() / 1000);
+							var worker_arguements = Tracking.auto_userid+'&'+e.coords.latitude+'&'+e.coords.longitude+'&'+ e.coords.accuracy+'&'+e.coords.altitude+'&'+e.coords.speed+'&'+e.coords.heading+'&'+Tracking.id_mission+'&'+epoch_now;
+							Tracking.worker.postMessage( new WorkerMessage('fix', worker_arguements));
+						}
+						//console.log("GPS FIX", data);
+						
+						//$.get("/position.dummy?", data, function() {});
 					}
-					//console.log("GPS FIX", data);
-					
-					//$.get("/position.dummy?", data, function() {});
 				}
 			}
+		}catch(e){
+			console.error("Error when managing location",e);
 		}
 	},
 	onLocationError : function(e) {
