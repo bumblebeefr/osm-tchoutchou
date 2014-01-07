@@ -573,7 +573,11 @@
 										traiteDelaiHisto();
 									} else {
 										Missions.modeHistorique.isOn=false;
-										Missions.statuses['hour'] = "Aujourd'hui à "+moment(mission.last_update).format("HH:mm:ss");
+										if($("body").hasClass("nocontrols")){
+											Missions.statuses['hour'] = moment(mission.last_update).format("LLLL");
+										}else{
+											Missions.statuses['hour'] = "Aujourd'hui à "+moment(mission.last_update).format("HH:mm:ss");
+										}
 									}
 								}
 							} catch(e){
@@ -926,6 +930,7 @@
 						$("#histo_block").hide();
 						$("#type_selection").hide();
 						$("#about	").hide();
+						$('#sidebar').show();
 						try{
 							layersControl.removeFrom(map);
 							scaleControl.removeFrom(map);
@@ -1095,7 +1100,9 @@
 			if(L.Browser.touch){
 				$("body").addClass("touch");	
 			}else{
-				$("#sidebar").show();
+				if(!$("body").hasClass("nocontrol")){
+					$("#sidebar").show();
+				}
 			}
 			$("input.filter").change(function(){
 				Missions.redrawMarkers();
