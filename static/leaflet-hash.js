@@ -12,8 +12,8 @@
 			this.init(map);
 		}
 	};
-	L.hash_args = {};
-	L.splitHash = function(hash){
+	L.Hash.args = {};
+	L.Hash.deserialize = function(hash){
 		var output = {};
 		if(hash == undefined || hash == null || hash.length == 0 || hash == "#"){
 			hash = document.location.hash;
@@ -37,7 +37,7 @@
 		return output;
 	};
 
-	L.serialiszeToHash = function(o){
+	L.Hash.serialize = function(o){
 		var h = "#";
 		for(k in o){
 			if(h != "#"){
@@ -47,29 +47,29 @@
 		}
 		return h;
 	};
-//	L.Hash.parseHash = function(hash) {
-//		if(hash.indexOf('#') === 0) {
-//			hash = hash.substr(1);
-//		}
-//		var args = hash.split("/");
-//		if (args.length == 3) {
-//			var zoom = parseInt(args[0], 10),
-//			lat = parseFloat(args[1]),
-//			lon = parseFloat(args[2]);
-//			if (isNaN(zoom) || isNaN(lat) || isNaN(lon)) {
-//				return false;
-//			} else {
-//				return {
-//					center: new L.LatLng(lat, lon),
-//					zoom: zoom
-//				};
-//			}
-//		} else {
-//			return false;
-//		}
-//	};
+
+	L.Hash.setArg = function(name,value){
+		var args = L.Hash.deserialize();
+		args[name] = value;
+		L.Hash.replace(args);
+		
+	};
+	
+	L.Hash.removeArg = function(name){
+		var args = L.Hash.deserialize();
+		delete(args[name]);
+		L.Hash.replace(args);
+	};
+	
+	L.Hash.replace = function(args){
+		var hash = L.Hash.serialize(args);
+		location.replace(hash);
+		L.Hash.args = args;
+		L.Hash.lastSetHash = hash;
+	};
+	
 	L.Hash.parseHash = function(hash) {
-		var args = L.splitHash();
+		var args = L.Hash.deserialize();
 		if (('lat' in args) && ('lng' in args) && ('zoom' in args)) {
 			var zoom = parseInt(args.zoom, 10),
 			lat = parseFloat(args.lat),
@@ -92,12 +92,12 @@
 		    zoom = map.getZoom(),
 		    precision = Math.max(0, Math.ceil(Math.log(zoom) / Math.LN2));
 
-		var args = L.splitHash();
+		var args = L.Hash.deserialize();
 		args['lat'] = center.lat.toFixed(precision);
 		args['lng'] = center.lng.toFixed(precision);
 		args['zoom'] = zoom;
 		
-		return L.serialiszeToHash(args);
+		return L.Hash.serialize(args);
 	},
 
 	L.Hash.prototype = {
@@ -140,7 +140,7 @@
 
 			var hash = this.formatHash(this.map);
 			if (this.lastHash != hash) {
-				location.replace(hash);
+				L.Hash.replace(L.Hash.deserialize(hash));
 				this.lastHash = hash;
 			}
 		},
@@ -167,11 +167,11 @@
 		changeDefer: 100,
 		changeTimeout: null,
 		onHashChange: function() {
-			var args =  L.splitHash();
+			var args =  L.Hash.deserialize();
 			if(typeof $ == 'function'){
-				$("body").trigger( "hashchange", [args,L.hash_args] );
+				$("body").trigger( "hashchange", [args,L.Hash.args,L.Hash.lastSetHash != location.hash] );
 			}
-			L.hash_args = args;
+			L.Hash.args = args;
 			// throttle calls to update() so that they only happen every
 			// `changeDefer` ms
 			if (!this.changeTimeout) {

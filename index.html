@@ -374,15 +374,15 @@
 			<br>
 			  Train n°<input type="text" id="number_filter" class="filter"/>
 			<br />
-			<label><input type="checkbox" class="filter" name="simple" checked="checked"/>TER / Intercités</label>
-			<label><input type="checkbox" class="filter" name="tgv" checked="checked"/>TGV</label>
-			<label><input type="checkbox" class="filter" name="thalys" checked="checked"/>Thalys</label>
-			<label><input type="checkbox" class="filter" name="eurostar" checked="checked"/>Eurostar</label>
-			<label><input type="checkbox" class="filter" name="unknown" checked="checked"/>Autres</label>
+			<label class="checkbox-inline"><input type="checkbox" class="filter" name="simple" checked="checked"/> TER / Intercités</label>
+			<label class="checkbox-inline"><input type="checkbox" class="filter" name="tgv" checked="checked"/> TGV</label>
+			<label class="checkbox-inline"><input type="checkbox" class="filter" name="thalys" checked="checked"/> Thalys</label>
+			<label class="checkbox-inline"><input type="checkbox" class="filter" name="eurostar" checked="checked"/> Eurostar</label>
+			<label class="checkbox-inline"><input type="checkbox" class="filter" name="unknown" checked="checked"/> Autres</label>
 			<br />
-			<label><input type="checkbox" class="filter" name="ok"/>À l'heure</label>
-			<label><input type="checkbox" class="filter" name="delayed" checked="checked"/>En retard</label>
-			<label><input type="checkbox" class="filter" name="cancelled" checked="checked"/>Supprimé</label>
+			<label class="checkbox-inline"><input type="checkbox" class="filter" name="ok"/> À l'heure</label>
+			<label class="checkbox-inline"><input type="checkbox" class="filter" name="delayed" checked="checked"/> En retard</label>
+			<label class="checkbox-inline"><input type="checkbox" class="filter" name="cancelled" checked="checked"/> Supprimé</label>
 		</div>
 		<div></div>
 		<div id="detail_block" class="block" >
@@ -463,6 +463,7 @@
 			var newTimestamp=60*mult+oldTime; 
 			var newMoment=moment(newTimestamp*1000);
 			console.log("futur timestamp : " + newTimestamp + " = "+ newMoment.format("LLLL"));
+			L.Hash.setArg("date",newMoment.format("YYYYMMDDHHmm"));
 			$("#dateHistorique").val(newMoment.format("DD/MM/YYYY HH:mm:ss"));
 		};
 		
@@ -751,6 +752,7 @@
 				TrainFilters.visible = visible;
 				TrainFilters.num_train = $.trim($("#number_filter").val());
 				trainWorker.postMessage(new WorkerMessage('update_filters', TrainFilters));
+
 			},
 			//redraw each mission whithout changing data (after an UI event for example)
 			redrawMarkers : function(){
@@ -803,8 +805,10 @@
 				}
 			},
 			clean : function(remove){
+				if(remove.length > 0){
+					console.log("removing "+remove.length+" missions");
+				}
 				for(id_mission in remove){
-					console.log("removing",id_mission);
 					Missions.remove(id_mission);
 				}
 				delete(remove);
@@ -870,12 +874,42 @@
 		}
 		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
-		$("body").on("hashchange",function(event,args,old_args){
-			console.log("Hash has changed", args,old_args);
-			if('date' in  args){
-				if(args.date != old_args.date) {
-					$("#dateHistorique").val(moment(args.date,"YYYYMMDDHHMMSS").format("DD-MM-YYYY HH:mm:ss"));
+		$("body").on("hashchange",function(event,args,old_args,external){
+			console.log("Hash has changed ",(external ? "from outside" : "from inside"), args,old_args);
+			if(external){
+				if('date' in  args){
+					if(args.date != old_args.date) {
+						$("#dateHistorique").val(moment(args.date,"YYYYMMDDHHmm").format("DD/MM/YYYY HH:mm:ss"));
+					}
 				}
+				var redraw = false;
+				if('visible' in args){
+					if(args.visible != old_args.visible) {
+						var visible = args.visible.split("/");
+						if( ! _.contains(visible,'ok') && ! _.contains(visible,'delayed')&& ! _.contains(visible,'cancelled')){
+							visible.push('ok','delayed','cancelled');
+						}
+						console.log(visible,_.contains(visible,'all'));
+						$("input[type=checkbox].filter").each(function(){
+							if(_.contains(visible,'all') || _.contains(visible,$(this).attr('name'))){
+								this.checked = true
+							}else{
+								this.checked = false;
+							}
+						});
+						redraw = true;
+					}
+				}
+				if(args.num != old_args.num){
+					if(args.num){
+						$("#number_filter").val(args.num);
+					} else{
+						$("#number_filter").val("");
+					}
+					redraw = true;
+				}
+
+				if (redraw) Missions.redrawMarkers();
 			}
 		});
 		var hash = new L.Hash(map);
@@ -997,6 +1031,7 @@
 			$("#btnStopHisto").click(function(event) {
 				Missions.modeHistorique.isOn=false;
 				$("#dateHistorique").val("");
+				L.Hash.removeArg("date");
 			});
 		
 			function traiteToggleBlock(elt){
@@ -1023,6 +1058,13 @@
 			}
 			$("input.filter").change(function(){
 				Missions.redrawMarkers();
+				
+				L.Hash.setArg("visible",TrainFilters.visible.join("/"));
+ 				if(TrainFilters.num_train.length >0){
+					L.Hash.setArg("num",TrainFilters.num_train);
+				}else{
+					L.Hash.removeArg("num");
+				} 
 			});
 
  			$("#sidebar_button" ).click(function(){
