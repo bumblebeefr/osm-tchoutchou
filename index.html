@@ -284,11 +284,20 @@
 		
 		/*camembert général dans la sidebar (stats)*/
 		#camembert {
-		margin-top:20px;
+			margin-top:20px;
 			width:80px;
 			height:120px;
 			float:right;
 			opacity:1;
+		}
+		
+		.nocontrols #camembert{
+			float:none;
+			width:350px;
+			height:400px;
+		}
+		.nocontrols #stat_detail{
+			display:none;
 		}
 		
 		.statRegionIcon {
@@ -445,9 +454,6 @@
 		//variable permettant d'agir dans la page sur certains traitements
 		//refreshMissions relance eriodiquement le traitement des missions (refresh data+carte)
 		var DEBUG ={refreshMissions:true,nocontrols:false};
-		if(document.location.search.indexOf("nocontrols") > -1){
-			DEBUG.nocontrols = true;
-		}
 		
 		//=========================================
 		var getDateHistorique = function (){
@@ -864,14 +870,13 @@
 			    "OSM Legacy": osmLegacyLayer
 		};
 		var overlayMaps = {};
-		if(!DEBUG.nocontrols){
-			L.control.layers(baseMaps, overlayMaps).addTo(map);
-			L.control.scale({imperial:false}).addTo(map);
-			L.control.attribution().addTo(map);
-			L.control.zoom().addTo(map);
-		}else{
-			$(".button").hide();
-		}
+		
+		var layersControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+		var scaleControl = L.control.scale({imperial:false}).addTo(map);
+		var attributionControl = L.control.attribution().addTo(map);
+		var zoomControl = L.control.zoom().addTo(map);
+		
+		
 		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
 		$("body").on("hashchange",function(event,args,old_args,external){
@@ -907,6 +912,37 @@
 						$("#number_filter").val("");
 					}
 					redraw = true;
+				}
+				if( args.nocontrol != old_args.nocontrol){
+					if('nocontrol' in args){
+						$("body").addClass('nocontrols');
+						$(".button").hide();
+						$("#detail_block").hide();
+						$("#histo_block").hide();
+						$("#type_selection").hide();
+						$("#about	").hide();
+						try{
+							layersControl.removeFrom(map);
+							scaleControl.removeFrom(map);
+							attributionControl.removeFrom(map);
+							zoomControl.removeFrom(map);
+						}catch (e){}
+					}else{
+						$("body").removeClass('nocontrols');
+						$(".button").show();
+						$("#histo_block").show();
+						$("#type_selection").show();
+						$("#about").show();
+						try{
+							layersControl.addTo(map);
+							scaleControl.addTo(map);
+							attributionControl.addTo(map);
+							zoomControl.addTo(map);
+						}catch (e){}
+						if(!L.Browser.touch && !!L.Browser.mobile){
+							$("#detail_block").show();
+						}
+					}
 				}
 
 				if (redraw) Missions.redrawMarkers();
@@ -1052,7 +1088,6 @@
 
 			if(L.Browser.touch){
 				$("body").addClass("touch");	
-				$("#detail_block").hide();
 			}else{
 				$("#sidebar").show();
 			}
