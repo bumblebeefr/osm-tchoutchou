@@ -43,7 +43,7 @@ var Tracking = {
 		Tracking.worker.postMessage( new WorkerMessage('init', null) );
 		Tracking.worker.addEventListener("message", function (event) {
 			var infos = event.data.split("&");
-			$("#tracking_info").html("<strong>Tracking : "+infos[0]+"</strong> relevés, dont "+infos[1]+" encore en cache.");
+			$("#tracking_info").html("<strong>Tracking : "+infos[1]+"</strong> relevés, dont "+infos[0]+" encore en cache.");
 		});
 		
 	},
