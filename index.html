@@ -866,11 +866,12 @@
 		var mode = Missions;
 
 		var map = L.map('map',{
-			center: new L.LatLng(46.354510837365254,3.33984375),
+			center: new L.LatLng(46.81,6.88),
 			zoom:6,
 			layers: [mapquestLayer],
 			attributionControl: false,
-			zoomControl: false
+			zoomControl: false,
+			inertia:false
 		});
 
 		var baseMaps = {
