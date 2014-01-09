@@ -119,7 +119,7 @@ Train.drawMarker = function(train,forceUpdate){
 			Missions.markers[train.id_mission].setLatLng(L.latLng(train.lat,train.lng));
 			Missions.markers[train.id_mission].setIcon(Missions.icons[train.type]);
 			if(Missions.markers[train.id_mission].getPopup()){
-				Missions.markers[train.id_mission].setPopupContent(train.getPopup());
+				Missions.markers[train.id_mission].setPopupContent(Train.getPopup(train));
 			}
 			Train.updateAngle(train);
 			Missions.markers[train.id_mission].update();
