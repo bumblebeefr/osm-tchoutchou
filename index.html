@@ -304,7 +304,7 @@
 		.statRegionIcon {
 		  --border:1px black solid; 
 		  --background-color: #FFFFF0;
-			---border-radius: 10px;
+			--border-radius: 10px;
 			opacity:0.8;
 			---moz-box-shadow:    3px 3px 5px 6px #aaa;
       ---webkit-box-shadow: 3px 3px 5px 6px #aaa;
@@ -312,7 +312,9 @@
       margin-bottom:-1em;	}
 		
 		.camembert_region  {
-			width:80px;height:80px;
+		  /*taille doit correspondre a taille icone cf js */
+			width:130px;
+			height:80px;
 			text-align: center;
 			margin-top:-1em;
 			opacity:1;
@@ -320,12 +322,14 @@
 		}
 		
 		.region_titre {
-		margin:0.3em;
-			---color:#1163B0;
-			color:red;
+		  --margin:0.3em;
+			color:#0153A0;			
+			text-shadow: #ffffff 0.2em 0.2em 0.2em;
 			font-weight:bold;
 			opacity:1;
+			font-size:110%;
 			text-align:center;
+			line-height: 0.8
 			
 		}
 		
@@ -458,7 +462,12 @@
 		moment.lang('fr');
 		//variable permettant d'agir dans la page sur certains traitements
 		//refreshMissions relance eriodiquement le traitement des missions (refresh data+carte)
-		var DEBUG ={refreshMissions:true,nocontrols:false};
+		//showGraphsRegions affiche les graph de stats region aux zoom les plus faibles
+		var DEBUG ={
+			refreshMissions:true,
+			nocontrols:false,
+			showGraphsRegions:false
+		};
 		
 		//=========================================
 		var getDateHistorique = function (){
@@ -643,12 +652,42 @@
 		var GraphsRegions={
 				isActive : false,
 				url:"http://www.raildar.fr/json/convert?url=get_circulation.json&regions=yes",
-				markers:[],
-				addMarker:function(){
-					
+				markers:{},
+				regions:{},
+				add:function(region){
+					GraphsRegions.regions[region.id_region] = region;
+					GraphsRegions.drawMarker(region,true);
+					return region;
 				},
-				removeMarker:function(){
-					
+				drawMarker:function(region,forceUpdate){
+					if(region.id_region in GraphsRegions.markers){
+						if (forceUpdate){					
+							GraphsRegions.refresh(GraphsRegions.markers[region.id_region]);
+						}
+					} else {
+						//iconSize doit correspondre a width et heigh du css .camembert_region pour que tout soit centré.
+						// la hauteur + petite donne la taille du camebert
+						// la largeur plus grande permet d'afficher le nom region sur plus large
+						var myIcon= L.divIcon({className: '',iconSize:L.point(130,80), html:"<div id='statRegionIcon_"+region.id_region+"' class='statRegionIcon'><div class='region_titre'>"+region.name+"</div><div  class='camembert_region' id='camembert_region_"+region.id_region+"'></div></div>"});
+						var mark=L.marker(region["latLgn"], {icon: myIcon});
+						GraphsRegions.markers[region.id_region]=mark;
+						mark.addTo(map);
+						//graphsRegionsLayerGroup.add(mark);
+						makeCamembertStat("camembert_region_"+region.id_region,region.dataGraph);
+						if(console && console.error){
+							console.log("camembert calculé pour "+ region.id_region +"-"+region.name )
+						}
+					}
+				},
+				remove : function(id_region){
+					if(id_region in GraphsRegions.markers){
+						//graphsRegionsLayerGroup.remove(region);
+						map.removeLayer(GraphsRegions.markers[id_region]);
+						delete(GraphsRegions.markers[id_region]);
+						delete(GraphsRegions.regions[id_region]);
+						$("statRegionIcon_"+id_region).remove();
+						
+					}
 				},
 				getMarkers:function(){
 					return GraphsRegions.markers;
@@ -668,7 +707,7 @@
 							traiteDelaiHisto();
 						},
 						success : function(data, textStatus, jqXHR){
-							$.each(data.markers.regions.region,function(index,region){							
+							$.each(data.markers.region,function(index,region){							
 								/*var southWest = L.latLng(region.lat_sw,region.lng_sw);
 								var northEast = L.latLng(region.lat_ne, region.lng_ne);
 								var bounds = L.latLngBounds(southWest, northEast);
@@ -697,17 +736,11 @@
 										dataGraph["red"]+=c;
 									}
 								});
-																
+								
+								region["dataGraph"]=dataGraph;
  								
- 								var myIcon= L.divIcon({className: '',iconSize:L.point(80,80), html:"<div class='statRegionIcon'><div class='region_titre'>"+region.name+"</div><div  class='camembert_region' id='camembert_region_"+region.id_region+"'></div></div>"});
- 								var mark=L.marker(region["latLgn"], {icon: myIcon});
- 								GraphsRegions.markers.push(mark);
- 								mark.addTo(map);
-								//L.marker(region["latLgn"]).addTo(map);
- 								makeCamembertStat("camembert_region_"+region.id_region,dataGraph);
-								if(console && console.error){
-									console.log("camembert calculé pour "+ region.id_region +"-"+region.name )
-								}
+								GraphsRegions.add(region);
+ 								
 							});
 						},
 						complete : function(jqXHR, textStatus){
@@ -716,18 +749,21 @@
 							
 					});
 				},
-				refresh : function(){
-					$.each(GraphsRegions.markers,function(index,marker){
-						map.removeLayer(marker);							
-					});
-					GraphsRegions.markers=[];
+				refresh : function(region){
+					if(region.id_region in GraphsRegions.markers){
+						GraphsRegions.regions[region.id_region]=region;
+						makeCamembertStat("camembert_region_"+region.id_region,region.dataGraph);
+					} else {
+						
+					}
+
 				},
 				clear : function(){
 					GraphsRegions.isActive = false;
-					$.each(GraphsRegions.markers,function(index,marker){
-						map.removeLayer(marker);							
-					});
-					GraphsRegions.markers=[];
+					for(k in GraphsRegions.regions){
+						GraphsRegions.remove(k);							
+					}	
+					//GraphsRegions.markers=[];
 				}
 		}
 		
@@ -987,20 +1023,20 @@
 		//Sart leaflet geolocation.
 		Tracking.init();
 
-/*		
-		map.on('zoomend', function(e) {
-			if (map.getZoom()<9){
-				mode = GraphsRegions;
-				Missions.clear();
-				GraphsRegions.clear();
-				GraphsRegions.show();
-			} else {
-				mode = Missions;
-				GraphsRegions.clear();
-			 	Missions.show();
-			}
-		});
-*/
+		if (DEBUG.showGraphsRegions) {
+			map.on('zoomend', function(e) {
+				if (map.getZoom()<9){
+					mode = GraphsRegions;
+					Missions.clear();
+					GraphsRegions.show();
+				} else {
+					mode = Missions;
+					GraphsRegions.clear();
+				 	Missions.show();
+				}
+			});
+		}
+
 		
 		
 		//=========================================
@@ -1171,16 +1207,21 @@
  				});
  			});
  			
-/* 			if (map.getZoom()<9){
-				Missions.clear();
-				GraphsRegions.clear();
-				GraphsRegions.show();
-			} else {
-				GraphsRegions.clear();
-			 	Missions.show();
-			}
-*/
-			 Missions.show();
+ 			
+ 			if (DEBUG.showGraphsRegions) {
+	 			if (map.getZoom()<9){
+					Missions.clear();
+					GraphsRegions.clear();
+					GraphsRegions.show();
+				} else {
+					GraphsRegions.clear();
+				 	Missions.show();
+				}
+ 			} else {
+ 				Missions.show();
+ 			}
+
+
 			
 		
  			
