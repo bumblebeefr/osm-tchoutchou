@@ -21,7 +21,7 @@ var train_types = {
     'Eurostar': 'eurostar',
     'RER' : 'rer',
     'RATP' : 'rer',
-    'train' : 'Transilien'
+    'Train' : 'transilien'
 };
 
 var position_type = {
