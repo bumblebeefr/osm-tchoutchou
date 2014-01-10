@@ -18,7 +18,10 @@ var train_types = {
     'LER': 'simple',
     'Intercite': 'simple',
     'TER': 'simple',
-    'Eurostar': 'eurostar'
+    'Eurostar': 'eurostar',
+    'RER' : 'rer',
+    'RATP' : 'rer',
+    'train' : 'Transilien'
 };
 
 var position_type = {
