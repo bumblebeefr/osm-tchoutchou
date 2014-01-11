@@ -1113,6 +1113,73 @@
 			});
 			
 		}
+		
+		var TrajetsLignes={};
+		
+		function showTrajet(idMission){
+			jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
+				async : true,
+				cache : false,
+				data : {"id_mission":idMission},	
+				error : function(jqXHR,textStatus,errorThrown){
+						if(console && console.error){
+							console.error("Error when loading #jstchouchou data ",jqXHR);
+						}
+						bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")", function() {});
+				},
+				success : function(data, textStatus, jqXHR){
+					try{
+					  var  idTrain=data.arrets.arret[0].id_train;
+					  if (idTrain){
+						  jQuery.ajax("http://www.raildar.fr/json/convert?url=show_trajet",{
+								async : true,
+								cache : false,
+								data : {"id_train":idTrain},	
+								error : function(jqXHR,textStatus,errorThrown){
+										if(console && console.error){
+											console.error("Error when loading #jstchouchou data ",jqXHR);
+										}
+										bootbox.alert("Erreur de récupération des données du trajet ("+jqXHR.status+")", function() {});
+								},
+								success : function(data, textStatus, jqXHR){
+									var line=[];
+									$.each(data.markers.line.point,function (index,pt){
+										line.push( L.latLng(pt.lat,pt.lng));
+									});
+									var ligne=L.polyline(line, {color: 'red'});
+									ligne.addTo(map);
+									
+									var gares=[];
+									$.each(data.markers.marker,function (index,pt){										
+										var cercle = L.circle( L.latLng(pt.lat,pt.lng), 100 );
+										cercle.addTo(map);
+										gares.push( cercle);
+									});
+									
+									
+									
+									for (t in TrajetsLignes){
+										map.removeLayer(TrajetsLignes[t].ligne);
+										$.each(TrajetsLignes[t].gares, function (index,gare){
+											map.removeLayer(gare);
+										});
+										delete TrajetsLignes[t];
+									}
+									
+									TrajetsLignes[idTrain]={"ligne":ligne,"gares":gares};
+									
+									
+								
+									
+								}
+						  });
+						  
+					  }
+					} finally {}
+				}
+			
+			});
+		}
 
 		// #####################################################################################
 		//                                  DOCUMENT READY
