@@ -63,6 +63,8 @@ var Train = function(mission){
 	this.human_time_to_next_gare=moment.duration(minutes,"minutes").humanize();
 };
 
+_.defaults(Train,Schedulable);
+
 Train.getTitle = function(train){
 	return train.brand+" n°"+train.num+" en direction de "+train.terminus;
 };
