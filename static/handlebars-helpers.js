@@ -107,3 +107,13 @@ Handlebars.registerHelper('foreach', function(context, options) {
 
 	return ret;
 });
+
+// get the first element of an array context .
+Handlebars.registerHelper('first', function(context,options) {
+	return options.fn(context[0]);		
+});
+
+//get the last element of an array context .
+Handlebars.registerHelper('last', function(context,options) {
+	return options.fn(context[context.length-1]);		
+});
