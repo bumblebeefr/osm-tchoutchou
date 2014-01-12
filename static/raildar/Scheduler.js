@@ -23,14 +23,26 @@ var Scheduler = {
 		
 		Scheduler.worker = new Worker('./static/raildar/MainWorker.js');
 		Scheduler.worker.addEventListener("message", function (event) {
-			if(event.data.type in Scheduler.workerCallbacks){
-				Scheduler.workerCallbacks[event.data.type](event.data.data);
+			if(event.data.cmd in Scheduler.workerCallbacks){
+				Scheduler.workerCallbacks[event.data.cmd](event.data.parameters);
 			}else{
-				logger.warn('No callbacks for',event.data.type);
+				logger.warn('No callbacks for',event.data.parameters);
 			}
 		});
 	},
 };
 
 Scheduler.workerCallbacks = {
+		console_log : function(args){
+			console.log.apply(window,args);
+		},
+		console_error : function(args){
+			console.error.apply(window,args);
+		},
+		console_info : function(args){
+			console.info.apply(window,args);
+		},
+		console_debug : function(args){
+			console.debug.apply(window,args);
+		}  
 };

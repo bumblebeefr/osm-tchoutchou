@@ -13,20 +13,20 @@ function visitorIsMooving(event) {
 
 	switch (messages.cmd) {
 		case 'init':
-			auto_userid = messages.parameter;
+			auto_userid = messages.parameters;
 			setInterval(storageTask, 500);
 //			console.log('gps worker firered !');
 				break;
 		case 'fix':
-			var params = messages.parameter.split("&");
-			//console.log('gps worker got a message : '+messages.parameter);
+			var params = messages.parameters.split("&");
+			//console.log('gps worker got a message : '+messages.parameters);
 			auto_userid = params[0];
 			var visitorLat = params[1];
 			var visitorLng = params[2];
 
 			if ( ( ( Math.abs(visitorLat - oldvisitorLat) > 0.0003 ) && ( Math.abs(visitorLng - oldvisitorLng) > 0.0003 ) || ( oldvisitorLat == 0 ) ) ) {
-//				console.log('store new position : '+messages.parameter);
-				fixStore.push(messages.parameter);
+//				console.log('store new position : '+messages.parameters);
+				fixStore.push(messages.parameters);
 				gpsFixCount++;
 				oldvisitorLat = visitorLat;
 				oldvisitorLng = visitorLng;

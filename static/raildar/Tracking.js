@@ -1,8 +1,4 @@
-// Communication avec les workers
-function WorkerMessage(cmd, parameter) {
-	this.cmd = cmd;
-	this.parameter = parameter;
-}
+
 
 var Tracking = {
 	marker : null,

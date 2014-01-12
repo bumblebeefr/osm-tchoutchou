@@ -43,3 +43,58 @@ function checkCookie()
 		return username;
 	}
 }
+
+var getJSON = function(url, _options) {
+	var options  = {
+		data : {},
+		cache:true,
+	};
+	for(var k in _options){
+		options[k] = _options[k];
+	}
+	
+	if(options.cache == false){
+		options.data['_'] = (new Date()).getTime();
+	}
+	
+	for (k in options.data) {
+		url += (url.indexOf("?") == -1) ? "?" : "&";
+		url += encodeURIComponent(k);
+		url += "=";
+		url += encodeURIComponent(options.data[k]);
+	}
+
+	var req = new XMLHttpRequest();
+	try{
+		req.open('GET', url, true);
+		//req.responseType = "json";
+		req.onreadystatechange = function(aEvt) {
+			if (req.readyState == 4) {
+				if (req.status == 200) {
+					if(typeof options.success == 'function'){
+						options.success(JSON.parse(req.response),req.statusText,req);
+					}
+				} else {
+					if(typeof options.error == 'function'){
+						options.error(req.statusText,req,null);
+					}
+				}
+				if(typeof options.complete == 'function'){
+					options.complete(req,req.statusText);
+				}
+			}
+		};
+		req.send(null);
+	}catch(e){
+		if(typeof options.error == 'function'){
+			options.error(req.statusText, req,e);
+		}
+		//console.error(e);
+	}
+};
+
+//Communication avec les workers
+function WorkerMessage(cmd, parameters) {
+	this.cmd = cmd;
+	this.parameters = parameters;
+}

@@ -143,7 +143,7 @@ var handlers = {
 };
 this.addEventListener('message', function(e) {
 	if (e.data.cmd in handlers) {
-		handlers[e.data.cmd](e.data.parameter);
+		handlers[e.data.cmd](e.data.parameters);
 	} else {
 		//console.error("No handler defined for cmd " + e.cmd);
 	}
