@@ -12,7 +12,7 @@ var Scheduler = {
 	// Layers groups used for eache dataSource
 	dataLayers : {},
 
-	// initialize the Schedulling system.
+	// initialize the Scheduling system.
 	init : function() {
 		for (k in Scheduler.config) {
 			Scheduler.timers[k] = null;
@@ -33,6 +33,7 @@ var Scheduler = {
 
 	onDataReceived : function(data) {
 		// TODO : Do something with the data
+		DataSourceConfig[data.datasource].obj.display(data);
 		Scheduler.onDataComplete(data.datasource);
 	},
 	onDataError : function(datasource, e) {
@@ -45,7 +46,7 @@ var Scheduler = {
 };
 
 Scheduler.workerCallbacks = {
-	// Console
+	// Console events
 	console_log : function(args) {
 		console.log.apply(window, args);
 	},
@@ -59,7 +60,7 @@ Scheduler.workerCallbacks = {
 		console.debug.apply(window, args);
 	},
 
-	// Data
+	// Data events
 	data_received : function(data) {
 		console.debug(data);
 		Scheduler.onDataReceived(data);
