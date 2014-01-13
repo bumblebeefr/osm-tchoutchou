@@ -113,7 +113,23 @@ Handlebars.registerHelper('first', function(context,options) {
 	return options.fn(context[0]);		
 });
 
-//get the last element of an array context .
-Handlebars.registerHelper('last', function(context,options) {
-	return options.fn(context[context.length-1]);		
+
+//get the 'index' or 'i' element of an array of items.
+//if position is negative, start to the end of the array of items
+//example : 
+//{{#indexOf data.arrayOfFoo i=2}}{{bar}}{{/indexOf}}  
+//--> return data.arrayOfFoo[2].bar
+Handlebars.registerHelper('indexOf', function(items, options) {
+	var ind=0;
+	if( 'i' in options.hash){
+		ind=options.hash.i;
+	} else 	if( 'index' in options.hash){
+		ind=options.hash.index;
+	}
+	
+	var index = ind < 0 ? items.length + ind : ind;
+	if(index >=0 && index < items.length){
+		return options.fn(items[index]);
+		
+	}
 });
