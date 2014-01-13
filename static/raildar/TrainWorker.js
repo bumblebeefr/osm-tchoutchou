@@ -108,7 +108,7 @@ var handlers = {
 						}
 						stats['ttl']  += 1;
 						
-						if(Train.isVisible(mission,TrainFilters)){
+						if(Train.isVisible(mission,TrainFilters) || 'id_mission' in options.data){
 							missions.push(mission);
 							trains[mission.id_mission] = true;
 							delete(Trains[mission.id_mission]);
