@@ -88,6 +88,11 @@
 			-o-animation: fade 0.6s linear infinite;
 			animation: fade 0.6s linear infinite; 
 		}
+		
+		button.loading{
+			background: url("static/images/loading.gif") no-repeat center;
+			color:lightgrey;
+		}
 
 		/* animation */
 		@-webkit-keyframes fade {
@@ -370,6 +375,20 @@
 		.biffe{
 			text-decoration: line-through;
 		}
+		.ok{
+			color:#2d8519;
+		}
+		
+		.verifTrajetPopup>span{
+		font-weight: bold;
+		}
+		
+		.verifTrajetPopup .help{
+			font-size: 120%;
+			color:orange;			
+		}
+		
+		
 
 		
 	</style>
@@ -415,7 +434,7 @@
 				<div id="mission_detail"></div>
 			</div>
 		</div>
-		<div id="histo_block" class="block toggle closed">
+<!-- 		<div id="histo_block" class="block toggle closed">
 			<div class="titleBlock fa"> <i class="fa fa-book"></i>  <strong>Historique :</strong></div>
 			<div id="historique" class="blockContent">
 				<div id="historique_help" class="help">
@@ -432,6 +451,7 @@
 				<div id="sliderHistoTime"></div>
 			</div>
 		</div>
+ -->
 		<div id="about" class="block">
 			<div ><i class="fa fa-info-circle"></i> À propos : Voir le <a href="http://wiki.raildar.fr" target="_blank">wiki</a> du projet</div>
 		</div> 
@@ -1114,71 +1134,94 @@
 			
 		}
 		
-		var TrajetsLignes={};
 		
-		function showTrajet(idMission){
-			jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
-				async : true,
-				cache : false,
-				data : {"id_mission":idMission},	
-				error : function(jqXHR,textStatus,errorThrown){
-						if(console && console.error){
-							console.error("Error when loading #jstchouchou data ",jqXHR);
-						}
-						bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")", function() {});
+		
+
+		//=========================================	
+		function sendErreurTrajet(idTrain, source){
+			var params={
+					"id_train":idTrain,
+					"correct":"no",
+					"reason": window.location.hash.substring(1),
+					"source": "osmtchoutchou"
+			}
+			$(source).addClass("loading");
+			$.ajax({
+				url:"http://raildar.fr/xml/set_checked_train",
+				data:params,
+				complete : function(){
+					if(btnSource) {$(btnSource).removeClass("loading");}
 				},
-				success : function(data, textStatus, jqXHR){
-					try{
-					  var  idTrain=data.arrets.arret[0].id_train;
-					  if (idTrain){
-						  jQuery.ajax("http://www.raildar.fr/json/convert?url=show_trajet",{
-								async : true,
-								cache : false,
-								data : {"id_train":idTrain},	
-								error : function(jqXHR,textStatus,errorThrown){
-										if(console && console.error){
-											console.error("Error when loading #jstchouchou data ",jqXHR);
-										}
-										bootbox.alert("Erreur de récupération des données du trajet ("+jqXHR.status+")", function() {});
-								},
-								success : function(data, textStatus, jqXHR){
-									var line=[];
-									$.each(data.markers.line.point,function (index,pt){
-										line.push( L.latLng(pt.lat,pt.lng));
-									});
-									var ligne=L.polyline(line, {color: 'red'});
-									ligne.addTo(map);
-									
-									var gares=[];
-									$.each(data.markers.marker,function (index,pt){										
-										var cercle = L.circle( L.latLng(pt.lat,pt.lng), 100 );
-										cercle.addTo(map);
-										gares.push( cercle);
-									});
-									
-									
-									
-									for (t in TrajetsLignes){
-										map.removeLayer(TrajetsLignes[t].ligne);
-										$.each(TrajetsLignes[t].gares, function (index,gare){
-											map.removeLayer(gare);
-										});
-										delete TrajetsLignes[t];
-									}
-									
-									TrajetsLignes[idTrain]={"ligne":ligne,"gares":gares};
-									
-									
-								
-									
-								}
-						  });
-						  
-					  }
-					} finally {}
+				success: function(data, textStatus, jqXHR) { 
+					$(source).parent().removeClass("loading");
+					$(source).parent().html("<span class='fa fa-thumbs-up ok ok'>Merci !</span>");
+					
+				},
+				error : function(jqXHR,textStatus,errorThrown){
+					$(source).parent().append("<span class='error'>oups !</span>");
+					$(source).parent().removeClass("loading");
 				}
-			
 			});
+		}
+		
+		
+		//=========================================	
+		var TrajetsLignes={};
+		var trajetsLayerGroup=L.featureGroup();
+		trajetsLayerGroup.addTo(map);
+		function showTrajet(id_mission,btnSource){
+			var  mission=Missions.missions[id_mission];
+		  var  idTrain=mission.id_train;
+		  if (idTrain){
+			  if(btnSource) {$(btnSource).addClass("loading");}
+			  jQuery.ajax("http://www.raildar.fr/json/convert?url=show_trajet",{
+					async : true,
+					cache : false,
+					data : {"id_train":idTrain},	
+					complete : function(){
+						if(btnSource) {$(btnSource).removeClass("loading");}
+					},
+					error : function(jqXHR,textStatus,errorThrown){
+							if(console && console.error){
+								console.error("Error when loading #jstchouchou data ",jqXHR);
+							}
+							bootbox.alert("Erreur de récupération des données du trajet ("+jqXHR.status+")", function() {});
+							
+					},
+					success : function(data, textStatus, jqXHR){
+						data.mission=mission;
+						trajetsLayerGroup.clearLayers();
+						
+						var line=[];
+						$.each(data.markers.line.point,function (index,pt){
+							line.push( L.latLng(pt.lat,pt.lng));
+						});
+						var ligne=L.polyline(line, {color: '#000',weight:5,opacity:0.8});
+						trajetsLayerGroup.addLayer(ligne);
+						ligne.bringToFront();
+						
+						var gares=[];
+						$.each(data.markers.marker,function (index,pt){										
+							var cercle = L.circle( L.latLng(pt.lat,pt.lng), 100,{color:"#c000FF",fillcolor:'#c000FF',weight:12,opacity:0.8} );
+							trajetsLayerGroup.addLayer(cercle);
+							cercle.bringToFront();
+							gares.push( cercle);
+						});
+						
+						var popup_contenu=HandlebarsUtil.render('verif_trajet_popup',data);
+						trajetsLayerGroup.bindPopup(popup_contenu);
+						
+						TrajetsLigne={};
+						
+						TrajetsLignes[idTrain]={"ligne":ligne,"gares":gares};
+						//succes = suppression du bouton de demande de trajet
+						if(btnSource) {$(btnSource).remove();}
+						
+					}
+			  });
+			  
+		  }
+					
 		}
 
 		// #####################################################################################
