@@ -31,6 +31,9 @@ var Scheduler = {
 		});
 	},
 
+	onFilterChanges : function(newFilters,oldFilters){
+		//TODO check which datatSource have to be updated/activated
+	},	
 	onDataReceived : function(data) {
 		// TODO : Do something with the data
 		DataSourceConfig[data.datasource].obj.display(data);
