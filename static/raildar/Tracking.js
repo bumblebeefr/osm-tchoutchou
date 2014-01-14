@@ -201,13 +201,13 @@ var Tracking = {
 	askNeighborMission : function(id_gare){
 		Tracking.loadingMessage.show();
 		console.log("Seaching mission",id_gare);
-		var args = {lat : Tracking.latlng.lat,lng:Tracking.latlng.lng,dist:50};
-		$.get("http://www.raildar.fr/xml/get_near_missions",args,function(data){
+		var args = {url : "get_near_missions",lat : Tracking.latlng.lat,lng:Tracking.latlng.lng,dist:50};
+		$.get("http://www.raildar.fr/json/convert",args,function(data){
 			Tracking.loadingMessage.hide();
 			console.log(data);
 			
-			if(!$.isArray(data.missions.mission) && $.isPlainObject(data.missions.mission)){
-				data.missions.mission = [data.missions.mission];
+			if(!$.isArray(data.markers.marker) && $.isPlainObject(data.markers.marker)){
+				data.markers.marker = [data.markers.marker];
 			}
 			
 			var html = $("<fieldset />").css({

@@ -6,6 +6,7 @@ var statuses = {
     "black": 'cancelled'
 };
 
+
 var train_types = {
     'TGV/ICE': 'tgv',
     'TGV': 'tgv',
@@ -77,11 +78,13 @@ Train.isVisible = function(train){
 	var b = TrainFilters.bounds;
 	if(train.lng > b._southWest.lng && train.lng < b._northEast.lng){
 		if(train.lat > b._southWest.lat && train.lat < b._northEast.lat){
+			//si filtre est une regexp
 			if(TrainFilters.num_train.length >0){
-				if(train.num.indexOf(TrainFilters.num_train)>-1){
+				var regexp=new RegExp(TrainFilters.num_train,"i");
+				if( regexp.test(train.num)){
 					return true;
 				}
-			}else{
+			} else {
 				if(_.contains(TrainFilters.visible,train.train_type)){
 					if(_.contains(TrainFilters.visible,train.status)){
 						return true;
