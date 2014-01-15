@@ -1,21 +1,16 @@
 var worker = this;
-importScripts('../spark-md5.min.js', '../moment.min.js', '../moment.fr.js', '../underscore-min.js');
-importScripts('./WorkerConsole.js', './DataSourceConfig.js', './Schedulable.js', './Train.js');
+importScripts('../riot.js','../spark-md5.min.js', '../moment.min.js', '../moment.fr.js', '../underscore-min.js');
+importScripts('./Static.js','./WorkerConsole.js','./Filters.js', './DataSourceConfig.js', './Schedulable.js', './Train.js');
 
 moment.lang('fr');
 
 // Hold filters
-var Filters = {};
-var OldFilters = {};
 var runningXHR = {};
 
 var commands = {
 
-	update_filters : function(filters) {
-		if (JSON.stringify(filters) != JSON.stringify(Filters)) {
-			OldFilters = Filters;
-			Filters = filters;
-		}
+	set_filter : function(args) {
+		Filters.set(args.name,args.value);
 	},
 
 	// Load data from a specified datatsource
@@ -29,7 +24,7 @@ var commands = {
 			}
 			var obj = DataSourceConfig[options.datasource].obj;
 			var args = _.clone(DataSourceConfig[options.datasource].args);
-			obj.preprocess(args);
+			obj.preprocess(args,Filters.get());
 			getJSON(DataSourceConfig[options.datasource].url, {
 				data : args,
 				cache : false,
@@ -44,7 +39,7 @@ var commands = {
 				success : function(data, textStatus, jqXHR) {
 					worker.sendMessage(new WorkerMessage("data_received", {
 						datasource : datasource,
-						data : obj.prostProcess(data)
+						data : obj.prostProcess(data,Filters.get())
 					}));
 				}
 			});

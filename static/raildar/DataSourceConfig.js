@@ -25,7 +25,7 @@ var DataSourceConfig = {
 		},
 		'minZoom' : 5,
 		'maxZoom' : null,
-		'obj' : Train,
+		'obj' : Trains,
 		'refreshDelay' : 10
 
 	},
@@ -40,7 +40,7 @@ var DataSourceConfig = {
 		},
 		'minZoom' : 5,
 		'maxZoom' : null,
-		'obj' : Train,
+		'obj' : Trains,
 		'refreshDelay' : 10
 
 	},
@@ -55,7 +55,7 @@ var DataSourceConfig = {
 		},
 		'minZoom' : 5,
 		'maxZoom' : null,
-		'obj' : Train,
+		'obj' : Trains,
 		'refreshDelay' : 10
 
 	},

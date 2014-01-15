@@ -29,24 +29,41 @@ var Scheduler = {
 				logger.warn('No callbacks for', event.data.cmd);
 			}
 		});
-	},
-
-	onFilterChanges : function(newFilters,oldFilters){
-		//TODO check which datatSource have to be updated/activated
-	},	
-	onDataReceived : function(data) {
-		// TODO : Do something with the data
-		DataSourceConfig[data.datasource].obj.display(data);
-		Scheduler.onDataComplete(data.datasource);
-	},
-	onDataError : function(datasource, e) {
-		// TODO :Do something with the error
-		Scheduler.onDataComplete(data.datasource);
-	},
-	onDataComplete : function(data) {
-		// TODO : relaunch timer if needed;
 	}
+
 };
+observable(Scheduler);
+
+
+
+Scheduler.on('dataReceive' ,function(data) {
+	// TODO : Do something with the data
+	if(data != null){
+		DataSourceConfig[data.datasource].obj.display(data);
+	}
+	Scheduler.onDataComplete(data.datasource);
+});
+Scheduler.on('dataError',function(datasource, e) {
+	// TODO :Do something with the error
+	Scheduler.onDataComplete(data.datasource);
+});
+Scheduler.on('dataComplete',function(data) {
+	// TODO : relaunch timer if needed;
+});
+
+
+Filters.on('valueChange',function(namme,value){
+	Scheduler.worker.postMessage(new WorkerMessage('set_filter', { name : name, value:value}));
+	//TODO check which datatSource have to be updated/activated
+});
+
+
+
+
+
+
+
+
 
 Scheduler.workerCallbacks = {
 	// Console events
@@ -66,10 +83,10 @@ Scheduler.workerCallbacks = {
 	// Data events
 	data_received : function(data) {
 		console.debug(data);
-		Scheduler.onDataReceived(data);
+		Scheduler.trigger('dataReceived',data);
 	},
 	data_error : function(data) {
 		console.debug(data);
-		Scheduler.onDataError(data);
+		Scheduler.trigger('dataError',data);
 	},
 };

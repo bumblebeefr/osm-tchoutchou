@@ -1,6 +1,6 @@
 var worker = this;
 
-importScripts('./Train.js', './TrainFilters.js', '../spark-md5.min.js', '../moment.min.js', '../moment.fr.js', '../underscore-min.js');
+importScripts('./Static.js','./Train.js', './TrainFilters.js', '../spark-md5.min.js', '../moment.min.js', '../moment.fr.js', '../underscore-min.js');
 
 moment.lang('fr');
 

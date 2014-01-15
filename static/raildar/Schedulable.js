@@ -1,10 +1,13 @@
 // Template of Schedulable Operation that can be managed by the scheduler.
 // These Operations should inherit this Object by calling
 // _.defaults(Schedulable, Train) for example.
-var Schedulable = {
+var Schedulable = function(){
+	observable(this);
+};
+_.extend(Schedulable.protoype, {
+
 	// Called by the web worker before ajax request
 	// - params : ajax request's paramaeters
-	// - options : can contain any option used, useful if when have to override
 	// some value when having kind of inheritance between Schedulable Objects.
 	// (see
 	// _.default)
@@ -14,7 +17,6 @@ var Schedulable = {
 
 	// Called by the webworker after having received data from the request
 	// - data : JSON decoded data from the ajax request to the datasource
-	// - options : can contain any option used, useful if when have to override
 	// some value when having kind of inheritance between Schedulable Objects.
 	// (see
 	// _.default)
@@ -25,17 +27,15 @@ var Schedulable = {
 	// Called by the view to refresh or display the visualization of data.
 	// - data return from the worker, mainly managed by the postProcess()
 	// method.
-	// - options : can contain any option used, useful if when have to override
-	// some value when having kind of inheritance between Schedulable Objects.
-	// (see
 	// _.default)
-	display : function(data, options) {
+	display : function(data) {
 		logger.error('Display not implemented');
 	},
 
 	// called by the scheduler when Filters hcange, in order to know if the
 	// modification of filters have impact on this datatSource.
 	isConcernedByFilterChanges : function(newFilters, oldFilter) {
+		logger.error('isConcernedByFilterChanges not implemented');
 		return false;
 	}
-};
+});
