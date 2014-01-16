@@ -169,7 +169,17 @@
 		onHashChange: function() {
 			var args =  L.Hash.deserialize();
 			if(typeof $ == 'function'){
-				$("body").trigger( "hashchange", [args,L.Hash.args,L.Hash.lastSetHash != location.hash] );
+				var changedValues = {};
+				for(k in args){
+					if(args[k] != L.Hash.args[k]){
+						changedValues[k] = args[k];
+					}
+				}
+				var deleted = _.omit(L.Hash.args,_.keys(args));
+				for(k in deleted ){
+					changedValues[k] = null;
+				}
+				$("body").trigger( "hashchange", [args,L.Hash.args,L.Hash.lastSetHash != location.hash,changedValues] );
 			}
 			L.Hash.args = args;
 			// throttle calls to update() so that they only happen every

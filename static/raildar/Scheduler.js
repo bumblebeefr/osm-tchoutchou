@@ -62,6 +62,7 @@ Scheduler.on('dataComplete', function(dataSourceName) {
 	}, DataSourceConfig[dataSourceName].refreshDelay);
 });
 
+//update filters on Webker's side
 Filters.on('change', function(newValues, oldValues, allFilters) {
 	Scheduler.worker.postMessage(new WorkerMessage('set_filter', {
 		newValues : newValues,

@@ -67,9 +67,6 @@ TrainDataSource.prototype.isVisible = function(train){
 
 // Called by the web worker before ajax request
 // - params : ajax request's paramaeters
-// some value when having kind of inheritance between Schedulable Objects.
-// (see
-// _.default)
 TrainDataSource.prototype.preProcess = function(params, filters) {
 	_.extend(params, {
 		zoom : filters.zoom,
@@ -80,9 +77,6 @@ TrainDataSource.prototype.preProcess = function(params, filters) {
 
 // Called by the webworker after having received data from the request
 // - data : JSON decoded data from the ajax request to the datasource
-// some value when having kind of inheritance between Schedulable Objects.
-// (see
-// _.default)
 // - params : Url parameters object send to the datasource
 // - filters : Object containing filters used to get the data
 // - checksum : 

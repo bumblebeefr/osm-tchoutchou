@@ -16,7 +16,8 @@ var Filters = {
 		center : {
 			lat : 46.81,
 			lng : 6.88
-		}
+		},
+		tracking : false
 	},
 
 	/**

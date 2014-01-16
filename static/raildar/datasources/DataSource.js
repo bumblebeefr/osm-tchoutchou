@@ -1,6 +1,4 @@
 // Template of Schedulable Operation that can be managed by the scheduler.
-// These Operations should inherit this Object by calling
-// _.defaults(Schedulable, Train) for example.
 function DataSource(options){
 	observable(this);
 	_.extend(this,options);
@@ -9,18 +7,12 @@ _.extend(DataSource.prototype, {
 
 	// Called by the web worker before ajax request
 	// - params : ajax request's paramaeters
-	// some value when having kind of inheritance between Schedulable Objects.
-	// (see
-	// _.default)
 	preProcess : function(params) {
 		console.warn('Preprocess not implemented on ' + this.constructor.name);
 	},
 
 	// Called by the webworker after having received data from the request
 	// - data : JSON decoded data from the ajax request to the datasource
-	// some value when having kind of inheritance between Schedulable Objects.
-	// (see
-	// _.default)
 	// - filters : Object containing filters used to get the data
 	// - checksum : String containing checsum of raw data
 	postProcess : function(data) {

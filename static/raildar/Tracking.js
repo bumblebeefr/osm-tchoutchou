@@ -82,10 +82,12 @@ var Tracking = {
 		map.stopLocate();
 		Missions.redrawMarkers();
 		$("#tracking_info").hide();
+		Filters.set("false",true);
 	},
 	//Start sending fixes to the mspecified mission
 	run : function(id_mission){
 		if(id_mission != null && id_mission.length>0){
+			Filters.set("tracking",true);
 			Tracking.running = 2;
 			Tracking.id_mission = id_mission;
 			Missions.redrawMarkers();
@@ -195,7 +197,7 @@ var Tracking = {
 				
 			});
 		}else{
-			Tracking.stop()
+			Tracking.stop();
 		}
 	},
 	askNeighborMission : function(id_gare){

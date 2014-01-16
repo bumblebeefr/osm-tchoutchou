@@ -28,7 +28,7 @@ var commands = {
 				data : urlParams,
 				cache : false,
 				error : function(jqXHR, textStatus, errorThrown) {
-					console.log("Error occurs when getting loading data from " + datatsource + "datasource", textStatus, errorThrown);
+					console.log("Error occurs when getting loading data from " + parameters.dataSourceName + "datasource", textStatus, errorThrown);
 					worker.sendMessage(new WorkerMessage("data_error", {
 						dataSourceName : parameters.dataSourceName,
 						textStatus : textStatus,

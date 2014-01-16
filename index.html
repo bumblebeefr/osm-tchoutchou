@@ -78,7 +78,7 @@
 	<script src="./static/moment.fr.js"></script>
 	<script src="./static/handlebars.js"></script>
 	<script src="./static/handlebars-helpers.js"></script>
-	<script src="./static/handlebars-util.js"></script>
+	<script src="./static/handlebars-util.js"></script>xœ
 	<script src="./static/raildar/library.js"></script>
 	<script src="./static/raildar/Static.js"></script>
 	
@@ -254,11 +254,18 @@
 		var zoomControl = L.control.zoom().addTo(map);
 		
 		//FIXME remplacer par un apel a Filers.set();
-		//map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
+		function setMapBoundsFilters(){
+			Filters.set({
+				bounds : map.getBounds(),
+				zoom : map.getZoom(),
+				center : map.getCenter()
+			})
+		}
+		map.on('zoomend',setMapBoundsFilters).on('dragend',setMapBoundsFilters);
 		
-		$("body").on("hashchange",function(event,args,old_args,external){
-/* 			if(external){
-				console.log("Hash has changed ",(external ? "from outside" : "from inside"), args,old_args);
+		$("body").on("hashchange",function(event,args,old_args,external,changedValues){
+ 			if(external){
+				console.log("Hash has changed ",(external ? "from outside" : "from inside"), args,old_args,changedValues);
 				if('date' in  args){
 					if(args.date != old_args.date) {
 						$("#dateHistorique").val(moment(args.date,"YYYYMMDDHHmm").format("DD/MM/YYYY HH:mm:ss"));
@@ -343,13 +350,10 @@
 				}
 
 				if (redraw) Missions.redrawMarkers();
-			} */
+			} 
 		});
 		var hash = new L.Hash(map);
 		
-		//Initialise filters
-		//FIXME A supprimer ou remplacer par un setFilters();
-		//Missions.setFilters();
 		
 		//Sart leaflet geolocation.
 		Tracking.init();
@@ -361,7 +365,7 @@
 		//=========================================
 		function onResize(){
 			$("#sidebar").height($(window).height());
-			// FIXME remplacer par Filters.Set() ... Missions.redrawMarkers();
+			setMapBoundsFilters();
 		}
 		
 		//=========================================
