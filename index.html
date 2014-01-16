@@ -15,383 +15,7 @@
         <!-- fin date time picker-->
 	<link rel="shortcut icon" href="./static/train.ico" />
 	
-	<style>
-		body {
-			padding: 0;
-			margin: 0;
-			font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva, sans-serif;
-			font-size:10pt;
-		}
-		a{
-			color:#666;
-			font-weight:bold;
-		}
-		html, body, #map {
-			height: 100%;
-		}
-		
-		#title{
-			font-size:1.8em;
-			padding-top:0!important;
-			border-bottom:solid 1px #888;
-			overflow:auto;
-			magin-left:1em;
-
-		}
-
-		#title .titre{
-			margin-top:0.2em;
-		}
-		#title .poweredBy{
-			font-style: italic;
-			font-size :60%;
-			margin-left:8em;
-			margin-top:-0.5em;
-		}
-		
-		#icon{
-			float:left;
-			
-			width:43px;
-			height:43px;
-
-			margin-top:0.1em;
-			margin-right:0.5em;
-		}
-		
-		#icon #icon-loading{
-			display:none;
-		}
-		
-		#icon.loading{
-			-webkit-animation: fade 0.6s linear infinite;
-			-moz-animation: fade 0.6s linear infinite;
-			-ms-animation: fade 0.6s linear infinite;
-			-o-animation: fade 0.6s linear infinite;
-			animation: fade 0.6s linear infinite;
-		}
-		
-		#icon.loading #icon-loading{
-			display:inline;
-		}
-		
-		#icon.loading #icon-fixed{
-			display:none;
-		}	
-		
-		
-		
-		#icon.loading{
- 			-webkit-animation: fade 0.6s linear infinite;
-			-moz-animation: fade 0.6s linear infinite;
-			-ms-animation: fade 0.6s linear infinite;
-			-o-animation: fade 0.6s linear infinite;
-			animation: fade 0.6s linear infinite; 
-		}
-		
-		button.loading{
-			background: url("static/images/loading.gif") no-repeat center;
-			color:lightgrey;
-		}
-
-		/* animation */
-		@-webkit-keyframes fade {
-			0% { opacity:0.5 }
-			60% { opacity:0.9 }
-			100% { opacity:0.5 }
-		}
-		
-		@-moz-keyframes fade {
-			0% { opacity:0.5 }
-			60% { opacity:0.9 }
-			100% { opacity:0.5 }
-		}
-		
-		@-ms-keyframes fade {
-			0% { opacity:0.5 }
-			60% { opacity:0.9 }
-			100% { opacity:0.5 }
-		}
-		
-		@-o-keyframes fade {
-			0% { opacity:0.5 }
-			60% { opacity:0.9 }
-			100% { opacity:0.5 }
-		}
-		
-		@keyframes fade {
-			0% { opacity:0.5 }
-			60% { opacity:0.9 }
-			100% { opacity:0.5 }
-		} 
-		
-		.right {text-align:right}
-
-		.animated .circle-icon, .animated .leaflet-popup{
-			-webkit-transition: all 20s linear;
-			-moz-transition: all 20s linear;
-			-o-transition: all 20s linear;
-			transition: all 20s linear;
-		}
-		.circle-icon{
-			border-radius:9px;
-			opacity:0.9;
-			/* box-shadow: 0px 0px 2px #444; */
-			text-align:center;
-			line-height:18px;
-			overflow:hidden;
-			font-size:12px;
-			color:#FFF;
-		}
-		
-		.circle-icon img{
-			width:22px;
-			height:22px;
-		}
-		
-		
-		#sidebar>div{
-			padding:1em;
-		}
-		#sidebar{
-			width:380px;
-			position:absolute;
-			background-color:rgba(255,255,255,0.8);
-			top:0px;
-			right:0px;
-			height:100%;
-			-webkit-transition: width 0.3s;
-			-moz-transition: width 0.3s;
-			-o-transition: width 0.3s;
-			transition: width 0.3s;
-			max-width:100%;
-			display:none;
-			z-index:900;
-			overflow:auto;
-		}
-		.leaflet-bottom{
-			z-index:800!important;
-		}
-		.leaflet-control-attribution{
-			opacity:0.5;
-		}
-		
-		.button{
-			position:absolute;
-			right:10px;
-			width:36px;
-			text-align:center;
-			overflow:hidden;
-			height:36px;
-			padding:0;
-			
-			cursor:pointer;
-			border-radius:6px 0 0 6px;
-			font-size:1.5em;
-			line-height:36px;
-			
-			box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-			background: #fff;
-			border-radius: 5px;
-			
-			z-index:1000;
-		}
-		
-		.touch .button {
-			border:2px solid rgba(0, 0, 0, 0.2) !important;
-			box-shadow:none;
-			width:48px;
-			height:48px;
-			line-height:44px;
-			background-clip: padding-box;
-		}
-		
-		
-		#sidebar_button{
-			top:56px;
-		}
-		.touch #sidebar_button {
-			
-			top:64px;
-		}
-		
-		#tracking_button{
-			top:102px;	
-		}
-		#tracking_button.enabled{
-			color:#BB0000;
-		}
-		#tracking_button.enabled i{
-			-webkit-animation: fade 1s linear infinite;
-			-moz-animation: fade 1s linear infinite;
-			-ms-animation: fade 1s linear infinite;
-			-o-animation: fade 1s linear infinite;
-			animation: fade 1s linear infinite;
-		}
-		.touch #tracking_button{
-			top:118px;	
-		}
-		
-		#tracking_info{
-			disaplay:none;
-			position:absolute;
-			top:0px;
-			right:60px;
-			font-size:0.8em;
-			background-color : rgba(255,255,255,0.8);
-		}
-		
-		
-		#number_filter{
-			border:solid 1px #888;
-			background-color: rgba(255,255,255,0.4);
-		}
-		.help{
-			color:#444;
-			font-style: italic;
-			font-size:90%;
-			padding:0.5em 2em 0.5em 2em;			
-		}
-		.centered{			
-			text-align:center;			
-		}
-		.error {
-			color:red;
-			font-weight: bold;
-			font-size:110%;
-			padding:0.5em 2em 0.5em 2em;
-		}
-		#mission_detail_help{
-			padding:3em;		
-		}
-		#mission_detail{
-			padding:0.5em 1em ;
-		}
-		#stats li{
-			list-style-type: none;
-		}
-		#stats ul{
-			padding-left:15px;
-		}
-		#stat_detail{
-			display:block;
-			clear:right;
-			text-align:center;
-			font-size:0.8em;
-		}
-		#details{
-			height:120px;
-		}
-		#about>div{
-			padding:0.5em 1em;
-			color:#333;
-			font-size:0.9em;
-		}
-		
-		/*camembert général dans la sidebar (stats)*/
-		#camembert {
-			margin-top:20px;
-			width:80px;
-			height:120px;
-			float:right;
-			opacity:1;
-		}
-		
-		.nocontrols #camembert{
-			float:none;
-			width:350px;
-			height:400px;
-		}
-		.nocontrols #stat_detail{
-			display:none;
-		}
-		
-		.statRegionIcon {
-		  --border:1px black solid; 
-		  --background-color: #FFFFF0;
-			--border-radius: 10px;
-			opacity:0.8;
-			---moz-box-shadow:    3px 3px 5px 6px #aaa;
-      ---webkit-box-shadow: 3px 3px 5px 6px #aaa;
-      ---box-shadow:         10px 10px 10px 0px rgba(0,0,0,0.5);	
-      margin-bottom:-1em;	}
-		
-		.camembert_region  {
-		  /*taille doit correspondre a taille icone cf js */
-			width:130px;
-			height:80px;
-			text-align: center;
-			margin-top:-1em;
-			opacity:1;
-			
-		}
-		
-		.region_titre {
-		  --margin:0.3em;
-			color:#0153A0;			
-			text-shadow: #ffffff 0.2em 0.2em 0.2em;
-			font-weight:bold;
-			opacity:1;
-			font-size:110%;
-			text-align:center;
-			line-height: 0.8
-			
-		}
-		
-		.jqplot-grid-canvas{
-			display:none;
-		}
-
-		.titleBlock{
-			border-bottom: 1px solid #888888;
-			display:block;
-		}
-		
-		table#detailInfoMission {
-			width:100%;
-		}
-		table#detailInfoMission tr{
-			border-bottom: 1px solid #888888;
-		}
-		table#detailInfoMission th{
-			color:#339Fdd ;
-		}
-
-		
-		.arret_green{ background-color:#ccffcc}
-		.arret_yellow{ background-color:#ffffcc}
-		.arret_orange{ background-color:#ffeecc}
-		.arret_red{ background-color:#ffcccc}
-		.arret_black{ background-color:#aaaaaa;text-decoration: line-through;}
-		.arret_depasse {
-			color:grey;
-			font-style: italic;			
-			background-color:#eee;
-		}
-		.arret_next {
-			font-weight:bold;background-color:none;
-		}
-		
-		.biffe{
-			text-decoration: line-through;
-		}
-		.ok{
-			color:#2d8519;
-		}
-		
-		.verifTrajetPopup>span{
-		font-weight: bold;
-		}
-		
-		.verifTrajetPopup .help{
-			font-size: 120%;
-			color:orange;			
-		}
-		
-		
-
-		
-	</style>
+	<link rel="stylesheet" media="all" href="./static/css/raildar.css" />
 </head>
 <body>
 	<div id="map"></div>
@@ -434,24 +58,7 @@
 				<div id="mission_detail"></div>
 			</div>
 		</div>
-<!-- 		<div id="histo_block" class="block toggle closed">
-			<div class="titleBlock fa"> <i class="fa fa-book"></i>  <strong>Historique :</strong></div>
-			<div id="historique" class="blockContent">
-				<div id="historique_help" class="help">
-					Date à laquelle vous souhaitez voir l'état du traffic.
-					<br> Le curseur règle le décalage entre chaque jeux de  données..
-					<br><i class="fa fa-power-off" ></i> stoppe le mode historique et revient au présent
-				</div>
-				date : <input size="15" type="text" id="dateHistorique" class="datetimepicker" />
-				<button id="btnStopHisto" type="button" title="Stoppe le mode historique"><i class="fa fa-power-off" ></i></button>				
-				<br>		
-				Prochaines données : <span id="txtMultiplicateurVitesseHistorique" ></span>
-				<input type="hidden" id="multiplicateurVitesseHistorique" />
-				
-				<div id="sliderHistoTime"></div>
-			</div>
-		</div>
- -->
+
 		<div id="about" class="block">
 			<div ><i class="fa fa-info-circle"></i> À propos : Voir le <a href="http://wiki.raildar.fr" target="_blank">wiki</a> du projet</div>
 		</div> 
@@ -462,7 +69,6 @@
 	<script src="./static/leaflet.js"></script>
 	<script src="./static/leaflet-hash.js"></script>
 	<script src="./static/jquery-2.0.3.js"></script>
-	<script src="./static/riot.js"></script>
 	<script src="./static/underscore-min.js"></script>
 	<script src="./static/jquery.jqplot.js"></script>
 	<script src="./static/jqplot.pieRenderer.js"></script>
@@ -475,8 +81,21 @@
 	<script src="./static/handlebars-util.js"></script>
 	<script src="./static/raildar/library.js"></script>
 	<script src="./static/raildar/Static.js"></script>
-	<script src="./static/raildar/Train.js"></script>
-	<script src="./static/raildar/TrainFilters.js"></script>
+	
+	<script src="./static/raildar/Filters.js"></script>
+	
+	<script src="./static/raildar/datasources/DataSource.js"></script>
+	<script src="./static/raildar/datasources/TrainDataSource.js"></script>
+	<script src="./static/raildar/datasources/DataSourceConfig.js"></script>
+	
+	<script src="./static/raildar/display/Display.js"></script>
+	<script src="./static/raildar/display/StatsDisplay.js"></script>
+	<script src="./static/raildar/display/TrainDisplay.js"></script>
+	<script src="./static/raildar/display/DisplayManager.js"></script>
+
+	<script src="./static/raildar/Scheduler.js"></script>
+
+
 	<script src="./static/raildar/Tracking.js"></script>
 	<!-- date time picker-->
 	<script src="./static/jquery-ui-1.10.3.custom.min.js"></script>
@@ -580,326 +199,11 @@
 			else return default_value;
 		};
 		
-		//Webwoker tha wil get and filter circulation/trains
-		var callbacks = {
-				circulation_error : function(data){
-					if(console && console.error){
-						console.error("Error when loading #jstchouchou data ",data.textStatus);
-					}
-					bootbox.alert("Erreur de récupération des données de la mission ("+data.textStatus+")", function() {});
-				},
-				circulation_success : function(data){
-					console.timeEnd("worker");
-					console.time("view");
-					Missions.statuses = data.stats;
-					Missions.statuses['hour'] = null;
-					Missions.statuses['indicateur_histo'] =  (Missions.modeHistorique.isOn)?"<i class='fa fa-book'></i>":"";
-
-					//netoyage des mission terminées
-					Missions.clean(data.remove);
-					
-					//affichage/maj des autres markers
-					$.each(data.missions,function(){
-							try{
-								var mission = Missions.add(this);
-								
-								if(Missions.statuses['hour'] == null){
-									if( Missions.modeHistorique.isOn){
-										Missions.statuses['hour'] =  getDateHistorique().format("LLLL");
-										traiteDelaiHisto();
-									} else {
-										Missions.modeHistorique.isOn=false;
-										if($("body").hasClass("nocontrols")){
-											Missions.statuses['hour'] = moment(mission.last_update).format("LLLL");
-										}else{
-											Missions.statuses['hour'] = "Aujourd'hui à "+moment(mission.last_update).format("HH:mm:ss");
-										}
-									}
-								}
-							} catch(e){
-								console.error("Oups ya un probleme avec le point là ",this,e);
-							}
-					});
-
-					//Affichage des stats
-					$("#stats").html(HandlebarsUtil.render('stats',Missions.statuses));
-					
-					var pcts = {
-							"green" : 0,
-							"yellow" : 0,
-							"orange" :0,
-							"red":0,
-							"black":0
-					}
-					for(k in pcts){
-						if(k in Missions.statuses){
-							pcts[k] = Math.round(Missions.statuses[k]/Missions.statuses.ttl*1000)/10;
-						}
-					}
-					makeCamembertStat("camembert", {"green":Missions.statuses["green"],"yellow":Missions.statuses["yellow"],"orange":Missions.statuses["orange"],"red":Missions.statuses["red"],"black":Missions.statuses["black"]});
-				},
-				// apres traitement succes ou erreur
-				circulation_complete : function(jqXHR, textStatus){
-					$("#icon").removeClass("loading");
-					console.timeEnd("view");
-					console.timeEnd("get_circulation");
-					
-					
-					// ici on ne doit jamais être rentré dans la boucle (aucune feature ramenée) car Missions.statuses['hour'] ==null
-					// dans ce cas il faut quand même, en cas d'histo, calculer la date histo suivante sinon on bloque au meme moment
-					if(Missions.statuses['hour'] == null && Missions.modeHistorique.isOn && getDateHistorique() ){
-						Missions.statuses['hour']=getDateHistorique().format("LLLL") +" Aucune donnée disponible";
-						traiteDelaiHisto();
-					}					
-					
-					if (DEBUG.refreshMissions) {
-						var delai=Math.max(Missions.refreshDelays.force,Missions.refreshDelays.live);	//par defaut on rafraichit le live		
-						if(getDateHistorique()) {
-							Missions.modeHistorique.isOn=true;
-							delai=Math.max(Missions.refreshDelays.force,Missions.refreshDelays.histo); //en cas d'historique, on va plus vite
-						} else {
-							Missions.modeHistorique.isOn=false;
-						}
-						if(Missions.isActive){
-							clearTimeout(Missions.timeoutId);
-							Missions.timeoutId = setTimeout(Missions.show,delai);
-						}else{
-							Missions.clear();
-						}
-					}
-				}
-			};
-		var trainWorker = new Worker('./static/raildar/TrainWorker.js');
-		trainWorker.addEventListener("message", function (event) {
-			callbacks[event.data.type](event.data.data);
-		});
 		
 		
-		//=========================================
-		var GraphsRegions={
-				isActive : false,
-				url:"http://www.raildar.fr/json/convert?url=get_circulation.json&regions=yes",
-				markers:{},
-				regions:{},
-				add:function(region){
-					GraphsRegions.regions[region.id_region] = region;
-					GraphsRegions.drawMarker(region,true);
-					return region;
-				},
-				drawMarker:function(region,forceUpdate){
-					if(region.id_region in GraphsRegions.markers){
-						if (forceUpdate){					
-							GraphsRegions.refresh(GraphsRegions.markers[region.id_region]);
-						}
-					} else {
-						//iconSize doit correspondre a width et heigh du css .camembert_region pour que tout soit centré.
-						// la hauteur + petite donne la taille du camebert
-						// la largeur plus grande permet d'afficher le nom region sur plus large
-						var myIcon= L.divIcon({className: '',iconSize:L.point(130,80), html:"<div id='statRegionIcon_"+region.id_region+"' class='statRegionIcon'><div class='region_titre'>"+region.name+"</div><div  class='camembert_region' id='camembert_region_"+region.id_region+"'></div></div>"});
-						var mark=L.marker(region["latLgn"], {icon: myIcon});
-						GraphsRegions.markers[region.id_region]=mark;
-						mark.addTo(map);
-						//graphsRegionsLayerGroup.add(mark);
-						makeCamembertStat("camembert_region_"+region.id_region,region.dataGraph);
-						if(console && console.error){
-							console.log("camembert calculé pour "+ region.id_region +"-"+region.name )
-						}
-					}
-				},
-				remove : function(id_region){
-					if(id_region in GraphsRegions.markers){
-						//graphsRegionsLayerGroup.remove(region);
-						map.removeLayer(GraphsRegions.markers[id_region]);
-						delete(GraphsRegions.markers[id_region]);
-						delete(GraphsRegions.regions[id_region]);
-						$("statRegionIcon_"+id_region).remove();
-						
-					}
-				},
-				getMarkers:function(){
-					return GraphsRegions.markers;
-				},
-				show:function(layerGroup){
-					GraphsRegions.isActive = true;
-					$("#icon").addClass("loading");
-					$.ajax(GraphsRegions.url,{
-						async : true,
-						cache : false,
-						error : function(jqXHR,textStatus,errorThrown){
-							
-							if(console && console.error){
-								console.error("Error when loading statistiques regions",jqXHR);
-							}
-							$("#tmp_camemberts").html("<div class='error centered'>Erreur de récupération des stats region ("+jqXHR.status+") <br>"+ errorThrown+"</div>")
-							traiteDelaiHisto();
-						},
-						success : function(data, textStatus, jqXHR){
-							$.each(data.markers.region,function(index,region){							
-								/*var southWest = L.latLng(region.lat_sw,region.lng_sw);
-								var northEast = L.latLng(region.lat_ne, region.lng_ne);
-								var bounds = L.latLngBounds(southWest, northEast);
-								region["bbox"]=bounds;
-								*/
-								region["latLgn"]=L.latLng(region.lat,region.lng);
-								
-								var dataGraph ={"green":0,"yellow":0,"orange":0,"red":0,"black":0};
-								if (! (region.trains instanceof Array) ){
-									region.trains=[region.trains]
-								}
-								$.each(region.trains,function(index,retardCount){
-									var r=0;
-									var c=0;									
-									r=retardCount.retard;
-									c=parseInt(retardCount.count);
-									if (r<0) {
-										dataGraph["black"]+=c;
-									} else if (r<5) {
-										dataGraph["green"]+=c;
-									} else if (r<15) {
-										dataGraph["yellow"]+=c;
-									} else if (r<30) {
-										dataGraph["orange"]+=c;
-									} else {
-										dataGraph["red"]+=c;
-									}
-								});
-								
-								region["dataGraph"]=dataGraph;
- 								
-								GraphsRegions.add(region);
- 								
-							});
-						},
-						complete : function(jqXHR, textStatus){
-							$("#icon").removeClass("loading");
-						}
-							
-					});
-				},
-				refresh : function(region){
-					if(region.id_region in GraphsRegions.markers){
-						GraphsRegions.regions[region.id_region]=region;
-						makeCamembertStat("camembert_region_"+region.id_region,region.dataGraph);
-					} else {
-						
-					}
-
-				},
-				clear : function(){
-					GraphsRegions.isActive = false;
-					for(k in GraphsRegions.regions){
-						GraphsRegions.remove(k);							
-					}	
-					//GraphsRegions.markers=[];
-				}
-		}
 		
-		//=========================================
-		var Missions = {
-			isActive : false,
-			timeoutId : null,
-			// en millisecondes (pour settimeout())
-			refreshDelays:{
-				live:10000,
-				histo:2000,
-				force:0
-			},
-			modeHistorique:{
-				isOn:false
-			},
-			icons:{
-				green: L.divIcon({className: 'circle-icon circle-icon-green',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_green.png" />'}),
-				yellow: L.divIcon({className: 'circle-icon circle-icon-yellow',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_yellow.png" />'}),
-				orange: L.divIcon({className: 'circle-icon circle-icon-orange',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_orange.png" />'}),
-				red: L.divIcon({className: 'circle-icon circle-icon-red',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_red.png" />'}),
-				black: L.divIcon({className: 'circle-icon circle-icon-black',iconSize:L.point(22,22), html:'<img src="./static/images/fleche_black.png" />'})
-			},
-			markers:{},
-			missions:{},
-			statuses:{ttl:0},
-			add : function(mission){
-				Missions.missions[mission.id_mission] = mission;
-				Train.drawMarker(mission,true);
-				return mission;
-			},
-			setFilters : function() {
-				TrainFilters.bounds = map.getBounds();
-				var visible = [];
-				$("input.filter:checked").each(function(){
-					visible.push($(this).attr('name'));
-				});
-				TrainFilters.visible = visible;
-				TrainFilters.num_train = $.trim($("#number_filter").val());
-				trainWorker.postMessage(new WorkerMessage('update_filters', TrainFilters));
+		
 
-			},
-			//redraw each mission whithout changing data (after an UI event for example)
-			redrawMarkers : function(){
-				Missions.setFilters();
-				Missions.draw();
-			},
-			show : function(){
-				Missions.isActive = true;
-				Missions.draw();
-			},
-			draw : function(){
-				if(Missions.isActive) {
-					console.time("get_circulation");
-					console.time("worker");
-					$("#icon").addClass("loading");
-					var b = map.getBounds();
-					var params={
-/* 						south_west_lng : b._southWest.lng,
-						north_east_lng :  b._northEast.lng,
-						south_west_lat : b._southWest.lat,
-						north_east_lat : b._northEast.lat, */
-						zoom : map.getZoom(),
-						lat : map.getCenter().lat,
-						lng : map.getCenter().lng
-					};
-					var dateHisto=getDateHistorique();
-					
-					if (Missions.modeHistorique.isOn || dateHisto){
-						Missions.modeHistorique.isOn = true;
-						console.info("Mode historique demandé : timestamp = "+dateHisto.format("X")+" date = "+dateHisto.format("LLLL"));
-						params["date"]=dateHisto.format("X");
-					}
-					if(Tracking.running == 2 && Tracking.id_mission !=null){
-						params['id_mission'] = Tracking.id_mission;
-					}
-	
-					Missions.statuses['hour'] = null;
-					
-					//Call the web worker that will load and filter data.
-					//See trainWorker configuration for callbacks
-					trainWorker.postMessage(new WorkerMessage('get_circulation', { data : params}));
-				}
-
-			},
-			remove : function(id_mission){
-				if(id_mission in Missions.markers){
-					map.removeLayer(Missions.markers[id_mission]);
-					delete(Missions.markers[id_mission]);
-					delete(Missions.missions[id_mission]);
-				}
-			},
-			clean : function(remove){
-				if(remove.length > 0){
-					console.log("removing "+remove.length+" missions");
-				}
-				for(id_mission in remove){
-					Missions.remove(id_mission);
-				}
-				delete(remove);
-			},
-			clear : function(){
-				Missions.isActive = false;
-				clearTimeout(Missions["timeoutId"]);
-				for(k in Missions.missions){
-						Missions.remove(k);					
-				}
-			}
-		};
 
 		//=========================================
 		var cloudmadeLayer = L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
@@ -926,7 +230,6 @@
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.openstreetmap.org/">OpenStreetMap</a>'
 		});
 		
-		var mode = Missions;
 
 		var map = L.map('map',{
 			center: new L.LatLng(46.81,6.88),
@@ -950,11 +253,11 @@
 		var attributionControl = L.control.attribution().addTo(map);
 		var zoomControl = L.control.zoom().addTo(map);
 		
-		
-		map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
+		//FIXME remplacer par un apel a Filers.set();
+		//map.on('zoomend',Missions.redrawMarkers).on('dragend',Missions.redrawMarkers);
 		
 		$("body").on("hashchange",function(event,args,old_args,external){
-			if(external){
+/* 			if(external){
 				console.log("Hash has changed ",(external ? "from outside" : "from inside"), args,old_args);
 				if('date' in  args){
 					if(args.date != old_args.date) {
@@ -1040,36 +343,25 @@
 				}
 
 				if (redraw) Missions.redrawMarkers();
-			}
+			} */
 		});
 		var hash = new L.Hash(map);
 		
 		//Initialise filters
-		Missions.setFilters();
+		//FIXME A supprimer ou remplacer par un setFilters();
+		//Missions.setFilters();
 		
 		//Sart leaflet geolocation.
 		Tracking.init();
 
-		if (DEBUG.showGraphsRegions) {
-			map.on('zoomend', function(e) {
-				if (map.getZoom()<9){
-					mode = GraphsRegions;
-					Missions.clear();
-					GraphsRegions.show();
-				} else {
-					mode = Missions;
-					GraphsRegions.clear();
-				 	Missions.show();
-				}
-			});
-		}
+
 
 		
 		
 		//=========================================
 		function onResize(){
 			$("#sidebar").height($(window).height());
-			Missions.redrawMarkers();
+			// FIXME remplacer par Filters.Set() ... Missions.redrawMarkers();
 		}
 		
 		//=========================================
@@ -1324,7 +616,7 @@
  				});
  			});
  			
- 			
+ 			/*
  			if (DEBUG.showGraphsRegions) {
 	 			if (map.getZoom()<9){
 					Missions.clear();
@@ -1336,13 +628,14 @@
 				}
  			} else {
  				Missions.show();
- 			}
+ 			}*/
 
 
 			
 		
  			
 		});
+		Scheduler.init();
 		
 		
 

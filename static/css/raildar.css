@@ -1,0 +1,483 @@
+body {
+	padding: 0;
+	margin: 0;
+	font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva,
+		sans-serif;
+	font-size: 10pt;
+}
+
+a {
+	color: #666;
+	font-weight: bold;
+}
+
+html,body,#map {
+	height: 100%;
+}
+
+#title {
+	font-size: 1.8em;
+	padding-top: 0 !important;
+	border-bottom: solid 1px #888;
+	overflow: auto;
+	magin-left: 1em;
+}
+
+#title .titre {
+	margin-top: 0.2em;
+}
+
+#title .poweredBy {
+	font-style: italic;
+	font-size: 60%;
+	margin-left: 8em;
+	margin-top: -0.5em;
+}
+
+#icon {
+	float: left;
+	width: 43px;
+	height: 43px;
+	margin-top: 0.1em;
+	margin-right: 0.5em;
+}
+
+#icon #icon-loading {
+	display: none;
+}
+
+#icon.loading {
+	-webkit-animation: fade 0.6s linear infinite;
+	-moz-animation: fade 0.6s linear infinite;
+	-ms-animation: fade 0.6s linear infinite;
+	-o-animation: fade 0.6s linear infinite;
+	animation: fade 0.6s linear infinite;
+}
+
+#icon.loading #icon-loading {
+	display: inline;
+}
+
+#icon.loading #icon-fixed {
+	display: none;
+}
+
+#icon.loading {
+	-webkit-animation: fade 0.6s linear infinite;
+	-moz-animation: fade 0.6s linear infinite;
+	-ms-animation: fade 0.6s linear infinite;
+	-o-animation: fade 0.6s linear infinite;
+	animation: fade 0.6s linear infinite;
+}
+
+button.loading {
+	background: url("static/images/loading.gif") no-repeat center;
+	color: lightgrey;
+}
+
+/* animation */
+@
+-webkit-keyframes fade { 0% {
+	opacity: 0.5
+}
+
+60%
+{
+opacity
+:
+0
+.9
+ 
+}
+100%
+{
+opacity
+:
+0
+.5
+ 
+}
+}
+@
+-moz-keyframes fade { 0% {
+	opacity: 0.5
+}
+
+60%
+{
+opacity
+:
+0
+.9
+ 
+}
+100%
+{
+opacity
+:
+0
+.5
+ 
+}
+}
+@
+-ms-keyframes fade { 0% {
+	opacity: 0.5
+}
+
+60%
+{
+opacity
+:
+0
+.9
+ 
+}
+100%
+{
+opacity
+:
+0
+.5
+ 
+}
+}
+@
+-o-keyframes fade { 0% {
+	opacity: 0.5
+}
+
+60%
+{
+opacity
+:
+0
+.9
+ 
+}
+100%
+{
+opacity
+:
+0
+.5
+ 
+}
+}
+@
+keyframes fade { 0% {
+	opacity: 0.5
+}
+
+60%
+{
+opacity
+:
+0
+.9
+ 
+}
+100%
+{
+opacity
+:
+0
+.5
+ 
+}
+}
+.right {
+	text-align: right
+}
+
+.animated .circle-icon,.animated .leaflet-popup {
+	-webkit-transition: all 20s linear;
+	-moz-transition: all 20s linear;
+	-o-transition: all 20s linear;
+	transition: all 20s linear;
+}
+
+.circle-icon {
+	border-radius: 9px;
+	opacity: 0.9;
+	/* box-shadow: 0px 0px 2px #444; */
+	text-align: center;
+	line-height: 18px;
+	overflow: hidden;
+	font-size: 12px;
+	color: #FFF;
+}
+
+.circle-icon img {
+	width: 22px;
+	height: 22px;
+}
+
+#sidebar>div {
+	padding: 1em;
+}
+
+#sidebar {
+	width: 380px;
+	position: absolute;
+	background-color: rgba(255, 255, 255, 0.8);
+	top: 0px;
+	right: 0px;
+	height: 100%;
+	-webkit-transition: width 0.3s;
+	-moz-transition: width 0.3s;
+	-o-transition: width 0.3s;
+	transition: width 0.3s;
+	max-width: 100%;
+	display: none;
+	z-index: 900;
+	overflow: auto;
+}
+
+.leaflet-bottom {
+	z-index: 800 !important;
+}
+
+.leaflet-control-attribution {
+	opacity: 0.5;
+}
+
+.button {
+	position: absolute;
+	right: 10px;
+	width: 36px;
+	text-align: center;
+	overflow: hidden;
+	height: 36px;
+	padding: 0;
+	cursor: pointer;
+	border-radius: 6px 0 0 6px;
+	font-size: 1.5em;
+	line-height: 36px;
+	box-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+	background: #fff;
+	border-radius: 5px;
+	z-index: 1000;
+}
+
+.touch .button {
+	border: 2px solid rgba(0, 0, 0, 0.2) !important;
+	box-shadow: none;
+	width: 48px;
+	height: 48px;
+	line-height: 44px;
+	background-clip: padding-box;
+}
+
+#sidebar_button {
+	top: 56px;
+}
+
+.touch #sidebar_button {
+	top: 64px;
+}
+
+#tracking_button {
+	top: 102px;
+}
+
+#tracking_button.enabled {
+	color: #BB0000;
+}
+
+#tracking_button.enabled i {
+	-webkit-animation: fade 1s linear infinite;
+	-moz-animation: fade 1s linear infinite;
+	-ms-animation: fade 1s linear infinite;
+	-o-animation: fade 1s linear infinite;
+	animation: fade 1s linear infinite;
+}
+
+.touch #tracking_button {
+	top: 118px;
+}
+
+#tracking_info {
+	disaplay: none;
+	position: absolute;
+	top: 0px;
+	right: 60px;
+	font-size: 0.8em;
+	background-color: rgba(255, 255, 255, 0.8);
+}
+
+#number_filter {
+	border: solid 1px #888;
+	background-color: rgba(255, 255, 255, 0.4);
+}
+
+.help {
+	color: #444;
+	font-style: italic;
+	font-size: 90%;
+	padding: 0.5em 2em 0.5em 2em;
+}
+
+.centered {
+	text-align: center;
+}
+
+.error {
+	color: red;
+	font-weight: bold;
+	font-size: 110%;
+	padding: 0.5em 2em 0.5em 2em;
+}
+
+#mission_detail_help {
+	padding: 3em;
+}
+
+#mission_detail {
+	padding: 0.5em 1em;
+}
+
+#stats li {
+	list-style-type: none;
+}
+
+#stats ul {
+	padding-left: 15px;
+}
+
+#stat_detail {
+	display: block;
+	clear: right;
+	text-align: center;
+	font-size: 0.8em;
+}
+
+#details {
+	height: 120px;
+}
+
+#about>div {
+	padding: 0.5em 1em;
+	color: #333;
+	font-size: 0.9em;
+}
+
+/*camembert général dans la sidebar (stats)*/
+#camembert {
+	margin-top: 20px;
+	width: 80px;
+	height: 120px;
+	float: right;
+	opacity: 1;
+}
+
+.nocontrols #camembert {
+	float: none;
+	width: 350px;
+	height: 400px;
+}
+
+.nocontrols #stat_detail {
+	display: none;
+}
+
+.statRegionIcon { -
+	-border: 1px black solid; -
+	-background-color: #FFFFF0; -
+	-border-radius: 10px;
+	opacity: 0.8; --
+	-moz-box-shadow: 3px 3px 5px 6px #aaa; --
+	-webkit-box-shadow: 3px 3px 5px 6px #aaa; --
+	-box-shadow: 10px 10px 10px 0px rgba(0, 0, 0, 0.5);
+	margin-bottom: -1em;
+}
+
+.camembert_region {
+	/*taille doit correspondre a taille icone cf js */
+	width: 130px;
+	height: 80px;
+	text-align: center;
+	margin-top: -1em;
+	opacity: 1;
+}
+
+.region_titre { -
+	-margin: 0.3em;
+	color: #0153A0;
+	text-shadow: #ffffff 0.2em 0.2em 0.2em;
+	font-weight: bold;
+	opacity: 1;
+	font-size: 110%;
+	text-align: center;
+	line-height: 0.8
+}
+
+.jqplot-grid-canvas {
+	display: none;
+}
+
+.titleBlock {
+	border-bottom: 1px solid #888888;
+	display: block;
+}
+
+table#detailInfoMission {
+	width: 100%;
+}
+
+table#detailInfoMission tr {
+	border-bottom: 1px solid #888888;
+}
+
+table#detailInfoMission th {
+	color: #339Fdd;
+}
+
+.arret_green {
+	background-color: #ccffcc
+}
+
+.arret_yellow {
+	background-color: #ffffcc
+}
+
+.arret_orange {
+	background-color: #ffeecc
+}
+
+.arret_red {
+	background-color: #ffcccc
+}
+
+.arret_black {
+	background-color: #aaaaaa;
+	text-decoration: line-through;
+}
+
+.arret_depasse {
+	color: grey;
+	font-style: italic;
+	background-color: #eee;
+}
+
+.arret_next {
+	font-weight: bold;
+	background-color: none;
+}
+
+.biffe {
+	text-decoration: line-through;
+}
+
+.ok {
+	color: #2d8519;
+}
+
+.verifTrajetPopup>span {
+	font-weight: bold;
+}
+
+.verifTrajetPopup .help {
+	font-size: 120%;
+	color: orange;
+}

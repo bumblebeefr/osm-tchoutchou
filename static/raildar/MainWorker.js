@@ -1,8 +1,7 @@
 var worker = this;
-importScripts('../riot.js','../spark-md5.min.js', '../moment.min.js', '../moment.fr.js', '../underscore-min.js');
-importScripts('./Static.js','./WorkerConsole.js','./Filters.js', './DataSourceConfig.js', './Schedulable.js', './Train.js');
-
-moment.lang('fr');
+importScripts('../spark-md5.min.js', '../moment.min.js', '../moment.fr.js', '../underscore.js');
+importScripts('./library.js', './Static.js', './WorkerConsole.js', './Filters.js');
+importScripts('./datasources/DataSource.js', './datasources/TrainDataSource.js', './datasources/DataSourceConfig.js');
 
 // Hold filters
 var runningXHR = {};
@@ -10,53 +9,54 @@ var runningXHR = {};
 var commands = {
 
 	set_filter : function(args) {
-		Filters.set(args.name,args.value);
+		Filters.set(args.newValues);
 	},
 
 	// Load data from a specified datatsource
-	// option :
-	// - datasource : name of the datasouce to call
+	// parameters :
+	// - dataSourceName : name of the datasouce to call
 	// -
-	get_data : function(options) {
-		if (options.datasource in DataSourceConfig) {
-			if (options.datasource in runningXHR) {
-				runningXHR[options.datasource].abort();
+	get_data : function(parameters) {
+		if (parameters.dataSourceName in DataSourceConfig) {
+			if (parameters.dataSourceName in runningXHR) {
+				runningXHR[parameters.dataSourceName].abort();
 			}
-			var obj = DataSourceConfig[options.datasource].obj;
-			var args = _.clone(DataSourceConfig[options.datasource].args);
-			obj.preprocess(args,Filters.get());
-			getJSON(DataSourceConfig[options.datasource].url, {
-				data : args,
+			var dataSouceObject = DataSourceConfig[parameters.dataSourceName].dataSouceObject;
+			var urlParams = _.clone(DataSourceConfig[parameters.dataSourceName].urlParams);
+			dataSouceObject.preProcess(urlParams, Filters.get());
+			getJSON(DataSourceConfig[parameters.dataSourceName].url, {
+				data : urlParams,
 				cache : false,
 				error : function(jqXHR, textStatus, errorThrown) {
 					console.log("Error occurs when getting loading data from " + datatsource + "datasource", textStatus, errorThrown);
 					worker.sendMessage(new WorkerMessage("data_error", {
-						datasource : datasource,
+						dataSourceName : parameters.dataSourceName,
 						textStatus : textStatus,
 						error : errorThrown ? errorThrown.message : null
 					}));
 				},
 				success : function(data, textStatus, jqXHR) {
-					worker.sendMessage(new WorkerMessage("data_received", {
-						datasource : datasource,
-						data : obj.prostProcess(data,Filters.get())
+					var md5 = SparkMD5.hash(jqXHR.responseText);
+					worker.postMessage(new WorkerMessage("data_received", {
+						dataSourceName : parameters.dataSourceName,
+						data : dataSouceObject.postProcess(data, urlParams, Filters.get(), md5)
 					}));
 				}
 			});
 		} else {
-			console.error("No datasource named", options.datasource);
+			console.error("No datasource named " + parameters.dataSourceName);
 		}
 	}
 
 };
 
-// Handle message events. A message (see Workermessage in libray.js) have to
+// Handle message events. A message (see WorkermMessage in libray.js) have to
 // properties :
 // - cmd : Name of the command to execute, key in commands object
 // - parameter : Object containing parameters to the function.
 this.addEventListener('message', function(e) {
 	if (e.data.cmd in commands) {
-		commands[e.data.cmd](e.data.parameter);
+		commands[e.data.cmd](e.data.parameters);
 	} else {
 		console.error("No handler defined for cmd " + e.cmd);
 	}

@@ -1,10 +1,10 @@
 // Template of Schedulable Operation that can be managed by the scheduler.
 // These Operations should inherit this Object by calling
 // _.defaults(Schedulable, Train) for example.
-var Schedulable = function(){
+var DataSource = function(){
 	observable(this);
 };
-_.extend(Schedulable.protoype, {
+_.extend(DataSource.prototype, {
 
 	// Called by the web worker before ajax request
 	// - params : ajax request's paramaeters
@@ -20,16 +20,10 @@ _.extend(Schedulable.protoype, {
 	// some value when having kind of inheritance between Schedulable Objects.
 	// (see
 	// _.default)
+	// - filters : Object containing filters used to get the data
+	// - checksum : String containing checsum of raw data
 	postProcess : function(data) {
 		logger.error('Postprocess not implemented');
-	},
-
-	// Called by the view to refresh or display the visualization of data.
-	// - data return from the worker, mainly managed by the postProcess()
-	// method.
-	// _.default)
-	display : function(data) {
-		logger.error('Display not implemented');
 	},
 
 	// called by the scheduler when Filters hcange, in order to know if the

@@ -6,12 +6,6 @@ var Scheduler = {
 
 	},
 
-	// Could be managed by the leaflet LayerControls, or we do our own ?
-	baseLayers : {},
-
-	// Layers groups used for eache dataSource
-	dataLayers : {},
-
 	// initialize the Scheduling system.
 	init : function() {
 		for (k in Scheduler.config) {
@@ -22,6 +16,12 @@ var Scheduler = {
 		}
 
 		Scheduler.worker = new Worker('./static/raildar/MainWorker.js');
+
+		// Handle messages from webworker. A message (see WorkermMessage in
+		// libray.js) have to
+		// properties :
+		// - cmd : Name of the command to execute, key in commands object
+		// - parameter : Object containing parameters to the function.
 		Scheduler.worker.addEventListener("message", function(event) {
 			if (event.data.cmd in Scheduler.workerCallbacks) {
 				Scheduler.workerCallbacks[event.data.cmd](event.data.parameters);
@@ -29,41 +29,45 @@ var Scheduler = {
 				logger.warn('No callbacks for', event.data.cmd);
 			}
 		});
+
+		// FIXME demarrage pour tester
+		Scheduler.show("national");
+	},
+
+	show : function(datatSourceName) {
+		Scheduler.worker.postMessage(new WorkerMessage('get_data', {
+			dataSourceName : datatSourceName
+		}));
 	}
 
 };
 observable(Scheduler);
 
-
-
-Scheduler.on('dataReceive' ,function(data) {
+Scheduler.on('dataReceive', function(workerData) {
 	// TODO : Do something with the data
-	if(data != null){
-		DataSourceConfig[data.datasource].obj.display(data);
+	if (workerData.data != null) {
+		DisplayManager.display(workerData.data);
 	}
-	Scheduler.onDataComplete(data.datasource);
+	Scheduler.onDataComplete(workerData.dataSourceName);
 });
-Scheduler.on('dataError',function(datasource, e) {
+Scheduler.on('dataError', function(workerData, e) {
 	// TODO :Do something with the error
-	Scheduler.onDataComplete(data.datasource);
+	Scheduler.onDataComplete(workerData.dataSourceName);
 });
-Scheduler.on('dataComplete',function(data) {
+Scheduler.on('dataComplete', function(dataSourceName) {
 	// TODO : relaunch timer if needed;
+	Scheduler.timers['trains'] = setTimeout(function() {
+		Scheduler.show(dataSourceName);
+	}, 1000);
 });
 
-
-Filters.on('valueChange',function(namme,value){
-	Scheduler.worker.postMessage(new WorkerMessage('set_filter', { name : name, value:value}));
-	//TODO check which datatSource have to be updated/activated
+Filters.on('change', function(newValues, oldValues, allFilters) {
+	Scheduler.worker.postMessage(new WorkerMessage('set_filter', {
+		newValues : newValues,
+		oldValues : oldValues
+	}));
+	// TODO check which datatSource have to be updated/activated
 });
-
-
-
-
-
-
-
-
 
 Scheduler.workerCallbacks = {
 	// Console events
@@ -81,12 +85,12 @@ Scheduler.workerCallbacks = {
 	},
 
 	// Data events
-	data_received : function(data) {
-		console.debug(data);
-		Scheduler.trigger('dataReceived',data);
+	data_received : function(workerData) {
+		console.debug(workerData);
+		Scheduler.trigger('dataReceived', workerData);
 	},
-	data_error : function(data) {
-		console.debug(data);
-		Scheduler.trigger('dataError',data);
+	data_error : function(workerData) {
+		console.debug(workerData);
+		Scheduler.trigger('dataError', workerData);
 	},
 };

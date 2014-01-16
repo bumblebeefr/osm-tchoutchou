@@ -99,7 +99,7 @@ function WorkerMessage(cmd, parameters) {
 	this.parameters = parameters;
 }
 
-
+//Obbservable, from riot.js
 function observable(el) {
 	  var callbacks = {}, slice = [].slice;
 
