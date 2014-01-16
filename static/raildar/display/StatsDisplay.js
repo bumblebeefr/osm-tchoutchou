@@ -1,4 +1,5 @@
-var StatsDisplay = function() {
-	this.__proto__.constructor();
+function StatsDisplay() {
+	Display.call(this);
+	this.stats = {};
 };
-StatsDisplay.prototype = new Display();
+_.extend(StatsDisplay.prototype,Display.prototype);

@@ -1,8 +1,9 @@
 // Template of Schedulable Operation that can be managed by the scheduler.
 // These Operations should inherit this Object by calling
 // _.defaults(Schedulable, Train) for example.
-var DataSource = function(){
+function DataSource(options){
 	observable(this);
+	_.extend(this,options);
 };
 _.extend(DataSource.prototype, {
 
@@ -12,7 +13,7 @@ _.extend(DataSource.prototype, {
 	// (see
 	// _.default)
 	preProcess : function(params) {
-		logger.error('Preprocess not implemented');
+		console.warn('Preprocess not implemented on ' + this.constructor.name);
 	},
 
 	// Called by the webworker after having received data from the request
@@ -23,13 +24,13 @@ _.extend(DataSource.prototype, {
 	// - filters : Object containing filters used to get the data
 	// - checksum : String containing checsum of raw data
 	postProcess : function(data) {
-		logger.error('Postprocess not implemented');
+		console.warn('Postprocess not implemented on ' + this.constructor.name);
 	},
 
 	// called by the scheduler when Filters hcange, in order to know if the
 	// modification of filters have impact on this datatSource.
 	isConcernedByFilterChanges : function(newFilters, oldFilter) {
-		logger.error('isConcernedByFilterChanges not implemented');
+		console.warn('isConcernedByFilterChanges not implemented on ' + this.constructor.name);
 		return false;
 	}
 });

@@ -1,7 +1,7 @@
 // Template of Schedulable Operation that can be managed by the scheduler.
 // These Operations should inherit this Object by calling
 // _.defaults(Schedulable, Train) for example.
-var Display = function(){
+function Display(){
 	observable(this);
 };
 _.extend(Display.prototype, {
@@ -10,6 +10,6 @@ _.extend(Display.prototype, {
 	// method.
 	// _.default)
 	display : function(data) {
-		logger.error('Display not implemented');
+		console.warn('display() function not implemented on ',this.constructor.name);
 	},
 });

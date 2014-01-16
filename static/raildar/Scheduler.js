@@ -43,22 +43,23 @@ var Scheduler = {
 };
 observable(Scheduler);
 
-Scheduler.on('dataReceive', function(workerData) {
+Scheduler.on('dataReceived', function(workerData) {
+	console.log(workerData);
 	// TODO : Do something with the data
 	if (workerData.data != null) {
-		DisplayManager.display(workerData.data);
+		DisplayManager.display(workerData.dataSourceName,workerData.data);
 	}
-	Scheduler.onDataComplete(workerData.dataSourceName);
+	Scheduler.trigger('dataComplete',workerData.dataSourceName);
 });
 Scheduler.on('dataError', function(workerData, e) {
 	// TODO :Do something with the error
-	Scheduler.onDataComplete(workerData.dataSourceName);
+	Scheduler.trigger('dataComplete',workerData.dataSourceName);
 });
 Scheduler.on('dataComplete', function(dataSourceName) {
 	// TODO : relaunch timer if needed;
 	Scheduler.timers['trains'] = setTimeout(function() {
 		Scheduler.show(dataSourceName);
-	}, 1000);
+	}, DataSourceConfig[dataSourceName].refreshDelay);
 });
 
 Filters.on('change', function(newValues, oldValues, allFilters) {
@@ -86,11 +87,9 @@ Scheduler.workerCallbacks = {
 
 	// Data events
 	data_received : function(workerData) {
-		console.debug(workerData);
 		Scheduler.trigger('dataReceived', workerData);
 	},
 	data_error : function(workerData) {
-		console.debug(workerData);
 		Scheduler.trigger('dataError', workerData);
 	},
 };

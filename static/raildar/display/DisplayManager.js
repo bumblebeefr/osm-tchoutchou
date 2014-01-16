@@ -15,9 +15,10 @@ var DisplayManager = {
 	
 	/************* Methods *************/
 	display : function(dataSourceName,data){
+		console.debug("Displaying data from ",dataSourceName,data);
 		for(var k in data){
 			if(k in DisplayManager.displays){
-				DisplayManager.displays[k].display(data);
+				DisplayManager.displays[k].display(data[k],data);
 			}else{
 				logger.warn('No display defined for '+k);
 			}

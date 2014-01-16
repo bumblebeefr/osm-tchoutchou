@@ -1,9 +1,9 @@
-var TrainDataSource = function() {
-	this.__proto__.constructor();
+function TrainDataSource(options) {
+	DataSource.call(this,options);
 	this.trains = {};
 	this.lastCirculationChecksum = null;
 };
-TrainDataSource.prototype = new DataSource();
+_.extend(TrainDataSource.prototype,DataSource.prototype);
 
 // Create a simple object with all train informations from a geoson object
 TrainDataSource.prototype.createTrain = function(mission) {
@@ -41,6 +41,8 @@ TrainDataSource.prototype.createTrain = function(mission) {
 };
 
 TrainDataSource.prototype.isVisible = function(train){
+	//FIXME
+	return true;
 	var filters = Filters.get();
 	var b = filters.bounds;
 	if(train.lng > b._southWest.lng && train.lng < b._northEast.lng){
@@ -95,7 +97,6 @@ TrainDataSource.prototype.postProcess = function(data, params, filters, checksum
 		};
 		for ( var i = 0; i < data.features.length; i++) {
 			var mission = self.createTrain(data.features[i]);
-			console.log(JSON.stringify(mission));
 			if (!(mission.status in stats)) {
 				// console.info("Nouveau type : ",mission.type);
 				stats[mission.status] = 1;

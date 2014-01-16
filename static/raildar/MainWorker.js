@@ -21,9 +21,9 @@ var commands = {
 			if (parameters.dataSourceName in runningXHR) {
 				runningXHR[parameters.dataSourceName].abort();
 			}
-			var dataSouceObject = DataSourceConfig[parameters.dataSourceName].dataSouceObject;
+			var dataSourceObject = DataSourceConfig[parameters.dataSourceName];
 			var urlParams = _.clone(DataSourceConfig[parameters.dataSourceName].urlParams);
-			dataSouceObject.preProcess(urlParams, Filters.get());
+			dataSourceObject.preProcess(urlParams, Filters.get());
 			getJSON(DataSourceConfig[parameters.dataSourceName].url, {
 				data : urlParams,
 				cache : false,
@@ -39,7 +39,7 @@ var commands = {
 					var md5 = SparkMD5.hash(jqXHR.responseText);
 					worker.postMessage(new WorkerMessage("data_received", {
 						dataSourceName : parameters.dataSourceName,
-						data : dataSouceObject.postProcess(data, urlParams, Filters.get(), md5)
+						data : dataSourceObject.postProcess(data, urlParams, Filters.get(), md5)
 					}));
 				}
 			});

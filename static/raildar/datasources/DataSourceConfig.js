@@ -1,6 +1,6 @@
 //Configration of each datasource
 var DataSourceConfig = {
-	'national' : {
+	'national' : new TrainDataSource({
 		'url' : 'http://raildar.fr/json/get_circulation',
 		'urlParams' : {
 			'source' : 'garesenmouvement'
@@ -11,9 +11,8 @@ var DataSourceConfig = {
 		},
 		'minZoom' : 5,
 		'maxZoom' : null,
-		'dataSouceObject' : new TrainDataSource(),
-		'refreshDelay' : 10
-	},
+		'refreshDelay' : 10*1000
+	}),
 //	'regional' : {
 
 //

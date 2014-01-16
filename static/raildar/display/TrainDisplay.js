@@ -1,5 +1,5 @@
-var TrainDisplay = function() {
-	this.__proto__.constructor();
+function TrainDisplay() {
+	Display.call(this);
 	_.extend(this, {
 		markers : {},
 		icons : {
@@ -31,7 +31,7 @@ var TrainDisplay = function() {
 		}
 	});
 };
-TrainDisplay.prototype = new Display();
+_.extend(TrainDisplay.prototype ,Display.prototype);
 
 // get the title of a train
 TrainDisplay.prototype.getTitle = function(train) {
@@ -95,12 +95,12 @@ TrainDisplay.prototype.drawMarker = function(train, forceUpdate) {
 	}
 };
 
+
 TrainDisplay.prototype.remove = function(id_mission) {
 	var _self = this;
 	if (id_mission in _self.markers) {
-		map.removeLayer(self.markers[id_mission]);
+		map.removeLayer(_self.markers[id_mission]);
 		delete (_self.markers[id_mission]);
-		delete (_self.missions[id_mission]);
 	}
 };
 
@@ -121,12 +121,13 @@ TrainDisplay.prototype.display = function(data) {
 	// netoyage des mission terminées
 	self.clean(data.remove);
 
+	console.log("show",data);
 	// affichage/maj des autres markers
 	$.each(data.missions, function() {
-		try {
-			self.add(this);
-		} catch (e) {
-			console.error("Oups ya un probleme avec le point là ", this, e);
-		}
+		//try {
+			self.drawMarker(this);
+		//} catch (e) {
+		//	console.error("Oups ya un probleme avec le point là ", this, e);
+		//}
 	});
 };
