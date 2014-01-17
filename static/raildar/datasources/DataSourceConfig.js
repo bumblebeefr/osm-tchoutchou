@@ -3,19 +3,6 @@ var DataSourceConfig = {
 	'national' : new TrainDataSource({
 		'url' : 'http://raildar.fr/json/get_circulation',
 		'urlParams' : {
-			'id_source' : '1'
-		},
-		'center' : {
-			'lat' : 46.81,
-			'lng' : 6.88
-		},
-		'minZoom' : 5,
-		'maxZoom' : null,
-		'refreshDelay' : 10*1000
-	}),
-	'regional' : new TrainDataSource({
-		'url' : 'http://raildar.fr/json/get_circulation',
-		'urlParams' : {
 			'id_source' : '2'
 		},
 		'center' : {
@@ -23,8 +10,23 @@ var DataSourceConfig = {
 			'lng' : 6.88
 		},
 		'minZoom' : 5,
-		'maxZoom' : null,
-		'refreshDelay' : 10*1000
+		'maxZoom' : 8,
+		'refreshDelay' : 100*1000,
+		'layerName' : 'national'
+	}),
+	'regional' : new TrainDataSource({
+		'url' : 'http://raildar.fr/json/get_circulation',
+		'urlParams' : {
+			'id_source' : '1'
+		},
+		'center' : {
+			'lat' : 46.81,
+			'lng' : 6.88
+		},
+		'minZoom' : 5,
+		'maxZoom' : 8,
+		'refreshDelay' : 100*1000,
+		'layerName' : 'regional'
 	}),
 
 
@@ -39,7 +41,8 @@ var DataSourceConfig = {
 		},
 		'minZoom' : 7,
 		'maxZoom' : null,
-		'refreshDelay' : 10*1000
+		'refreshDelay' : 100*1000,
+		'layerName' : 'idf'
 	}),
 	'toulouse'  : new TrainDataSource({
 		'url' : 'http://raildar.fr/json/get_circulation',
@@ -52,9 +55,17 @@ var DataSourceConfig = {
 		},
 		'minZoom' : 7,
 		'maxZoom' : null,
-		'refreshDelay' : 10*1000
+		'refreshDelay' : 100*1000,
+		'layerName' : 'toulouse'
 	}),
 //	'stats' : {
 //
 //	}
+};
+
+DataSourceConfig.getNamesByLayerGroup = function(layerGroup){
+	return _.reduce(DataSourceConfig,function(memo,datasource,name){
+		if(datasource.layerGroup == layerGroup) memo.push(name);
+		return memo;
+	},[]);
 };

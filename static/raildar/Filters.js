@@ -1,6 +1,7 @@
 var Filters = {
 	_data : {
-		visible : [ "" ],
+		visible : "delayed/cancelled",
+		train_layer : "",
 		num_train : "",
 		bounds : {
 			_southWest : {
@@ -12,12 +13,12 @@ var Filters = {
 				lng : 200,
 			}
 		},
-		zoom : 6,
+		zoom : 0,
 		center : {
-			lat : 46.81,
-			lng : 6.88
+			lat : 0,
+			lng : 0
 		},
-		tracking : false
+		tracking : null
 	},
 
 	/**
@@ -48,7 +49,7 @@ var Filters = {
 				var newValue = {};
 				newValue[obj] = value;
 
-				Filters.trigger("change", newValues, oldValues, Filters._data);
+				Filters.trigger("change", newValue,oldValue, Filters._data);
 			}
 		} else if (typeof obj === 'object') {
 			var changed = false;

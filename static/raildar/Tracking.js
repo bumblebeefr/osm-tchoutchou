@@ -82,7 +82,7 @@ var Tracking = {
 		map.stopLocate();
 		Missions.redrawMarkers();
 		$("#tracking_info").hide();
-		Filters.set("false",true);
+		Filters.set("tracking",null);
 	},
 	//Start sending fixes to the mspecified mission
 	run : function(id_mission){
@@ -90,6 +90,7 @@ var Tracking = {
 			Filters.set("tracking",true);
 			Tracking.running = 2;
 			Tracking.id_mission = id_mission;
+			Filters.set("tracking",id_mission);
 			Missions.redrawMarkers();
 			console.log('Start sending fixes for mission ',id_mission);
 		}else{

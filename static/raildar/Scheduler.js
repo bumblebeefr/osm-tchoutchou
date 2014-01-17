@@ -5,70 +5,93 @@ var Scheduler = {
 	timers : {
 
 	},
+	sourceArctive : {
+
+	},
 
 	// initialize the Scheduling system.
 	init : function() {
-		for (k in Scheduler.config) {
-			Scheduler.timers[k] = null;
-		}
-		for (k in Scheduler.config) {
-			Scheduler.dataLayers[k] = L.featureGroup();
-		}
-
-		Scheduler.worker = new Worker('./static/raildar/MainWorker.js');
-
-		// Handle messages from webworker. A message (see WorkermMessage in
-		// libray.js) have to
-		// properties :
-		// - cmd : Name of the command to execute, key in commands object
-		// - parameter : Object containing parameters to the function.
-		Scheduler.worker.addEventListener("message", function(event) {
-			if (event.data.cmd in Scheduler.workerCallbacks) {
-				Scheduler.workerCallbacks[event.data.cmd](event.data.parameters);
-			} else {
-				logger.warn('No callbacks for', event.data.cmd);
+		if (Scheduler.worker == null) {
+			for (k in DataSourceConfig) {
+				Scheduler.timers[k] = null;
+				Scheduler.sourceArctive[k] = false;
 			}
-		});
 
-		// FIXME demarrage pour tester
-		Scheduler.show("national");
+			Scheduler.worker = new Worker('./static/raildar/MainWorker.js');
+
+			// Handle messages from webworker. A message (see WorkermMessage in
+			// libray.js) have to
+			// properties :
+			// - cmd : Name of the command to execute, key in commands object
+			// - parameter : Object containing parameters to the function.
+			Scheduler.worker.addEventListener("message", function(event) {
+				if (event.data.cmd in Scheduler.workerCallbacks) {
+					Scheduler.workerCallbacks[event.data.cmd](event.data.parameters);
+				} else {
+					logger.warn('No callbacks for', event.data.cmd);
+				}
+			});
+
+		}
+		Scheduler.trigger('init');
 	},
 
-	show : function(datatSourceName) {
+	load : function(dataSourceName) {
+		console.debug('Loading datasource loading',dataSourceName);
+		var start = !Scheduler.sourceArctive[dataSourceName];
+		if(start){
+			Scheduler.trigger('start', dataSourceName);
+		}
+		clearTimeout(Scheduler.timers[dataSourceName]);
+		
+		Scheduler.sourceArctive[dataSourceName] = true;
 		Scheduler.worker.postMessage(new WorkerMessage('get_data', {
-			dataSourceName : datatSourceName
+			dataSourceName : dataSourceName
 		}));
-	}
+		Scheduler.trigger('load', dataSourceName);
+	},
+
+	stop : function(dataSourceName) {
+		console.debug('Stoping datasource loading',dataSourceName);
+		clearTimeout(Scheduler.timers[dataSourceName]);
+		Scheduler.sourceArctive[dataSourceName] = false;
+		Scheduler.trigger('stop', dataSourceName);
+	},
 
 };
 observable(Scheduler);
-
+Scheduler.init();
 Scheduler.on('dataReceived', function(workerData) {
-	console.log(workerData);
-	// TODO : Do something with the data
-	if (workerData.data != null) {
-		DisplayManager.display(workerData.dataSourceName,workerData.data);
+	try {
+		if (workerData.data != null && Scheduler.sourceArctive[workerData.dataSourceName]) {
+			DisplayManager.display(workerData.dataSourceName, workerData.data);
+		}
+	} catch (e) {
+		console.error("Error on display",e, e.message, "on File '"+e.fileName+"', line "+e.lineNumber);
 	}
-	Scheduler.trigger('dataComplete',workerData.dataSourceName);
+	Scheduler.trigger('dataComplete', workerData.dataSourceName);
 });
 Scheduler.on('dataError', function(workerData, e) {
 	// TODO :Do something with the error
-	Scheduler.trigger('dataComplete',workerData.dataSourceName);
+	Scheduler.trigger('dataComplete', workerData.dataSourceName);
 });
 Scheduler.on('dataComplete', function(dataSourceName) {
-	// TODO : relaunch timer if needed;
-	Scheduler.timers['trains'] = setTimeout(function() {
-		Scheduler.show(dataSourceName);
-	}, DataSourceConfig[dataSourceName].refreshDelay);
+	clearTimeout(Scheduler.timers[dataSourceName]);
+	if(Scheduler.sourceArctive[dataSourceName]){
+		Scheduler.timers[dataSourceName] = setTimeout(function() {
+			Scheduler.load(dataSourceName);
+		}, DataSourceConfig[dataSourceName].refreshDelay);
+	}
 });
 
-//update filters on Webker's side
+// update filters on Webworker's side
 Filters.on('change', function(newValues, oldValues, allFilters) {
+	console.log("filterchanges", arguments);
 	Scheduler.worker.postMessage(new WorkerMessage('set_filter', {
 		newValues : newValues,
 		oldValues : oldValues
 	}));
-	// TODO check which datatSource have to be updated/activated
+	DisplayManager.doTheFilterMagic(newValues, oldValues, allFilters);
 });
 
 Scheduler.workerCallbacks = {

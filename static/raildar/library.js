@@ -45,6 +45,8 @@ function checkCookie() {
 	}
 }
 
+// Execute an Ajax request to get a JSON object, constructed to mimic jquery's
+// syntax (not fully implemented).
 var getJSON = function(url, _options) {
 	var options = {
 		data : {},
@@ -71,26 +73,32 @@ var getJSON = function(url, _options) {
 		// req.responseType = "json";
 		req.onreadystatechange = function(aEvt) {
 			if (req.readyState == 4) {
-				if (req.status == 200) {
-					if (typeof options.success == 'function') {
-						options.success(JSON.parse(req.response), req.statusText, req);
+
+				try {
+					if (req.status == 200) {
+						if (typeof options.success == 'function') {
+							options.success(JSON.parse(req.response), req.statusText, req);
+						}
+					} else {
+						if (typeof options.error == 'function') {
+							options.error(req, req.statusText, null);
+						}
 					}
-				} else {
+					if (typeof options.complete == 'function') {
+						options.complete(req, req.statusText);
+					}
+				} catch (e) {
 					if (typeof options.error == 'function') {
-						options.error(req.statusText, req, null);
+						options.error(req, req.statusText, e);
 					}
-				}
-				if (typeof options.complete == 'function') {
-					options.complete(req, req.statusText);
 				}
 			}
 		};
 		req.send(null);
 	} catch (e) {
 		if (typeof options.error == 'function') {
-			options.error(req.statusText, req, e);
+			options.error(req, req.statusText, e);
 		}
-		// console.error(e);
 	}
 };
 
@@ -100,7 +108,7 @@ function WorkerMessage(cmd, parameters) {
 	this.parameters = parameters;
 }
 
-// Obbservable, from riot.js
+// Observable, from riot.js
 function observable(el) {
 	var callbacks = {}, slice = [].slice;
 
@@ -149,12 +157,10 @@ function observable(el) {
 
 };
 
-// Simplify inherit of js objects
-function inherit(C, P) {
-	var ParentPrototype = function() {
-	};
-	ParentPrototype.prototype = ParentPrototype.prototype;
-	C.prototype = new ParentPrototype();
-	C.uber = P.prototype;
-	C.prototype.constructor = C;
-}
+// get value from an object, return default_value if value not exists.
+var get = function(obj, key, default_value) {
+	if (key in obj)
+		return obj[key];
+	else
+		return default_value;
+};

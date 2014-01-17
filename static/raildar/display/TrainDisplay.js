@@ -57,7 +57,7 @@ TrainDisplay.prototype.updateAngle = function(train) {
 };
 
 // Show, update hide a train marker
-TrainDisplay.prototype.drawMarker = function(train, forceUpdate) {
+TrainDisplay.prototype.drawMarker = function(train,dataSourceName, forceUpdate) {
 	var self = this;
 	if (train.id_mission in self.markers) {
 		// update du marker visible
@@ -75,7 +75,7 @@ TrainDisplay.prototype.drawMarker = function(train, forceUpdate) {
 		self.markers[train.id_mission] = L.marker(L.latLng(train.lat, train.lng), {
 			icon : self.icons[train.type],
 			title : this.getTitle(train),
-		}).addTo(map);
+		}).addTo(DisplayManager.getLayerForDataSource(dataSourceName));
 		self.markers[train.id_mission].on('mouseover', function() {
 			$("#mission_detail").html(self.getPopup(train)).show();
 			$("#mission_detail_help").hide();
@@ -116,7 +116,7 @@ TrainDisplay.prototype.clean = function(remove) {
 };
 
 // Called by the disaplay manager to display data
-TrainDisplay.prototype.display = function(data) {
+TrainDisplay.prototype.display = function(data,dataSourceName) {
 	var self = this;
 	// netoyage des mission terminées
 	self.clean(data.remove);
@@ -125,7 +125,7 @@ TrainDisplay.prototype.display = function(data) {
 	// affichage/maj des autres markers
 	$.each(data.missions, function() {
 		//try {
-			self.drawMarker(this);
+			self.drawMarker(this,dataSourceName);
 		//} catch (e) {
 		//	console.error("Oups ya un probleme avec le point là ", this, e);
 		//}

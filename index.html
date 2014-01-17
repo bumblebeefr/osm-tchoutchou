@@ -1,70 +1,95 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>OSM Tchoutchou - Raildar with Leaflet and Open Street Map</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	
-	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-	<link rel="stylesheet" href="./static/bootstrap3/css/bootstrap.min.css">
-	<link rel="stylesheet" href="./static/jquery.jqplot.css">
-	<link rel="stylesheet" href="./static/leaflet.css" />
-	<!-- date time picker-->
-	<link rel="stylesheet" href="./static/jquery-ui-1.10.3.custom.css" />
-	<link rel="stylesheet" href="./static/jquery-ui-timepicker-addon.css" />
-        <!-- fin date time picker-->
-	<link rel="shortcut icon" href="./static/train.ico" />
-	
-	<link rel="stylesheet" media="all" href="./static/css/raildar.css" />
+<title>OSM Tchoutchou - Raildar with Leaflet and Open Street Map</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<link
+	href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
+	rel="stylesheet">
+<link rel="stylesheet" href="./static/bootstrap3/css/bootstrap.min.css">
+<link rel="stylesheet" href="./static/jquery.jqplot.css">
+<link rel="stylesheet" href="./static/leaflet.css" />
+<!-- date time picker-->
+<link rel="stylesheet" href="./static/jquery-ui-1.10.3.custom.css" />
+<link rel="stylesheet" href="./static/jquery-ui-timepicker-addon.css" />
+<!-- fin date time picker-->
+<link rel="shortcut icon" href="./static/train.ico" />
+
+<link rel="stylesheet" media="all" href="./static/css/raildar.css" />
 </head>
 <body>
 	<div id="map"></div>
 	<div id="sidebar">
 		<div id="title">
-		  <div id="icon">
-				<img id="icon-loading" src="./static/images/train_loading.gif"/>
-				<img id="icon-fixed" src="./static/images/train_full.png"/>
+			<div id="icon">
+				<img id="icon-loading" src="./static/images/train_loading.gif" /> <img
+					id="icon-fixed" src="./static/images/train_full.png" />
 			</div>
 			<div class="titre">OSM Tchoutchou</div>
 			<div class="poweredBy">Powered by Raildar.fr</div>
 		</div>
-		<div id="stats"> </div>
+		<div id="stats"></div>
 		<div id="tmp_camemberts"></div>
 		<div id="type_selection" class="block">
-			<div class="titleBlock"><i class="fa fa-magic"></i>   <strong>Filtres :</strong></div>
-			<br>
-			  Train n°<input type="text" id="number_filter" class="filter"/>
-			<br />
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="simple" checked="checked"/> TER / Intercités</label>
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="tgv" checked="checked"/> TGV</label>
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="thalys" checked="checked"/> Thalys</label>
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="eurostar" checked="checked"/> Eurostar</label>
-			<br />
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="rer" /> RER</label>
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="transilien" /> Transilien</label>
-			<br />
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="unknown" checked="checked"/> Autres</label>
-			<br />
-			<br />
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="ok"/> À l'heure</label>
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="delayed" checked="checked"/> En retard</label>
-			<label class="checkbox-inline"><input type="checkbox" class="filter" name="cancelled" checked="checked"/> Supprimé</label>
+			<div class="titleBlock">
+				<i class="fa fa-magic"></i> <strong>Filtres :</strong>
+			</div>
+			<br> Train n°<input type="text" id="number_filter" class="filter" /> <br /> <br /> 
+			<!-- <label class="checkbox-inline"><input
+				type="checkbox" class="filter" name="simple" checked="checked" />
+				TER / Intercités</label> <label class="checkbox-inline"><input
+				type="checkbox" class="filter" name="tgv" checked="checked" /> TGV</label> <label
+				class="checkbox-inline"><input type="checkbox"
+				class="filter" name="thalys" checked="checked" /> Thalys</label> <label
+				class="checkbox-inline"><input type="checkbox"
+				class="filter" name="eurostar" checked="checked" /> Eurostar</label> <br />
+			<label class="checkbox-inline"><input type="checkbox"
+				class="filter" name="rer" /> RER</label> <label class="checkbox-inline"><input
+				type="checkbox" class="filter" name="transilien" /> Transilien</label> <br />
+			<label class="checkbox-inline"><input type="checkbox"
+				class="filter" name="unknown" checked="checked" /> Autres</label> <br /> <br /> -->
+			Traffic : <br/>
+			<label title="TGV, Thalys, Eurostar, ..."><input type="radio" name="train_layer" class="train_layer" value="national" checked="checked"> National</label><br/>
+			<label title="TER, Corails intercités, ..."><input type="radio" name="train_layer" class="train_layer" value="regional"> Régional</label><br/>
+			<label title="Transilien, RER, ..."><input type="radio" name="train_layer" class="train_layer" value="idf"> Ile de france</label><br/>
+			<!-- <label><input type="radio" name="train_layer" class="train_layer" value="toulouse">Toulouse</label><br/> -->
+			<br/>
+			Ponctualité : <br/>
+			<label class="checkbox-inline"><input type="checkbox"
+				class="filter" name="ok" /> À l'heure</label> <label class="checkbox-inline"><input
+				type="checkbox" class="filter" name="delayed" checked="checked" />
+				En retard</label> <label class="checkbox-inline"><input
+				type="checkbox" class="filter" name="cancelled" checked="checked" />
+				Supprimé</label>
 		</div>
 		<div></div>
-		<div id="detail_block" class="block" >
-			<div class="titleBlock"><i class="fa fa-search"></i>  <strong>Détail du train :</strong></div>
+		<div id="detail_block" class="block">
+			<div class="titleBlock">
+				<i class="fa fa-search"></i> <strong>Détail du train :</strong>
+			</div>
 			<div id="details">
-				<div id="mission_detail_help" class="help centered" >Survolez un train pour en voir les détails</div>
+				<div id="mission_detail_help" class="help centered">Survolez
+					un train pour en voir les détails</div>
 				<div id="mission_detail"></div>
 			</div>
 		</div>
 
 		<div id="about" class="block">
-			<div ><i class="fa fa-info-circle"></i> À propos : Voir le <a href="http://wiki.raildar.fr" target="_blank">wiki</a> du projet</div>
-		</div> 
+			<div>
+				<i class="fa fa-info-circle"></i> À propos : Voir le <a
+					href="http://wiki.raildar.fr" target="_blank">wiki</a> du projet
+			</div>
+		</div>
 	</div>
-	<div id="sidebar_button" class="button"><i class="fa fa-cogs"></i></div>
-	<div id="tracking_button"  class="button"><i class="fa fa-location-arrow"></i></div>
+	<div id="sidebar_button" class="button">
+		<i class="fa fa-cogs"></i>
+	</div>
+	<div id="tracking_button" class="button">
+		<i class="fa fa-location-arrow"></i>
+	</div>
 	<div id="tracking_info"></div>
 	<script src="./static/leaflet.js"></script>
 	<script src="./static/leaflet-hash.js"></script>
@@ -78,25 +103,24 @@
 	<script src="./static/moment.fr.js"></script>
 	<script src="./static/handlebars.js"></script>
 	<script src="./static/handlebars-helpers.js"></script>
-	<script src="./static/handlebars-util.js"></script>xœ
+	<script src="./static/handlebars-util.js"></script>
+	xœ
 	<script src="./static/raildar/library.js"></script>
 	<script src="./static/raildar/Static.js"></script>
-	
+
 	<script src="./static/raildar/Filters.js"></script>
-	
+
 	<script src="./static/raildar/datasources/DataSource.js"></script>
 	<script src="./static/raildar/datasources/TrainDataSource.js"></script>
 	<script src="./static/raildar/datasources/DataSourceConfig.js"></script>
 	
+	<script src="./static/raildar/Scheduler.js"></script><script src="./static/raildar/Tracking.js"></script>
+
 	<script src="./static/raildar/display/Display.js"></script>
 	<script src="./static/raildar/display/StatsDisplay.js"></script>
 	<script src="./static/raildar/display/TrainDisplay.js"></script>
 	<script src="./static/raildar/display/DisplayManager.js"></script>
 
-	<script src="./static/raildar/Scheduler.js"></script>
-
-
-	<script src="./static/raildar/Tracking.js"></script>
 	<!-- date time picker-->
 	<script src="./static/jquery-ui-1.10.3.custom.min.js"></script>
 	<script src="./static/jquery-ui-timepicker-addon.js"></script>
@@ -191,42 +215,32 @@
 			  /*delete(pourcentages);
 			  delete(dataGraph);
 			  delete(plot1);*/
-		}
-		
-		//=========================================
-		var get = function(obj,key,default_value){
-			if( key in obj) return obj[key];
-			else return default_value;
 		};
-		
-		
-		
-		
-		
+
 
 
 		//=========================================
 		var cloudmadeLayer = L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
 			maxZoom: 18,
-			minZoom: 6,
+			minZoom: 5,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 		});
 
 		var transportLayer = L.tileLayer('http://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png', {
 			maxZoom: 18,
-			minZoom: 6,
+			minZoom: 5,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.thunderforest.com/">Thunderforest</a>'
 		});
 
 		var mapquestLayer = L.tileLayer('http://otile2.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
 			maxZoom: 18,
-			minZoom: 6,
+			minZoom: 5,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.mapquest.com/">Mapquest</a>'
 		});
 		
 		var osmLegacyLayer = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 18,
-			minZoom: 6,
+			minZoom: 5,
 			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.openstreetmap.org/">OpenStreetMap</a>'
 		});
 		
@@ -266,6 +280,27 @@
 		$("body").on("hashchange",function(event,args,old_args,external,changedValues){
  			if(external){
 				console.log("Hash has changed ",(external ? "from outside" : "from inside"), args,old_args,changedValues);
+				
+				var newFilters = _.omit(changedValues,'zoom','lat','lng');
+				
+				if('zoom' in changedValues || 'lat' in changedValues || 'lng' in changedValues){
+					newFilters.bounds = map.getBounds();
+					newFilters.zoom = map.getZoom();
+					newFilters.center = map.getCenter();
+				}
+				
+				if(!('train_layer' in args)){
+					newFilters.train_layer = $("input.train_layer:checked").val();
+					
+				}else{
+					if($("input.train_layer[value="+args.train_layer+"]").length >0){
+						$("input.train_layer[value="+args.train_layer+"]").prop('checked', true);
+					}else{
+						$("input.train_layer[value=national]").prop('checked', true);
+					}
+				}
+				
+				/*
 				if('date' in  args){
 					if(args.date != old_args.date) {
 						$("#dateHistorique").val(moment(args.date,"YYYYMMDDHHmm").format("DD/MM/YYYY HH:mm:ss"));
@@ -286,15 +321,13 @@
 							Missions.refreshDelays.force = 0;
 						}
 					}
-				}
-				var redraw = false;
+				}*/
 				if('visible' in args){
 					if(args.visible != old_args.visible) {
 						var visible = args.visible.split("/");
 						if( ! _.contains(visible,'ok') && ! _.contains(visible,'delayed')&& ! _.contains(visible,'cancelled')){
 							visible.push('ok','delayed','cancelled');
 						}
-						console.log(visible,_.contains(visible,'all'));
 						$("input[type=checkbox].filter").each(function(){
 							if(_.contains(visible,'all') || _.contains(visible,$(this).attr('name'))){
 								this.checked = true
@@ -314,7 +347,7 @@
 					redraw = true;
 				}
 				if( args.nocontrol != old_args.nocontrol){
-					if('nocontrol' in args){
+					if('nocontrol' in args && args['nocontrol'] != null){
 						DEBUG.refreshMissions = false;
 						$("body").addClass('nocontrols');
 						$(".button").hide();
@@ -346,10 +379,10 @@
 							$("#detail_block").show();
 						}
 					}
-					redraw = true;
 				}
 
-				if (redraw) Missions.redrawMarkers();
+				Filters.set(newFilters);
+
 			} 
 		});
 		var hash = new L.Hash(map);
@@ -578,12 +611,27 @@
 				}
 			}
 			$("input.filter").change(function(){
-				Missions.redrawMarkers();
-				
-				L.Hash.setArg("visible",TrainFilters.visible.join("/"));
- 				if(TrainFilters.num_train.length >0){
+				var visible = [];
+				$("input.filter:checked").each(function(){
+					visible.push($(this).attr('name'));
+				});
+				Filters.set("visible",visible.join("/"));
+				L.Hash.setArg("visible",visible.join("/"));
+			});
+
+			$("input.train_layer").change(function(){
+				var train_layer = $("input.train_layer:checked").val();
+				Filters.set("train_layer",train_layer);
+				L.Hash.setArg("train_layer",train_layer);
+			});
+			
+			$("#number_filter").change(function(){
+				var num_train = $.trim($(this).val());
+				if(num_train.length >0){
+					Filters.set("num_train",num_train);
 					L.Hash.setArg("num",TrainFilters.num_train);
 				}else{
+					Filters.set("num_train",null);
 					L.Hash.removeArg("num");
 				} 
 			});
