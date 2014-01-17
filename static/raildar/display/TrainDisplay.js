@@ -1,7 +1,7 @@
-function TrainDisplay() {
-	Display.call(this);
+function TrainDisplay(options) {
+	Display.call(this, options);
 	_.extend(this, {
-		markers : {},
+		markers : {}, //FIXME, devrai etre séparé par datasour/layer
 		icons : {
 			green : L.divIcon({
 				className : 'circle-icon circle-icon-green',
@@ -31,7 +31,7 @@ function TrainDisplay() {
 		}
 	});
 };
-_.extend(TrainDisplay.prototype ,Display.prototype);
+_.extend(TrainDisplay.prototype, Display.prototype);
 
 // get the title of a train
 TrainDisplay.prototype.getTitle = function(train) {
@@ -57,7 +57,7 @@ TrainDisplay.prototype.updateAngle = function(train) {
 };
 
 // Show, update hide a train marker
-TrainDisplay.prototype.drawMarker = function(train,dataSourceName, forceUpdate) {
+TrainDisplay.prototype.drawMarker = function(train, dataSourceName, forceUpdate) {
 	var self = this;
 	if (train.id_mission in self.markers) {
 		// update du marker visible
@@ -93,8 +93,9 @@ TrainDisplay.prototype.drawMarker = function(train,dataSourceName, forceUpdate) 
 		});
 		self.updateAngle(train);
 	}
+	self.markers[train.id_mission].mission = train;
+	self.markers[train.id_mission].dataSource = dataSourceName;
 };
-
 
 TrainDisplay.prototype.remove = function(id_mission) {
 	var _self = this;
@@ -116,18 +117,18 @@ TrainDisplay.prototype.clean = function(remove) {
 };
 
 // Called by the disaplay manager to display data
-TrainDisplay.prototype.display = function(data,dataSourceName) {
+TrainDisplay.prototype.display = function(data, dataSourceName) {
 	var self = this;
 	// netoyage des mission terminées
 	self.clean(data.remove);
 
-	console.log("show",data);
+	console.log("show", data);
 	// affichage/maj des autres markers
 	$.each(data.missions, function() {
-		//try {
-			self.drawMarker(this,dataSourceName);
-		//} catch (e) {
-		//	console.error("Oups ya un probleme avec le point là ", this, e);
-		//}
+		// try {
+		self.drawMarker(this, dataSourceName);
+		// } catch (e) {
+		// console.error("Oups ya un probleme avec le point là ", this, e);
+		// }
 	});
 };

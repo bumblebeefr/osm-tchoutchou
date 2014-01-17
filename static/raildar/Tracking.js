@@ -249,6 +249,7 @@ var Tracking = {
 		try{
 			Tracking.locationError = null;
 			if(Tracking.latlng == null || Tracking.latlng.lat != e.coords.latitude || Tracking.latlng.lng != e.coords.longitude){
+				Tracking.trigger("location",e);
 				Tracking.latlng = L.latLng(e.coords.latitude,e.coords.longitude);
 				
 				console.info("Localisation : ",Tracking.latlng);
@@ -280,6 +281,6 @@ var Tracking = {
 		Tracking.locationError = e;
 	}
 };
-
+observable(Tracking);
 
 

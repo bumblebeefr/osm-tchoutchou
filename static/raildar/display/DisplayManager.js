@@ -74,7 +74,7 @@ var DisplayManager = {
 		// Show/hide train layers
 		if ('train_layer' in newValues) {
 			var ok = false;
-			_.each(DataSourceConfig.getNamesByLayerGroup("trains"), function(name) {
+			_.each(DataSourceConfig.getNamesBy('layerGroup',"trains"), function(name) {
 				if (newValues['train_layer'] == name) {
 					Scheduler.load(name);
 					loaded.push(name);

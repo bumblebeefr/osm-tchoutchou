@@ -4,6 +4,10 @@ body {
 	font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva,
 		sans-serif;
 	font-size: 10pt;
+	overflow:hidden;
+}
+window{
+	overflow:hidden;
 }
 
 a {
@@ -236,6 +240,9 @@ opacity
 
 .leaflet-bottom {
 	z-index: 800 !important;
+}
+.leaflet-top.leaflet-right{
+	z-index:10000;
 }
 
 .leaflet-control-attribution {

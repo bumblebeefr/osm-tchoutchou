@@ -43,7 +43,7 @@ TrainDataSource.prototype.createTrain = function(mission) {
 
 TrainDataSource.prototype.isVisible = function(train) {
 	var filters = Filters.get();
-	if (filters.tracking){
+	if (filters.tracking) {
 		return true; // only one train tracked, always visible
 	}
 	var b = filters.bounds;
@@ -57,7 +57,7 @@ TrainDataSource.prototype.isVisible = function(train) {
 				}
 			} else {
 				// if(_.contains(filters.visible,train.train_type)){
-				if ( _.contains(filters.visible.split("/"), train.status)) {
+				if (_.contains(filters.visible.split("/"), train.status)) {
 					return true;
 				}
 				// }
@@ -76,7 +76,7 @@ TrainDataSource.prototype.preProcess = function(params, filters) {
 		lat : filters.center.lat,
 		lng : filters.center.lng
 	});
-	if(filters.tracking){
+	if (filters.tracking) {
 		params['id_mission'] = filters.tracking;
 	}
 };
@@ -88,10 +88,11 @@ TrainDataSource.prototype.preProcess = function(params, filters) {
 // - checksum :
 TrainDataSource.prototype.postProcess = function(data, params, filters, checksum) {
 	var self = this;
-	if (true || checksum != this.lastCirculationChecksum) { // FIXME des fois il faut
-													// reparser le données meme
-													// avec le meme md5 (Filtre
-													// changés).
+	if (true || checksum != this.lastCirculationChecksum) {
+		// FIXME des fois il faut
+		// reparser le données meme
+		// avec le meme md5 (Filtre
+		// changés).
 		this.lastCirculationChecksum = checksum;
 		var missions = [];
 		var trains = {};
@@ -114,17 +115,17 @@ TrainDataSource.prototype.postProcess = function(data, params, filters, checksum
 			}
 			stats['ttl'] += 1;
 
-			if(stats['hour'] == null){
+			if (stats['hour'] == null) {
 				var dayStart = moment().startOf('day');
 				var dayEnd = moment().endOf('day');
 				var d = moment(mission.last_update);
-				if(d.isBefore(dayEnd) && d.isAfter(dayStart)){
-					stats['hour'] = "Aujourd'hui à "+d.format("HH:mm:ss");
-				}else{
+				if (d.isBefore(dayEnd) && d.isAfter(dayStart)) {
+					stats['hour'] = "Aujourd'hui à " + d.format("HH:mm:ss");
+				} else {
 					stats['hour'] = d.format('LLLL');
 				}
 			}
-			
+
 			if (self.isVisible(mission) || 'id_mission' in params) {
 				missions.push(mission);
 				trains[mission.id_mission] = true;
@@ -133,13 +134,12 @@ TrainDataSource.prototype.postProcess = function(data, params, filters, checksum
 				delete (mission);
 			}
 		}
-		var output = _.clone({
-			trains : {
-				missions : missions,
-				remove : self.trains,
-			},
-			stats : stats
-		});
+		var output = {};
+		output['stats'] = stats;
+		output['trains'] = {
+			missions : missions,
+			remove : self.trains,
+		};
 		delete (Trains);
 		self.trains = trains;
 		delete (stats);
