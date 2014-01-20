@@ -1,8 +1,6 @@
 // Template of Schedulable Operation that can be managed by the scheduler.
 function DataSource(options) {
 	observable(this);
-	this.layerGroup = null;
-	this.layerName = null;
 	_.extend(this, options);
 };
 _.extend(DataSource.prototype, {

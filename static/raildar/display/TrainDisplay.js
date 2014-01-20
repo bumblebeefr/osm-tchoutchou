@@ -1,134 +1,153 @@
-function TrainDisplay(options) {
-	Display.call(this, options);
-	_.extend(this, {
-		markers : {}, //FIXME, devrai etre séparé par datasour/layer
-		icons : {
-			green : L.divIcon({
-				className : 'circle-icon circle-icon-green',
-				iconSize : L.point(22, 22),
-				html : '<img src="./static/images/fleche_green.png" />'
-			}),
-			yellow : L.divIcon({
-				className : 'circle-icon circle-icon-yellow',
-				iconSize : L.point(22, 22),
-				html : '<img src="./static/images/fleche_yellow.png" />'
-			}),
-			orange : L.divIcon({
-				className : 'circle-icon circle-icon-orange',
-				iconSize : L.point(22, 22),
-				html : '<img src="./static/images/fleche_orange.png" />'
-			}),
-			red : L.divIcon({
-				className : 'circle-icon circle-icon-red',
-				iconSize : L.point(22, 22),
-				html : '<img src="./static/images/fleche_red.png" />'
-			}),
-			black : L.divIcon({
-				className : 'circle-icon circle-icon-black',
-				iconSize : L.point(22, 22),
-				html : '<img src="./static/images/fleche_black.png" />'
-			})
+var TrainDisplay = {
+	markers : {}, // FIXME, devrai etre séparé par datasour/layer
+	icons : {
+		green : L.divIcon({
+			className : 'circle-icon circle-icon-green',
+			iconSize : L.point(22, 22),
+			html : '<img src="./static/images/fleche_green.png" />'
+		}),
+		yellow : L.divIcon({
+			className : 'circle-icon circle-icon-yellow',
+			iconSize : L.point(22, 22),
+			html : '<img src="./static/images/fleche_yellow.png" />'
+		}),
+		orange : L.divIcon({
+			className : 'circle-icon circle-icon-orange',
+			iconSize : L.point(22, 22),
+			html : '<img src="./static/images/fleche_orange.png" />'
+		}),
+		red : L.divIcon({
+			className : 'circle-icon circle-icon-red',
+			iconSize : L.point(22, 22),
+			html : '<img src="./static/images/fleche_red.png" />'
+		}),
+		black : L.divIcon({
+			className : 'circle-icon circle-icon-black',
+			iconSize : L.point(22, 22),
+			html : '<img src="./static/images/fleche_black.png" />'
+		})
+	},
+	getTitle : function(train) {
+		return train.brand + " n°" + train.num + " en direction de " + train.terminus;
+	},
+
+	// get HTML content to disaplay the popup of a train.
+	getPopup : function(train) {
+		return HandlebarsUtil.render('train_popup', train);
+	},
+
+	// Update the angle of a
+	updateAngle : function(train) {
+		if (train.id_mission in TrainDisplay.markers) {
+			var angle = (180 + parseInt(train.heading)) % 360;
+			var marker = $(TrainDisplay.markers[train.id_mission]._icon.firstChild);
+			marker.css({
+				"transform" : "rotate(" + angle + "deg)",
+				"display" : "block"
+			});
 		}
-	});
-};
-_.extend(TrainDisplay.prototype, Display.prototype);
+	},
 
-// get the title of a train
-TrainDisplay.prototype.getTitle = function(train) {
-	return train.brand + " n°" + train.num + " en direction de " + train.terminus;
-};
-
-// get HTML content to disaplay the popup of a train.
-TrainDisplay.prototype.getPopup = function(train) {
-	return HandlebarsUtil.render('train_popup', train);
-};
-
-// Update the angle of a
-TrainDisplay.prototype.updateAngle = function(train) {
-	var self = this;
-	if (train.id_mission in self.markers) {
-		var angle = (180 + parseInt(train.heading)) % 360;
-		var marker = $(self.markers[train.id_mission]._icon.firstChild);
-		marker.css({
-			"transform" : "rotate(" + angle + "deg)",
-			"display" : "block"
-		});
-	}
-};
-
-// Show, update hide a train marker
-TrainDisplay.prototype.drawMarker = function(train, dataSourceName, forceUpdate) {
-	var self = this;
-	if (train.id_mission in self.markers) {
-		// update du marker visible
-		if (forceUpdate) {
-			self.markers[train.id_mission].setLatLng(L.latLng(train.lat, train.lng));
-			self.markers[train.id_mission].setIcon(selfs.icons[train.type]);
-			if (self.markers[train.id_mission].getPopup()) {
-				self.markers[train.id_mission].setPopupContent(this.getPopup(train));
+	// Show, update hide a train marker
+	drawMarker : function(train, dataSourceName, forceUpdate) {
+		var mapLayer = DisplayManager.getDataLayerForDataSource("trains",dataSourceName).mapLayer;
+		if (train.id_mission in TrainDisplay.markers) {
+			// update du marker visible
+			if (forceUpdate) {
+				TrainDisplay.markers[train.id_mission].setLatLng(L.latLng(train.lat, train.lng));
+				TrainDisplay.markers[train.id_mission].setIcon(TrainDisplays.icons[train.type]);
+				if (TrainDisplay.markers[train.id_mission].getPopup()) {
+					TrainDisplay.markers[train.id_mission].setPopupContent(this.getPopup(train));
+				}
+				this.updateAngle(train);
+				TrainDisplay.markers[train.id_mission].update();
 			}
-			this.updateAngle(train);
-			self.markers[train.id_mission].update();
+		} else {
+			// ajout du marker si visible
+			TrainDisplay.markers[train.id_mission] = L.marker(L.latLng(train.lat, train.lng), {
+				icon : TrainDisplay.icons[train.type],
+				title : this.getTitle(train),
+			}).addTo(mapLayer);
+			TrainDisplay.markers[train.id_mission].on('mouseover', function() {
+				$("#mission_detail").html(TrainDisplay.getPopup(train)).show();
+				$("#mission_detail_help").hide();
+			}).on('mouseout', function() {
+				$("#mission_detail").html("").hide();
+				$("#mission_detail_help").show();
+			}).on('click', function() {
+				if (!TrainDisplay.markers[train.id_mission].getPopup()) {
+					TrainDisplay.markers[train.id_mission].bindPopup(TrainDisplay.getPopup(train)).openPopup();
+				}
+			}).on('popupclose', function() {
+				TrainDisplay.markers[train.id_mission].unbindPopup();
+			}).on('remove', function() {
+				delete (train);
+			});
+			TrainDisplay.updateAngle(train);
 		}
-	} else {
-		// ajout du marker si visible
-		self.markers[train.id_mission] = L.marker(L.latLng(train.lat, train.lng), {
-			icon : self.icons[train.type],
-			title : this.getTitle(train),
-		}).addTo(DisplayManager.getLayerForDataSource(dataSourceName));
-		self.markers[train.id_mission].on('mouseover', function() {
-			$("#mission_detail").html(self.getPopup(train)).show();
-			$("#mission_detail_help").hide();
-		}).on('mouseout', function() {
-			$("#mission_detail").html("").hide();
-			$("#mission_detail_help").show();
-		}).on('click', function() {
-			if (!self.markers[train.id_mission].getPopup()) {
-				self.markers[train.id_mission].bindPopup(self.getPopup(train)).openPopup();
+		TrainDisplay.markers[train.id_mission].mission = train;
+		TrainDisplay.markers[train.id_mission].dataSource = dataSourceName;
+	},
+
+	remove : function(id_mission) {
+		if (id_mission in TrainDisplay.markers) {
+			DisplayManager.getDataLayerForDataSource("trains",dataSourceName).mapLayer.removeLayer(TrainDisplay.markers[id_mission]);
+			delete (_TrainDisplay.markers[id_mission]);
+		}
+	},
+
+	clean : function(remove) {
+		if (remove.length > 0) {
+			console.log("removing " + remove.length + " missions");
+		}
+		for (id_mission in remove) {
+			TrainDisplay.remove(id_mission);
+		}
+		delete (remove);
+	}
+};
+
+Trains.on("add", function(mission_id, train, dataSourceName) {
+	TrainDisplay.drawMarker(train, dataSourceName);
+});
+
+Trains.on("remove", function(mission_id, dataSourceName) {
+	TrainDisplay.remove(id_mission);
+});
+
+//Autozoom, autopan
+DisplayManager.on('showLayer', function(layerGroup,layerName) {
+	if (layerGroup == 'trains') {
+		var dataLayer = DisplayManager.dataLayers[layerGroup][layerName];
+		var z = map.getZoom();
+		console.debug("Checkin zoom (current,min,max)", z, dataLayer.minZoom, dataLayer.maxZoom);
+		if (dataLayer.minZoom && dataLayer.minZoom > z) {
+			console.debug("Zooming to minZoom ", dataLayer.minZoom);
+			if (dataLayer.center) {
+				map.setView(dataLayer.center, dataLayer.minZoom, {
+					animate : false
+				});
+			} else {
+				map.setZoom(dataLayer.minZoom);
 			}
-		}).on('popupclose', function() {
-			self.markers[train.id_mission].unbindPopup();
-		}).on('remove', function() {
-			delete (train);
-		});
-		self.updateAngle(train);
-	}
-	self.markers[train.id_mission].mission = train;
-	self.markers[train.id_mission].dataSource = dataSourceName;
-};
-
-TrainDisplay.prototype.remove = function(id_mission) {
-	var _self = this;
-	if (id_mission in _self.markers) {
-		map.removeLayer(_self.markers[id_mission]);
-		delete (_self.markers[id_mission]);
-	}
-};
-
-TrainDisplay.prototype.clean = function(remove) {
-	var self = this;
-	if (remove.length > 0) {
-		console.log("removing " + remove.length + " missions");
-	}
-	for (id_mission in remove) {
-		self.remove(id_mission);
-	}
-	delete (remove);
-};
-
-// Called by the disaplay manager to display data
-TrainDisplay.prototype.display = function(data, dataSourceName) {
-	var self = this;
-	// netoyage des mission terminées
-	self.clean(data.remove);
-
-	console.log("show", data);
-	// affichage/maj des autres markers
-	$.each(data.missions, function() {
-		// try {
-		self.drawMarker(this, dataSourceName);
-		// } catch (e) {
-		// console.error("Oups ya un probleme avec le point là ", this, e);
-		// }
-	});
-};
+		}
+		if (dataLayer.maxZoom && dataLayer.maxZoom < z) {
+			console.debug("Zooming to maxZoom ", dataLayer.maxZoom);
+			if (dataLayer.center) {
+				map.setView(dataLayer.cedataLayerSource.maxZoom, {
+					animate : false
+				});
+			} else {
+				map.setZoom(dataLayer.maxZoom);
+			}
+		}
+		console.log(dataLayer.center);
+		if (dataLayer.center && !map.getBounds().contains(L.latLng(dataLayer.center.lat, dataLayer.center.lng))) {
+			console.debug("Recenter");
+			map.panTo(dataLayer.center, {
+				animate : false
+			});
+		}
+		console.debug("Checkin zoom (current,min,max)", z, dataLayer.minZoom, dataLayer.maxZoom);
+	};
+});

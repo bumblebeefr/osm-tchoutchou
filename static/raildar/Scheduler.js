@@ -62,13 +62,23 @@ var Scheduler = {
 observable(Scheduler);
 Scheduler.init();
 Scheduler.on('dataReceived', function(workerData) {
-	try {
+	//try {
 		if (workerData.data != null && Scheduler.sourceArctive[workerData.dataSourceName]) {
-			DisplayManager.display(workerData.dataSourceName, workerData.data);
+			for ( var k in workerData.data) {
+				if (k in window ) {
+					if('newData' in window[k]){
+						window[k].newData(workerData.data[k], workerData.dataSourceName);
+					}else{
+						console.warn('Object ' + k + 'have no newData() method !');
+					}
+				} else {
+					console.warn('No model object ' + k);
+				}
+			}
 		}
-	} catch (e) {
-		console.error("Error on display",e, e.message, "on File '"+e.fileName+"', line "+e.lineNumber);
-	}
+//	} catch (e) {
+//		console.error("Error on computing data",e, e.message, "on File '"+e.fileName+"', line "+e.lineNumber);
+//	}
 	Scheduler.trigger('dataComplete', workerData.dataSourceName);
 });
 Scheduler.on('dataError', function(workerData, e) {

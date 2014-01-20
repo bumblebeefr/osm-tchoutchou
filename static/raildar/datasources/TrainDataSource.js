@@ -1,6 +1,5 @@
 function TrainDataSource(options) {
 	DataSource.call(this, options);
-	this.layerGroup = "trains";
 	this.trains = {};
 	this.lastCirculationChecksum = null;
 };
@@ -135,8 +134,8 @@ TrainDataSource.prototype.postProcess = function(data, params, filters, checksum
 			}
 		}
 		var output = {};
-		output['stats'] = stats;
-		output['trains'] = {
+		output['Stats'] = stats;
+		output['Trains'] = {
 			missions : missions,
 			remove : self.trains,
 		};
