@@ -41,6 +41,7 @@ var TrainDisplay = {
 		if (train.id_mission in TrainDisplay.markers) {
 			var angle = (180 + parseInt(train.heading)) % 360;
 			var marker = $(TrainDisplay.markers[train.id_mission]._icon.firstChild);
+			console.log(marker);
 			marker.css({
 				"transform" : "rotate(" + angle + "deg)",
 				"display" : "block"
@@ -59,7 +60,6 @@ var TrainDisplay = {
 				if (TrainDisplay.markers[train.id_mission].getPopup()) {
 					TrainDisplay.markers[train.id_mission].setPopupContent(this.getPopup(train));
 				}
-				this.updateAngle(train);
 				TrainDisplay.markers[train.id_mission].update();
 			}
 		} else {
@@ -83,10 +83,8 @@ var TrainDisplay = {
 			}).on('remove', function() {
 				delete (train);
 			});
-			TrainDisplay.updateAngle(train);
 		}
-		TrainDisplay.markers[train.id_mission].mission = train;
-		TrainDisplay.markers[train.id_mission].dataSource = dataSourceName;
+		TrainDisplay.updateAngle(train);
 	},
 
 	remove : function(id_mission,dataSourceName) {
