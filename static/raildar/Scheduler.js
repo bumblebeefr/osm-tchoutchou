@@ -73,6 +73,11 @@ Scheduler.on('dataReceived', function(workerData) {
 			for ( var k in workerData.data) {
 				if (k in window ) {
 					if('newData' in window[k]){
+						var f = window[k].newData;
+						var args = [workerData.data[k], workerData.dataSourceName];
+						setTimeout(function(){
+							f.apply(window,args);
+						},0);
 						window[k].newData(workerData.data[k], workerData.dataSourceName);
 					}else{
 						console.warn('Object ' + k + 'have no newData() method !');

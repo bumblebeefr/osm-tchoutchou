@@ -4,27 +4,27 @@ var TrainDisplay = {
 		green : L.divIcon({
 			className : 'circle-icon circle-icon-green',
 			iconSize : L.point(22, 22),
-			html : '<img src="./static/images/fleche_green.png" />'
+			html : '<div class="img">&nbsp;</div>'
 		}),
 		yellow : L.divIcon({
 			className : 'circle-icon circle-icon-yellow',
 			iconSize : L.point(22, 22),
-			html : '<img src="./static/images/fleche_yellow.png" />'
+			html : '<div class="img">&nbsp;</div>'
 		}),
 		orange : L.divIcon({
 			className : 'circle-icon circle-icon-orange',
 			iconSize : L.point(22, 22),
-			html : '<img src="./static/images/fleche_orange.png" />'
+			html : '<div class="img">&nbsp;</div>'
 		}),
 		red : L.divIcon({
 			className : 'circle-icon circle-icon-red',
 			iconSize : L.point(22, 22),
-			html : '<img src="./static/images/fleche_red.png" />'
+			html : '<div class="img">&nbsp;</div>'
 		}),
 		black : L.divIcon({
 			className : 'circle-icon circle-icon-black',
 			iconSize : L.point(22, 22),
-			html : '<img src="./static/images/fleche_black.png" />'
+			html : '<div class="img">&nbsp;</div>'
 		})
 	},
 	getTitle : function(train) {
@@ -39,29 +39,32 @@ var TrainDisplay = {
 	// Update the angle of a
 	updateAngle : function(train) {
 		if (train.id_mission in TrainDisplay.markers) {
-			var angle = (180 + parseInt(train.heading)) % 360;
-			var marker = $(TrainDisplay.markers[train.id_mission]._icon.firstChild);
-			console.log(marker);
-			marker.css({
-				"transform" : "rotate(" + angle + "deg)",
-				"display" : "block"
-			});
+			if (train.id_depart != train.id_next_gare && train.minutes_to_next_gare > 0) {
+				var angle = (180 + parseInt(train.heading)) % 360;
+				$(TrainDisplay.markers[train.id_mission]._icon).addClass("circle-arrow-icon");
+				var marker = $(TrainDisplay.markers[train.id_mission]._icon.firstChild);
+				marker.css({
+					"transform" : "rotate(" + angle + "deg)",
+					"display" : "block"
+				});
+			} else {
+				$(TrainDisplay.markers[train.id_mission]._icon).addClass("circle-arrow-icon");
+			}
 		}
 	},
 
 	// Show, update hide a train marker
-	drawMarker : function(train, dataSourceName, forceUpdate) {
-		var mapLayer = DisplayManager.getDataLayerForDataSource("trains",dataSourceName).mapLayer;
+	drawMarker : function(train, dataSourceName) {
+		var mapLayer = DisplayManager.getDataLayerForDataSource("trains", dataSourceName).mapLayer;
 		if (train.id_mission in TrainDisplay.markers) {
 			// update du marker visible
-			if (forceUpdate) {
-				TrainDisplay.markers[train.id_mission].setLatLng(L.latLng(train.lat, train.lng));
-				TrainDisplay.markers[train.id_mission].setIcon(TrainDisplays.icons[train.type]);
-				if (TrainDisplay.markers[train.id_mission].getPopup()) {
-					TrainDisplay.markers[train.id_mission].setPopupContent(this.getPopup(train));
-				}
-				TrainDisplay.markers[train.id_mission].update();
+			TrainDisplay.markers[train.id_mission].setLatLng(L.latLng(train.lat, train.lng));
+			TrainDisplay.markers[train.id_mission].setIcon(TrainDisplay.icons[train.type]);
+			if (TrainDisplay.markers[train.id_mission].getPopup()) {
+				TrainDisplay.markers[train.id_mission].setPopupContent(this.getPopup(train));
 			}
+			TrainDisplay.markers[train.id_mission].update();
+
 		} else {
 			// ajout du marker si visible
 			TrainDisplay.markers[train.id_mission] = L.marker(L.latLng(train.lat, train.lng), {
@@ -87,13 +90,12 @@ var TrainDisplay = {
 		TrainDisplay.updateAngle(train);
 	},
 
-	remove : function(id_mission,dataSourceName) {
+	remove : function(id_mission, dataSourceName) {
 		if (id_mission in TrainDisplay.markers) {
-			DisplayManager.getDataLayerForDataSource("trains",dataSourceName).mapLayer.removeLayer(TrainDisplay.markers[id_mission]);
+			DisplayManager.getDataLayerForDataSource("trains", dataSourceName).mapLayer.removeLayer(TrainDisplay.markers[id_mission]);
 			delete (TrainDisplay.markers[id_mission]);
 		}
 	},
-
 
 };
 
@@ -102,11 +104,11 @@ Trains.on("add", function(mission_id, train, dataSourceName) {
 });
 
 Trains.on("remove", function(id_mission, dataSourceName) {
-	TrainDisplay.remove(id_mission,dataSourceName);
+	TrainDisplay.remove(id_mission, dataSourceName);
 });
 
-//Autozoom, autopan
-DisplayManager.on('showLayer', function(layerGroup,layerName) {
+// Autozoom, autopan
+DisplayManager.on('showLayer', function(layerGroup, layerName) {
 	if (layerGroup == 'trains') {
 		var dataLayer = DisplayManager.dataLayers[layerGroup][layerName];
 		var z = map.getZoom();
@@ -124,7 +126,7 @@ DisplayManager.on('showLayer', function(layerGroup,layerName) {
 		if (dataLayer.maxZoom && dataLayer.maxZoom < z) {
 			console.debug("Zooming to maxZoom ", dataLayer.maxZoom);
 			if (dataLayer.center) {
-				map.setView(dataLayer.cedataLayerSource.maxZoom, {
+				map.setView(dataLayer.center, dataLayer.maxZoom, {
 					animate : false
 				});
 			} else {
@@ -139,5 +141,6 @@ DisplayManager.on('showLayer', function(layerGroup,layerName) {
 			});
 		}
 		console.debug("Checkin zoom (current,min,max)", z, dataLayer.minZoom, dataLayer.maxZoom);
-	};
+	}
+	;
 });

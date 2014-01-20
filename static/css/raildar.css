@@ -4,10 +4,11 @@ body {
 	font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva,
 		sans-serif;
 	font-size: 10pt;
-	overflow:hidden;
+	overflow: hidden;
 }
-window{
-	overflow:hidden;
+
+window {
+	overflow: hidden;
 }
 
 a {
@@ -88,18 +89,42 @@ button.loading {
 60%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .9
+
+
  
+
+
 }
 100%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .5
+
+
  
+
+
 }
 }
 @
@@ -110,18 +135,42 @@ opacity
 60%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .9
+
+
  
+
+
 }
 100%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .5
+
+
  
+
+
 }
 }
 @
@@ -132,18 +181,42 @@ opacity
 60%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .9
+
+
  
+
+
 }
 100%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .5
+
+
  
+
+
 }
 }
 @
@@ -154,18 +227,42 @@ opacity
 60%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .9
+
+
  
+
+
 }
 100%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .5
+
+
  
+
+
 }
 }
 @
@@ -176,18 +273,42 @@ keyframes fade { 0% {
 60%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .9
+
+
  
+
+
 }
 100%
 {
 opacity
+
+
+
+
 :
+
+
+
+
 0
 .5
+
+
  
+
+
 }
 }
 .right {
@@ -210,13 +331,59 @@ opacity
 	overflow: hidden;
 	font-size: 12px;
 	color: #FFF;
-}
-
-.circle-icon img {
 	width: 22px;
 	height: 22px;
 }
 
+.circle-icon .img {
+	width: 22px;
+	height: 22px;
+	background-position: center center;
+	background-size: contain;
+	background-repeat: no-repeat;
+}
+
+.circle-icon-green  .img {
+	background-image: url(../images/circle_green.png);
+}
+
+.circle-icon-yellow .img {
+	background-image: url(../images/circle_yellow.png);
+}
+
+.circle-icon-orange  .img {
+	background-image: url(../images/circle_orange.png);
+}
+
+.circle-icon-red .img {
+	background-image: url(../images/circle_red.png);
+}
+
+.circle-icon-black  .img {
+	background-image: url(../images/circle_black.png);
+}
+
+
+
+.circle-arrow-icon.circle-icon-green  .img {
+	background-image: url(../images/fleche_green.png);
+}
+
+.circle-arrow-icon.circle-icon-yellow .img {
+	background-image: url(../images/fleche_yellow.png);
+}
+
+.circle-arrow-icon.circle-icon-orange  .img {
+	background-image: url(../images/fleche_orange.png);
+}
+
+.circle-arrow-icon.circle-icon-red .img {
+	background-image: url(../images/fleche_red.png);
+}
+
+.circle-arrow-icon.circle-icon-black  .img {
+	background-image: url(../images/fleche_black.png);
+}
 #sidebar>div {
 	padding: 1em;
 }
@@ -241,8 +408,9 @@ opacity
 .leaflet-bottom {
 	z-index: 800 !important;
 }
-.leaflet-top.leaflet-right{
-	z-index:10000;
+
+.leaflet-top.leaflet-right {
+	z-index: 10000;
 }
 
 .leaflet-control-attribution {
