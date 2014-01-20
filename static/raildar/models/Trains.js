@@ -5,7 +5,6 @@ var Trains = {
 		Trains.trigger("haveNewData",data,dataSourceName);
 		if(data.remove){
 			for(k in data.remove){
-				console.debug("remove : ",k);
 				delete(Trains.missions[k]);
 				Trains.trigger("remove",k,dataSourceName);
 			}

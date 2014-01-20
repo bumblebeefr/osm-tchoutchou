@@ -89,30 +89,22 @@ var TrainDisplay = {
 		TrainDisplay.markers[train.id_mission].dataSource = dataSourceName;
 	},
 
-	remove : function(id_mission) {
+	remove : function(id_mission,dataSourceName) {
 		if (id_mission in TrainDisplay.markers) {
 			DisplayManager.getDataLayerForDataSource("trains",dataSourceName).mapLayer.removeLayer(TrainDisplay.markers[id_mission]);
-			delete (_TrainDisplay.markers[id_mission]);
+			delete (TrainDisplay.markers[id_mission]);
 		}
 	},
 
-	clean : function(remove) {
-		if (remove.length > 0) {
-			console.log("removing " + remove.length + " missions");
-		}
-		for (id_mission in remove) {
-			TrainDisplay.remove(id_mission);
-		}
-		delete (remove);
-	}
+
 };
 
 Trains.on("add", function(mission_id, train, dataSourceName) {
 	TrainDisplay.drawMarker(train, dataSourceName);
 });
 
-Trains.on("remove", function(mission_id, dataSourceName) {
-	TrainDisplay.remove(id_mission);
+Trains.on("remove", function(id_mission, dataSourceName) {
+	TrainDisplay.remove(id_mission,dataSourceName);
 });
 
 //Autozoom, autopan

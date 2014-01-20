@@ -104,29 +104,29 @@ var DisplayManager = {
 			console.error("No layerGroup " + layerGroup + " found in DisplayManager.dataLayers");
 		}
 		if (names.length == 0) {
-			logger.warning("There is no layer on group " + layerGroup + " matching datasource " + layerGroup);
+			console.error("There is no layer on group " + layerGroup + " matching datasource " + dataSourceName);
 			return null;
 		} else {
 			if (names.length > 1)
-				logger.warning("There is more than one layer on group " + layerGroup + " matching datasource " + layerGroup);
+				logger.error("There is more than one layer on group " + layerGroup + " matching datasource " + layerGroup);
 			return names[0];
 		}
 	},
 	showLayer : function(group, name) {
-		console.debug("Show layer", group, name);
 		var mapLayer = DisplayManager.getDataLayer(group, name).mapLayer;
 		if (mapLayer) {
 			if (!map.hasLayer(mapLayer)) {
+				console.debug("Show layer", group, name);
 				mapLayer.addTo(map);
 				DisplayManager.trigger('showLayer', group, name);
 			}
 		}
 	},
 	hideLayer : function(group, name) {
-		console.debug("Hide layer", group, name);
 		var mapLayer = DisplayManager.getDataLayer(group, name).mapLayer;
 		if (mapLayer) {
 			if (map.hasLayer(mapLayer)) {
+				console.debug("Hide layer", group, name);
 				map.removeLayer(mapLayer);
 				DisplayManager.trigger('hideLayer', group, name);
 			}
@@ -185,7 +185,7 @@ var DisplayManager = {
 };
 observable(DisplayManager);
 
-
+//Show layers concerned by the dataSource when a datasource is loaded by the Scheduler.
 Scheduler.on('load', function(dataSourceName) {
 	for(layerGroup in DisplayManager.dataLayers){
 		var layerName = DisplayManager.getDataLayerNameForSource(layerGroup, dataSourceName);
@@ -195,11 +195,24 @@ Scheduler.on('load', function(dataSourceName) {
 	}
 	DisplayManager.addLoading(1);
 });
+
+//Hide layers when all his datasources are stopped.
 Scheduler.on('stop', function(dataSourceName) {
 	for(layerGroup in DisplayManager.dataLayers){
 		var layerName = DisplayManager.getDataLayerNameForSource(layerGroup, dataSourceName);
 		if(layerName != null){
-			DisplayManager.hideLayer(layerGroup, layerName);
+			if(DisplayManager.dataLayers[layerGroup][layerName].dataSources && DisplayManager.dataLayers[layerGroup][layerName].dataSources.length >0){
+				var hide = true;
+				_.each(DisplayManager.dataLayers[layerGroup][layerName].dataSources,function(dataSourceName){
+					if(Scheduler.isActive(dataSourceName)){
+						hide = false;
+						return false;
+					}
+				});
+				if(hide){
+					DisplayManager.hideLayer(layerGroup, layerName);
+				}
+			}
 		}
 	}
 });

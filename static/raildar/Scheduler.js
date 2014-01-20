@@ -52,11 +52,17 @@ var Scheduler = {
 	},
 
 	stop : function(dataSourceName) {
-		console.debug('Stoping datasource loading',dataSourceName);
-		clearTimeout(Scheduler.timers[dataSourceName]);
-		Scheduler.sourceArctive[dataSourceName] = false;
-		Scheduler.trigger('stop', dataSourceName);
+		if(Scheduler.sourceArctive[dataSourceName]){
+			console.debug('Stoping datasource loading',dataSourceName);
+			clearTimeout(Scheduler.timers[dataSourceName]);
+			Scheduler.sourceArctive[dataSourceName] = false;
+			Scheduler.trigger('stop', dataSourceName);
+		}
 	},
+	
+	isActive : function(dataSourceName){
+		return Scheduler.sourceArctive[dataSourceName];
+	}
 
 };
 observable(Scheduler);
