@@ -13,6 +13,6 @@
 		</ul>
 	</li>
 	<li><img src="./static/images/fleche_black.png" width="13"/> <strong>{{default cancelled 0}}</strong> trains supprim&eacute;s ({{percent cancelled ttl}})</li>
-	<li><img src="./static/images/fleche_blue.png" width="13"/> <strong>{{default unknown 0}}</strong> au départ / retard NC ({{percent unknown ttl}})</li>
+	<li><img src="./static/images/fleche_blue.png" width="13"/> <strong>{{default unknown 0}}</strong> retard inconnu ({{percent unknown ttl}})</li>
 </ul>
 <a id="stat_detail" href="http://www.raildar.fr/tools/rrd_circulation" target="_blank"><i class="fa fa-search-plus"></i> Plus de stats de circulation</a>
