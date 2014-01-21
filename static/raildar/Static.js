@@ -3,7 +3,8 @@ var statuses = {
     "yellow": "delayed",
     "orange": "delayed",
     "red": "delayed",
-    "black": 'cancelled'
+    "black": 'cancelled',
+    "blue": 'unknown'
 };
 
 

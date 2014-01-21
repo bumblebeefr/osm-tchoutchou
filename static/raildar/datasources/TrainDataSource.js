@@ -13,7 +13,9 @@ TrainDataSource.prototype.createTrain = function(mission) {
 
 	_.extend(train, mission.properties);
 
-	if (train.retard < 0) {
+	if (train.last_check=="") {
+		train.type = "blue";
+	} else if (train.retard < 0) {
 		train.type = "black";
 	} else if (train.retard < 5) {
 		train.type = "green";

@@ -362,6 +362,9 @@ opacity
 .circle-icon-black  .img {
 	background-image: url(../images/circle_black.png);
 }
+.circle-icon-blue  .img {
+	background-image: url(../images/circle_blue.png);
+}
 
 
 
@@ -383,6 +386,10 @@ opacity
 
 .circle-arrow-icon.circle-icon-black  .img {
 	background-image: url(../images/fleche_black.png);
+}
+
+.circle-arrow-icon.circle-icon-blue  .img {
+	background-image: url(../images/fleche_blue.png);
 }
 #sidebar>div {
 	padding: 1em;
