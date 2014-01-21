@@ -58,12 +58,22 @@
 			<!-- <label><input type="radio" name="train_layer" class="train_layer" value="toulouse">Toulouse</label><br/> -->
 			<br/>
 			Ponctualité : <br/>
-			<label class="checkbox-inline"><input type="checkbox"
-				class="filter" name="ok" /> À l'heure</label> <label class="checkbox-inline"><input
-				type="checkbox" class="filter" name="delayed" checked="checked" />
-				En retard</label> <label class="checkbox-inline"><input
-				type="checkbox" class="filter" name="cancelled" checked="checked" />
-				Supprimé</label>
+				<label class="checkbox-inline">
+					<input type="checkbox" class="filter" name="ok" /> 
+					À l'heure
+				</label> 
+				<label class="checkbox-inline">
+					<input type="checkbox" class="filter" name="delayed" checked="checked" />
+					En retard
+				</label> 
+				<label class="checkbox-inline">
+					<input type="checkbox" class="filter" name="cancelled" checked="checked" />
+					Supprimé
+				</label>
+				<label class="checkbox-inline">
+					<input type="checkbox" class="filter" name="unknown" checked="checked" />
+					NC
+				</label>
 		</div>
 		<div></div>
 		<div id="detail_block" class="block">
@@ -104,7 +114,7 @@
 	<script src="./static/handlebars.js"></script>
 	<script src="./static/handlebars-helpers.js"></script>
 	<script src="./static/handlebars-util.js"></script>
-	xœ
+
 	<script src="./static/raildar/library.js"></script>
 	<script src="./static/raildar/Static.js"></script>
 
@@ -167,7 +177,8 @@
 		//	 "yellow":nb_retard<15min , 
 		//   "orange":nb_retard<30min , 
 		//   "red":nb_retard>30min,
-		//   "black":nb_annulation
+		//   "black":nb_annulation,
+		//   "blue":nb_annulation
 		//   }
 		var makeCamembertStat=function(cssId,data){			
 			var total=0;
@@ -182,7 +193,8 @@
 					"yellow" : 0,
 					"orange" :0,
 					"red":0,
-					"black":0
+					"black":0,
+					"blue":0
 			};
 			
 			for(k in pourcentages){
@@ -199,11 +211,12 @@
 				['yellow',pourcentages.yellow], 
 				['orange',pourcentages.orange], 
 				['red',pourcentages.red], 
-				['black',pourcentages.black]
+				['black',pourcentages.black],
+				['blue',pourcentages.blue]
 			];
 			var plot1 = jQuery.jqplot (cssId, [dataGraph],
 				{
-				  seriesColors:['#19b419','#e9d91c','#fe7317','#f40000','#252525'],
+				  seriesColors:['#19b419','#e9d91c','#fe7317','#f40000','#252525','#17adfe'],
 			    seriesDefaults: {
 			    	fillAlpha :0,
 			      // Make this a pie chart.
@@ -402,70 +415,6 @@
 		function onResize(){
 			$("#sidebar").height($(window).height());
 			setMapBoundsFilters();
-		}
-		
-		//=========================================
-		function infoLigne(idMission){
-			//id=idMission.substr("mission".length)
-			jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
-					async : true,
-					cache : false,
-					data : {"id_mission":idMission},	
-					error : function(jqXHR,textStatus,errorThrown){
-							if(console && console.error){
-								console.error("Error when loading #jstchouchou data ",jqXHR);
-							}
-							bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")", function() {});
-					},
-					success : function(data, textStatus, jqXHR){
-						var mission=Missions.missions[idMission];
-						data["txtInfoTrain"]=mission.brand+" - "+mission.num ;
-						var nextGareAtteinte=false;
-						
-						
-						$.each(data.arrets.arret,function(index,arret){
-							//determine ou on en est dans le circuit
-							arret["arret_depasse"]=true;
-							if (! nextGareAtteinte && arret.id_gare== mission.id_next_gare){
-								nextGareAtteinte=true;
-								arret["is_next_gare"]=true;
-								arret["human_time_to_gare"]="(dans "+mission.human_time_to_next_gare+")";								;
-								arret["arret_depasse"]=false;
-								arret["minutes_to_gare"]=mission.minutes_to_next_gare
-							}
-							if (nextGareAtteinte){
-								arret["arret_depasse"]=false;
-							}
-							
-														
-							if (arret.minutes_retard<0){
-								arret["classe_retard"]="arret_black";
-							} else if (arret.minutes_retard<5){
-								arret["classe_retard"]="arret_green"
-							} else if (arret.minutes_retard<15){
-								arret["classe_retard"]="arret_yellow"
-							} else if (arret.minutes_retard<30){
-								arret["classe_retard"]="arret_orange"
-							} else {
-								arret["classe_retard"]="arret_red"
-							}
-							
-							if (arret["time_theorique"]){
-								var retard=0;
-								if (arret["minutes_retard"] && arret["minutes_retard"]>=0){
-									retard=moment.duration(parseInt( arret["minutes_retard"]),"minutes");
-								}
-								arret["horaire"]=moment(arret["time_theorique"]).add(retard).format("HH:mm");		
-								arret["horaireTheorique"]=moment(arret["time_theorique"]).format("HH:mm");		
-							} else {
-								arret["horaire"]="NC";
-							}
-						});
-						
-						bootbox.alert(HandlebarsUtil.render('mission',data), function() {});
-					}
-			});
-			
 		}
 		
 		

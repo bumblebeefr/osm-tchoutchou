@@ -7,7 +7,8 @@ var StatsDisplay = {
 			"yellow" : 0,
 			"orange" : 0,
 			"red" : 0,
-			"black" : 0
+			"black" : 0,
+			"blue" : 0
 		};
 		for (k in pcts) {
 			if (k in data) {
@@ -19,7 +20,8 @@ var StatsDisplay = {
 			"yellow" : data["yellow"],
 			"orange" : data["orange"],
 			"red" : data["red"],
-			"black" : data["black"]
+			"black" : data["black"],
+		    "blue" : data["blue"]
 		});
 
 	}

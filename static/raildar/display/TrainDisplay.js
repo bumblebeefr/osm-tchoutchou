@@ -25,6 +25,11 @@ var TrainDisplay = {
 			className : 'circle-icon circle-icon-black',
 			iconSize : L.point(22, 22),
 			html : '<div class="img">&nbsp;</div>'
+		}),
+		blue : L.divIcon({
+			className : 'circle-icon circle-icon-blue',
+			iconSize : L.point(22, 22),
+			html : '<div class="img">&nbsp;</div>'
 		})
 	},
 	getTitle : function(train) {
