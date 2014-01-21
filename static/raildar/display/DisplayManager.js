@@ -13,7 +13,7 @@ var DisplayManager = {
 					'lng' : 6.88
 				},
 				'minZoom' : 5,
-				'maxZoom' : 8
+				'maxZoom' : 10
 			},
 			"regional" : {
 				mapLayer : L.featureGroup(),
@@ -23,7 +23,7 @@ var DisplayManager = {
 					'lng' : 6.88
 				},
 				'minZoom' : 5,
-				'maxZoom' : 8
+				'maxZoom' : 10
 			},
 			"idf" : {
 				mapLayer : L.featureGroup(),
