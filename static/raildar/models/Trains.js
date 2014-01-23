@@ -1,7 +1,6 @@
 var Trains = {
 	missions : {},
 	newData : function(data, dataSourceName){
-		console.debug("Trains : new Data from "+dataSourceName);
 		Trains.trigger("haveNewData",data,dataSourceName);
 		if(data.remove){
 			for(k in data.remove){
@@ -12,8 +11,8 @@ var Trains = {
 
 		if(data.missions){
 			for(k in data.missions){
-				Trains.missions[k] = data.missions[k];
-				Trains.trigger("add",k,data.missions[k],dataSourceName);
+				Trains.missions[data.missions[k].id_mission] = data.missions[k];
+				Trains.trigger("add",data.missions[k].id_mission,data.missions[k],dataSourceName);
 			}
 		}
 	} 
