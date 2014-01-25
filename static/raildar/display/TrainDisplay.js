@@ -44,7 +44,7 @@ var TrainDisplay = {
 	// Update the angle of a
 	updateAngle : function(train) {
 		if (train.id_mission in TrainDisplay.markers) {
-			if (train.id_depart != train.id_next_gare ){//}&& train.minutes_to_next_gare > 0) {
+			if (train.id_depart != train.id_next_gare && train.minutes_to_next_gare > 0) {
 				var angle = (180 + parseInt(train.heading)) % 360;
 				$(TrainDisplay.markers[train.id_mission]._icon).addClass("circle-arrow-icon");
 				var marker = $(TrainDisplay.markers[train.id_mission]._icon.firstChild);
