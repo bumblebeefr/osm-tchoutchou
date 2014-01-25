@@ -37,14 +37,14 @@ var TrainDisplay = {
 	},
 
 	// get HTML content to disaplay the popup of a train.
-	getPopup : function(train) {
-		return HandlebarsUtil.render('train_popup', train);
+	getPopup : function(id_mission) {
+		return HandlebarsUtil.render('train_popup', Trains.missions[id_mission]);
 	},
 
 	// Update the angle of a
 	updateAngle : function(train) {
 		if (train.id_mission in TrainDisplay.markers) {
-			if (train.id_depart != train.id_next_gare && train.minutes_to_next_gare > 0) {
+			if (train.id_depart != train.id_next_gare ){//}&& train.minutes_to_next_gare > 0) {
 				var angle = (180 + parseInt(train.heading)) % 360;
 				$(TrainDisplay.markers[train.id_mission]._icon).addClass("circle-arrow-icon");
 				var marker = $(TrainDisplay.markers[train.id_mission]._icon.firstChild);
@@ -77,14 +77,14 @@ var TrainDisplay = {
 				title : this.getTitle(train),
 			}).addTo(mapLayer);
 			TrainDisplay.markers[train.id_mission].on('mouseover', function() {
-				$("#mission_detail").html(TrainDisplay.getPopup(train)).show();
+				$("#mission_detail").html(TrainDisplay.getPopup(train.id_mission)).show();
 				$("#mission_detail_help").hide();
 			}).on('mouseout', function() {
 				$("#mission_detail").html("").hide();
 				$("#mission_detail_help").show();
 			}).on('click', function() {
 				if (!TrainDisplay.markers[train.id_mission].getPopup()) {
-					TrainDisplay.markers[train.id_mission].bindPopup(TrainDisplay.getPopup(train)).openPopup();
+					TrainDisplay.markers[train.id_mission].bindPopup(TrainDisplay.getPopup(train.id_mission)).openPopup();
 				}
 			}).on('popupclose', function() {
 				TrainDisplay.markers[train.id_mission].unbindPopup();
