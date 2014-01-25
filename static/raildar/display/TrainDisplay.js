@@ -66,7 +66,7 @@ var TrainDisplay = {
 			TrainDisplay.markers[train.id_mission].setLatLng(L.latLng(train.lat, train.lng));
 			TrainDisplay.markers[train.id_mission].setIcon(TrainDisplay.icons[train.type]);
 			if (TrainDisplay.markers[train.id_mission].getPopup()) {
-				TrainDisplay.markers[train.id_mission].setPopupContent(this.getPopup(train.mission_id));
+				TrainDisplay.markers[train.id_mission].setPopupContent(this.getPopup(train.id_mission));
 			}
 			TrainDisplay.markers[train.id_mission].update();
 
