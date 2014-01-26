@@ -12,6 +12,10 @@ TrainDataSource.prototype.createTrain = function(mission) {
 	train.lat = mission.geometry.coordinates[1];
 
 	_.extend(train, mission.properties);
+	
+	// separateur brand - num en fonction de nu (est ce un nombre ou nom)
+	var sep=(isNaN(mission.properties.num))?" ":" n°"
+	train.txtInfoTrain=[mission.properties.brand,sep,mission.properties.num].join("") ;
 
 	if (train.last_check=="") {
 		train.type = "blue";

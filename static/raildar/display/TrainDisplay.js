@@ -116,7 +116,7 @@ var TrainDisplay = {
 				},
 				success : function(data, textStatus, jqXHR){
 					var mission=Trains.missions[idMission];
-					data["txtInfoTrain"]=mission.brand+" - "+mission.num ;
+					data["txtInfoTrain"]=[mission.brand," - ",mission.num].join("") ;
 					var nextGareAtteinte=false;
 					
 					

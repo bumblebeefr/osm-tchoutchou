@@ -1,4 +1,4 @@
-<strong>{{brand}} n&deg; <a class="infoLigne" onClick="TrainDisplay.showInfoLigne({{id_mission}})" id="mission{{id_mission}}" >{{num}}</a> </strong> &agrave; destination de {{terminus}}
+<strong><a class="infoLigne" onClick="TrainDisplay.showInfoLigne({{id_mission}})" id="mission{{id_mission}}" >{{txtInfoTrain}}</a> </strong> &agrave; destination de {{terminus}}
 <br/>
 {{#when type nequals='black'}}
 	{{#when id_depart equals=id_next_gare}}
@@ -8,13 +8,17 @@
 	{{/when}}
 	<br>
 {{/when}}
-{{#when type equals='green'}}
-	Train &agrave; l'heure.
+{{#when type equals='blue'}}
+  Pas d'information temp réel
 {{else}}
-	{{#when type equals='black'}}
-		<strong class="red">Train annul&eacute;.</strong>
+	{{#when type equals='green'}}
+		Train &agrave; l'heure.
 	{{else}}
-		En retard de {{retard}}min.
+		{{#when type equals='black'}}
+			<strong class="red">Train annul&eacute;.</strong>
+		{{else}}
+			En retard de {{retard}} min.
+		{{/when}}
 	{{/when}}
 {{/when}}
 <br>
