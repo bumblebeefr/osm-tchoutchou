@@ -1,4 +1,4 @@
-<strong><a class="infoLigne" onClick="TrainDisplay.showInfoLigne({{id_mission}})" id="mission{{id_mission}}" >{{txtInfoTrain}}</a> </strong> &agrave; destination de {{terminus}}
+<a class="infoLigne strong"  id="infoLigne{{id_mission}}" >{{txtInfoTrain}}</a> &agrave; destination de {{terminus}}
 <br/>
 {{#when type nequals='black'}}
 	{{#when id_depart equals=id_next_gare}}

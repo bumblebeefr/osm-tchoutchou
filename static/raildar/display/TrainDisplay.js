@@ -100,73 +100,13 @@ var TrainDisplay = {
 			DisplayManager.getDataLayerForDataSource("trains", dataSourceName).mapLayer.removeLayer(TrainDisplay.markers[id_mission]);
 			delete (TrainDisplay.markers[id_mission]);
 		}
-	},
-	
-	showInfoLigne : function(idMission){
-		//id=idMission.substr("mission".length)
-		jQuery.ajax("http://www.raildar.fr/json/convert?url=get_mission",{
-				async : true,
-				cache : false,
-				data : {"id_mission":idMission},	
-				error : function(jqXHR,textStatus,errorThrown){
-						if(console && console.error){
-							console.error("Error when loading #jstchouchou data ",jqXHR);
-						}
-						bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")", function() {});
-				},
-				success : function(data, textStatus, jqXHR){
-					var mission=Trains.missions[idMission];
-					data["txtInfoTrain"]=[mission.brand," - ",mission.num].join("") ;
-					var nextGareAtteinte=false;
-					
-					
-					$.each(data.arrets.arret,function(index,arret){
-						//determine ou on en est dans le circuit
-						arret["arret_depasse"]=true;
-						if (! nextGareAtteinte && arret.id_gare== mission.id_next_gare){
-							nextGareAtteinte=true;
-							arret["is_next_gare"]=true;
-							arret["human_time_to_gare"]="(dans "+mission.human_time_to_next_gare+")";								;
-							arret["arret_depasse"]=false;
-							arret["minutes_to_gare"]=mission.minutes_to_next_gare
-						}
-						if (nextGareAtteinte){
-							arret["arret_depasse"]=false;
-						}
-						
-													
-						if (arret.minutes_retard<0){
-							arret["classe_retard"]="arret_black";
-						} else if (arret.minutes_retard<5){
-							arret["classe_retard"]="arret_green"
-						} else if (arret.minutes_retard<15){
-							arret["classe_retard"]="arret_yellow"
-						} else if (arret.minutes_retard<30){
-							arret["classe_retard"]="arret_orange"
-						} else {
-							arret["classe_retard"]="arret_red"
-						}
-						
-						if (arret["time_theorique"]){
-							var retard=0;
-							if (arret["minutes_retard"] && arret["minutes_retard"]>=0){
-								retard=moment.duration(parseInt( arret["minutes_retard"]),"minutes");
-							}
-							arret["horaire"]=moment(arret["time_theorique"]).add(retard).format("HH:mm");		
-							arret["horaireTheorique"]=moment(arret["time_theorique"]).format("HH:mm");		
-						} else {
-							arret["horaire"]="NC";
-						}
-					});
-					
-					bootbox.alert(HandlebarsUtil.render('mission',data), function() {});
-				}
-		});
-		
 	}
 	
 
+
 };
+
+// #######################  EVENEMENTS  ########################
 
 Trains.on("add", function(mission_id, train, dataSourceName) {
 	TrainDisplay.drawMarker(train, dataSourceName);
@@ -210,6 +150,13 @@ DisplayManager.on('showLayer', function(layerGroup, layerName) {
 			});
 		}
 		console.debug("Checkin zoom (current,min,max)", z, dataLayer.minZoom, dataLayer.maxZoom);
-	}
-	;
+	};
+	
+	//gère le click sur le train dans la popup -> affiche l'infoligne
+	$("#map").on("click", ".infoLigne", function(event){
+		var target=$(event.target);
+		var idMission=target.attr("id").substr("infoLigne".length);			
+		var infoLigne=new InfoLigne(Trains.missions[idMission]);
+		DisplayManager.smallLoading(target.parent(), infoLigne);
+	});  
 });
