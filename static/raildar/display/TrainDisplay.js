@@ -158,5 +158,13 @@ DisplayManager.on('showLayer', function(layerGroup, layerName) {
 		var idMission=target.attr("id").substr("infoLigne".length);			
 		var infoLigne=new InfoLigne(Trains.missions[idMission]);
 		DisplayManager.smallLoading(target.parent(), infoLigne);
-	});  
+	}); 
+	
+	//gère le click sur le bouton de trajet dans la popup -> affiche le trajet et les gares
+	$("#map").on("click", ".showTrajet", function(event){
+		var target=$(event.target);
+		var idMission=target.attr("id").substr("btnTrajet".length);			
+		var trajet=new Trajet(Trains.missions[idMission]);
+		DisplayManager.smallLoading(target, trajet);
+	});
 });

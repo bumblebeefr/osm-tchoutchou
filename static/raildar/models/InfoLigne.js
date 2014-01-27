@@ -19,10 +19,11 @@ function InfoLigne(train){
 					if(console && console.error){
 						console.error("Error when loading Infoligne for mission : "+self.idMission,jqXHR);
 					}
-					self.trigger("error",jqXHR.status,self.idMission);
+					self.trigger("error",jqXHR,self.idMission);
 						
 				},
 				success : function(data, textStatus, jqXHR){
+					self.data=data;
 					self.trigger("load",data , self.idMission);
 				},
 				complete : function(){
@@ -31,8 +32,8 @@ function InfoLigne(train){
 		});
 	};
 	
-	self.errorDisplay=function(status){
-		bootbox.alert("Erreur de récupération des données de la mission ("+status+")");
+	self.errorDisplay=function(jqXHR){
+		bootbox.alert("Erreur de récupération des données de la mission ("+jqXHR.status+")");
 	}
 	
 	self.display=function(data){
@@ -92,8 +93,8 @@ function InfoLigne(train){
 	})
 	
 	//display error on error
-	self.on("error", function(status) {
-		self.errorDisplay(status);
+	self.on("error", function(jqXHR) {
+		self.errorDisplay(jqXHR);
 	})
 	
 	// à la création d'une InfoLigne, on charge les données directement

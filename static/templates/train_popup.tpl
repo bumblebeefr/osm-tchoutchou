@@ -26,5 +26,5 @@ Position : {{lib_pos_type}}
 <br>
 Derni&egrave;re v&eacute;rif : {{human_last_check}}
 <br>
-<!--<button type="button" onclick="showTrajet({{id_mission}},this)">Voir le trajet</button>-->
+<button type="button" class="showTrajet" id="btnTrajet{{id_mission}}">Voir le trajet</button>
 
