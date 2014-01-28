@@ -11,6 +11,7 @@ function Trajet(train){
 	
 	self.get=function () {
 		var  idTrain=self.idTrain;
+		DisplayManager.addLoading(1);
 		if (idTrain){
 			jQuery.ajax("http://www.raildar.fr/json/show_trajet",{
 				async : true,
@@ -18,6 +19,7 @@ function Trajet(train){
 				data : {"id_train":idTrain},	
 				complete : function(){
 					self.trigger("complete");
+					DisplayManager.addLoading(-1);
 				},
 				error : function(jqXHR,textStatus,errorThrown){
 					if(console && console.error){
