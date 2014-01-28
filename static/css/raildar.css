@@ -80,8 +80,6 @@ html,body,#map {
 	animation: fade 0.6s linear infinite;
 }
 
-
-
 /* animation */
 @
 -webkit-keyframes fade { 0% {
@@ -95,7 +93,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -104,7 +106,9 @@ opacity
 .9
 
 
+
  
+
 
 
 }
@@ -115,7 +119,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -124,7 +132,9 @@ opacity
 .5
 
 
+
  
+
 
 
 }
@@ -141,7 +151,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -150,7 +164,9 @@ opacity
 .9
 
 
+
  
+
 
 
 }
@@ -161,7 +177,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -170,7 +190,9 @@ opacity
 .5
 
 
+
  
+
 
 
 }
@@ -187,7 +209,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -196,7 +222,9 @@ opacity
 .9
 
 
+
  
+
 
 
 }
@@ -207,7 +235,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -216,7 +248,9 @@ opacity
 .5
 
 
+
  
+
 
 
 }
@@ -233,7 +267,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -242,7 +280,9 @@ opacity
 .9
 
 
+
  
+
 
 
 }
@@ -253,7 +293,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -262,7 +306,9 @@ opacity
 .5
 
 
+
  
+
 
 
 }
@@ -279,7 +325,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -288,7 +338,9 @@ opacity
 .9
 
 
+
  
+
 
 
 }
@@ -299,7 +351,11 @@ opacity
 
 
 
+
+
 :
+
+
 
 
 
@@ -308,7 +364,9 @@ opacity
 .5
 
 
+
  
+
 
 
 }
@@ -364,11 +422,10 @@ opacity
 .circle-icon-black  .img {
 	background-image: url(../images/circle_black.png);
 }
+
 .circle-icon-blue  .img {
 	background-image: url(../images/circle_blue.png);
 }
-
-
 
 .circle-arrow-icon.circle-icon-green  .img {
 	background-image: url(../images/fleche_green.png);
@@ -393,6 +450,7 @@ opacity
 .circle-arrow-icon.circle-icon-blue  .img {
 	background-image: url(../images/fleche_blue.png);
 }
+
 #sidebar>div {
 	padding: 1em;
 }
@@ -422,9 +480,9 @@ opacity
 	z-index: 10000;
 }
 
-.leaflet-control-attribution {
+/* .leaflet-control-attribution {
 	opacity: 0.5;
-}
+} */
 
 .button {
 	position: absolute;
@@ -648,7 +706,10 @@ table#detailInfoMission th {
 	font-weight: bold;
 	background-color: none;
 }
-.strong{font-weight: bold;}
+
+.strong {
+	font-weight: bold;
+}
 
 .biffe {
 	text-decoration: line-through;
