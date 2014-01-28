@@ -45,24 +45,35 @@ function Trajet(train){
 		
 		var ligneStyle={color: '#000',weight:5,opacity:0.8};		
 		var gareStyle = {
-			    radius: 12,
+			    radius:12,
 			    fillColor:"#c000FF",
 			    color:"#c000FF",
 			    weight:4,
 			    opacity: 0.8,
 			    fillOpacity: 0.2
 			};
+		
+		// calcul un rayon de cercle pour les gares en fonction du zoom de la carte
+		var getRadiusFromZoom=function(){
+			return (map.getZoom()*map.getZoom()/5);
+		}
+		
 		var style =  function(feature) {
 						switch (feature.geometry.type) {							
 							case 'LineString':  return ligneStyle;
-							case 'Point': return gareStyle;
+							case 'Point': {
+								gareStyle.radius=getRadiusFromZoom();
+								return gareStyle;
+							}
 						}
     }
 		
 		var ligne=L.geoJson(data.features, {
 		    style: style,
 		    pointToLayer: function (feature, latlng) {
-		        return L.circleMarker(latlng);
+		    	var circle=L.circleMarker(latlng);
+		    	map.on('zoomend',function(){console.log(["new radius",getRadiusFromZoom()].join(":"));circle.setRadius(getRadiusFromZoom());})
+		        return circle;
 		    }
 		});
 		trajetsLayerGroup.addLayer(ligne);
@@ -76,8 +87,8 @@ function Trajet(train){
 			gares.push( cercle);
 		});*/
 		
-		var popup_contenu=HandlebarsUtil.render('verif_trajet_popup',data);
-		trajetsLayerGroup.bindPopup(popup_contenu);
+		//var popup_contenu=HandlebarsUtil.render('verif_trajet_popup',data);
+		//trajetsLayerGroup.bindPopup(popup_contenu);
 		
 		//TrajetsLigne={};
 		
