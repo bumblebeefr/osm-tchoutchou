@@ -1,21 +1,6 @@
 /*
  * ObjetTrajet (polyligne suivie théoriquement par le train)
  */
-<<<<<<< HEAD
-	
-function Trajet(train){
-	var self=this;
-	self.train=train;
-	self.idTrain=train.id_train;
-	self.data=null;
-	
-	
-	self.get=function () {
-		var  idTrain=self.idTrain;
-		if (idTrain){
-			DisplayManager.addLoading(1);
-			jQuery.ajax("http://www.raildar.fr/json/show_trajet",{
-=======
 
 function Trajet(train) {
 	var self = this;
@@ -25,8 +10,8 @@ function Trajet(train) {
 
 	self.get = function() {
 		var idTrain = self.idTrain;
-		DisplayManager.addLoading(1);
 		if (idTrain) {
+			DisplayManager.addLoading(1);
 			jQuery.ajax("http://www.raildar.fr/json/show_trajet", {
 				async : true,
 				cache : false,
@@ -35,11 +20,11 @@ function Trajet(train) {
 				},
 				complete : function() {
 					self.trigger("complete");
+					DisplayManager.addLoading(-1);
 				},
 				error : function(jqXHR, textStatus, errorThrown) {
 					if (console && console.error) {
-						console.error("Error when loading Trajet for Train  "
-								+ idTrain, jqXHR);
+						console.error("Error when loading Trajet for Train  " + idTrain, jqXHR);
 					}
 					self.trigger("error", jqXHR, self.idTrain);
 				},
@@ -50,23 +35,20 @@ function Trajet(train) {
 				}
 			});
 		}
-	}
+	};
 
 	self.errorDisplay = function(status) {
-		bootbox.alert("Erreur de récupération des données de la mission ("
-				+ jqXHR.status + ")");
-	}
+		bootbox.alert("Erreur de récupération des données de la mission (" + jqXHR.status + ")");
+	};
 
 	self.errorGarePopupDisplay = function(status) {
-		bootbox.alert("Erreur de récupération des données de la gare ("
-				+ jqXHR.status + ")");
-	}
+		bootbox.alert("Erreur de récupération des données de la gare (" + jqXHR.status + ")");
+	};
 
 	self.getGarePopup = function(circle, feature) {
 		var idGare = feature.properties.id_gare;
 		if (idGare) {
 			jQuery.ajax("http://www.raildar.fr/json/next_missions", {
->>>>>>> ac3d1c905511c26681f5ab58ee79066a6b741041
 				async : true,
 				cache : false,
 				data : {
@@ -78,51 +60,49 @@ function Trajet(train) {
 				},
 				error : function(jqXHR, textStatus, errorThrown) {
 					if (console && console.error) {
-						console.error(
-								"Error when loading Gare Popup (next_missions) for Gare  "
-										+ idGare, jqXHR);
+						console.error("Error when loading Gare Popup (next_missions) for Gare  " + idGare, jqXHR);
 					}
 					self.trigger("gare.error", jqXHR, self.idGare);
 				},
 				success : function(data, textStatus, jqXHR) {
-					var  newData={};
-					newData["trains"]=data;
-					$.each(newData.trains, function(index,train){
-						if (train.minutes_retard<0){
-							train["classe_retard"]="arret_black";
-						} else if (train.minutes_retard<5){
-							train["classe_retard"]="arret_green"
-						} else if (train.minutes_retard<15){
-							train["classe_retard"]="arret_yellow"
-						} else if (train.minutes_retard<30){
-							train["classe_retard"]="arret_orange"
+					var newData = {};
+					newData["trains"] = data;
+					$.each(newData.trains, function(index, train) {
+						if (train.minutes_retard < 0) {
+							train["classe_retard"] = "arret_black";
+						} else if (train.minutes_retard < 5) {
+							train["classe_retard"] = "arret_green"
+						} else if (train.minutes_retard < 15) {
+							train["classe_retard"] = "arret_yellow"
+						} else if (train.minutes_retard < 30) {
+							train["classe_retard"] = "arret_orange"
 						} else {
-							train["classe_retard"]="arret_red"
+							train["classe_retard"] = "arret_red"
 						}
-						
-						if (train["time_theorique"]){
-							var retard=0;
-							if (train["minutes_retard"] && train["minutes_retard"]>=0){
-								retard=moment.duration(parseInt( train["minutes_retard"]),"minutes");
+
+						if (train["time_theorique"]) {
+							var retard = 0;
+							if (train["minutes_retard"] && train["minutes_retard"] >= 0) {
+								retard = moment.duration(parseInt(train["minutes_retard"]), "minutes");
 							}
-							train["horaire"]=moment(train["time_theorique"]).add(retard).format("HH:mm");		
-							train["horaireTheorique"]=moment(train["time_theorique"]).format("HH:mm");		
+							train["horaire"] = moment(train["time_theorique"]).add(retard).format("HH:mm");
+							train["horaireTheorique"] = moment(train["time_theorique"]).format("HH:mm");
 						} else {
-							train["horaire"]="NC";
+							train["horaire"] = "NC";
 						}
 					});
-					newData.gare=feature.properties;
-					
+					newData.gare = feature.properties;
+
 					self.trigger("gare.load", newData, circle);
 				}
 			});
 		}
 
-	}
+	};
 	self.displayGarePopup = function(data, circle) {
-		var popup_contenu=HandlebarsUtil.render('gare_popup',data);
+		var popup_contenu = HandlebarsUtil.render('gare_popup', data);
 		circle.bindPopup(popup_contenu);
-	}
+	};
 
 	self.display = function(data) {
 
@@ -146,7 +126,7 @@ function Trajet(train) {
 		// carte
 		var getRadiusFromZoom = function() {
 			return (map.getZoom() * map.getZoom() / 5);
-		}
+		};
 
 		var style = function(feature) {
 			switch (feature.geometry.type) {
@@ -157,7 +137,7 @@ function Trajet(train) {
 				return gareStyle;
 			}
 			}
-		}
+		};
 
 		var ligne = L.geoJson(data.features, {
 			style : style,
@@ -168,11 +148,9 @@ function Trajet(train) {
 				});
 
 				map.on('zoomend', function() {
-					console
-							.log([ "new radius", getRadiusFromZoom() ]
-									.join(":"));
+					console.log([ "new radius", getRadiusFromZoom() ].join(":"));
 					circle.setRadius(getRadiusFromZoom());
-				})
+				});
 				return circle;
 			}
 		});
@@ -194,7 +172,7 @@ function Trajet(train) {
 		// TrajetsLignes[idTrain]={"ligne":ligne,"gares":gares};
 		// //succes = suppression du bouton de demande de trajet
 		// if(btnSource) {$(btnSource).remove();}
-	}
+	};
 
 	// Enable MVP pattern
 	observable(self);
@@ -202,22 +180,22 @@ function Trajet(train) {
 	// display infoligne on load
 	self.on("load", function(data, idTrain) {
 		self.display(data);
-	})
+	});
 
 	// display error on error
 	self.on("error", function(jqXHR) {
 		self.errorDisplay(jqXHR);
-	})
+	});
 
 	// display infoligne on load
 	self.on("gare.load", function(data, circle) {
 		self.displayGarePopup(data, circle);
-	})
+	});
 
 	// display error on error
 	self.on("gare.error", function(jqXHR) {
 		self.errorGarePopupDisplay(jqXHR);
-	})
+	});
 
 	// à la création d'une InfoLigne, on charge les données directement
 	self.get();
