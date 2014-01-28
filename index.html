@@ -59,7 +59,7 @@
 			<br/>
 			Ponctualité : <br/>
 				<label class="checkbox-inline">
-					<input type="checkbox" class="filter" name="ok" /> 
+					<input type="checkbox" class="filter" name="ok" checked="checked"/> 
 					À l'heure
 				</label> 
 				<label class="checkbox-inline">
@@ -125,6 +125,8 @@
 	<script src="./static/raildar/datasources/DataSourceConfig.js"></script>
 	
 	<script src="./static/raildar/models/Trains.js"></script>
+	<script src="./static/raildar/models/InfoLigne.js"></script>
+	<script src="./static/raildar/models/Trajet.js"></script>
 	<script src="./static/raildar/models/Stats.js"></script>
 	
 	
@@ -282,6 +284,12 @@
 		var attributionControl = L.control.attribution({position:'bottomleft'}).addTo(map);
 		var scaleControl = L.control.scale({imperial:false}).addTo(map);
 		var zoomControl = L.control.zoom().addTo(map);
+		
+		
+
+		var trajetsLayerGroup=L.featureGroup();
+		trajetsLayerGroup.addTo(map);
+		
 		
 		//FIXME remplacer par un apel a Filers.set();
 		function setMapBoundsFilters(){
@@ -448,64 +456,7 @@
 		}
 		
 		
-		//=========================================	
-		var TrajetsLignes={};
-		var trajetsLayerGroup=L.featureGroup();
-		trajetsLayerGroup.addTo(map);
-		function showTrajet(id_mission,btnSource){
-			var  mission=Missions.missions[id_mission];
-		  var  idTrain=mission.id_train;
-		  if (idTrain){
-			  if(btnSource) {$(btnSource).addClass("loading");}
-			  jQuery.ajax("http://www.raildar.fr/json/convert?url=show_trajet",{
-					async : true,
-					cache : false,
-					data : {"id_train":idTrain},	
-					complete : function(){
-						if(btnSource) {$(btnSource).removeClass("loading");}
-					},
-					error : function(jqXHR,textStatus,errorThrown){
-							if(console && console.error){
-								console.error("Error when loading #jstchouchou data ",jqXHR);
-							}
-							bootbox.alert("Erreur de récupération des données du trajet ("+jqXHR.status+")", function() {});
-							
-					},
-					success : function(data, textStatus, jqXHR){
-						data.mission=mission;
-						trajetsLayerGroup.clearLayers();
-						
-						var line=[];
-						$.each(data.markers.line.point,function (index,pt){
-							line.push( L.latLng(pt.lat,pt.lng));
-						});
-						var ligne=L.polyline(line, {color: '#000',weight:5,opacity:0.8});
-						trajetsLayerGroup.addLayer(ligne);
-						ligne.bringToFront();
-						
-						var gares=[];
-						$.each(data.markers.marker,function (index,pt){										
-							var cercle = L.circle( L.latLng(pt.lat,pt.lng), 100,{color:"#c000FF",fillcolor:'#c000FF',weight:12,opacity:0.8} );
-							trajetsLayerGroup.addLayer(cercle);
-							cercle.bringToFront();
-							gares.push( cercle);
-						});
-						
-						var popup_contenu=HandlebarsUtil.render('verif_trajet_popup',data);
-						trajetsLayerGroup.bindPopup(popup_contenu);
-						
-						TrajetsLigne={};
-						
-						TrajetsLignes[idTrain]={"ligne":ligne,"gares":gares};
-						//succes = suppression du bouton de demande de trajet
-						if(btnSource) {$(btnSource).remove();}
-						
-					}
-			  });
-			  
-		  }
-					
-		}
+
 
 		// #####################################################################################
 		//                                  DOCUMENT READY
@@ -640,6 +591,8 @@
  			
 		});
 		Scheduler.init();
+		
+		
 		
 		
 

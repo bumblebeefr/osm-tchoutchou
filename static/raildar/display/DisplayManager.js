@@ -60,6 +60,14 @@ var DisplayManager = {
 			$("#icon").removeClass("loading");
 		}
 	},
+	//gestion d'un icone de chargement sur une "iconTarget" fournie (par ex le bouton qui a lancé l'action)
+	//l'icone de chargement est enlevé quand le "loadingObject" renvoie l'evenement "complete"
+	smallLoading : function(iconTarget,loadingObject ) {
+		iconTarget.addClass("loading");		
+		loadingObject.on("complete", function(){
+			iconTarget.removeClass("loading");
+		});
+	},
 
 	// layer management
 	getDataLayer : function(group, name) {

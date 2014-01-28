@@ -47,6 +47,11 @@ html,body,#map {
 	margin-right: 0.5em;
 }
 
+.loading {
+	background: url("/static/images/loading.gif") no-repeat center;
+	color: lightgrey;
+}
+
 #icon #icon-loading {
 	display: none;
 }
@@ -75,10 +80,7 @@ html,body,#map {
 	animation: fade 0.6s linear infinite;
 }
 
-button.loading {
-	background: url("static/images/loading.gif") no-repeat center;
-	color: lightgrey;
-}
+
 
 /* animation */
 @
@@ -646,6 +648,7 @@ table#detailInfoMission th {
 	font-weight: bold;
 	background-color: none;
 }
+.strong{font-weight: bold;}
 
 .biffe {
 	text-decoration: line-through;

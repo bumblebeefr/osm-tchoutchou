@@ -1,6 +1,6 @@
 var Filters = {
 	_data : {
-		visible : "delayed/cancelled/unknown",
+		visible : "ok/delayed/cancelled/unknown",
 		train_layer : "",
 		num_train : "",
 		bounds : {
