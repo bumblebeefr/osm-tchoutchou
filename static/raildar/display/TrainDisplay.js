@@ -162,6 +162,11 @@ DisplayManager.on('showLayer', function(layerGroup, layerName) {
 		console.debug("Checkin zoom (current,min,max)", z, dataLayer.minZoom, dataLayer.maxZoom);
 	};
 	
+
+	
+});
+
+$(function(){
 	//gère le click sur le train dans la popup -> affiche l'infoligne
 	$("#map").on("click", ".infoLigne", function(event){
 		var target=$(event.target);
@@ -169,6 +174,4 @@ DisplayManager.on('showLayer', function(layerGroup, layerName) {
 		var infoLigne=new InfoLigne(Trains.missions[idMission]);
 		DisplayManager.smallLoading(target.parent(), infoLigne);
 	}); 
-	
-	
 });
