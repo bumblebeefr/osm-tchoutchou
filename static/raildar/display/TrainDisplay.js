@@ -85,6 +85,7 @@ var TrainDisplay = {
 			}).on('click', function() {
 				if (!TrainDisplay.markers[train.id_mission].getPopup()) {
 					TrainDisplay.markers[train.id_mission].bindPopup(TrainDisplay.getPopup(train.id_mission)).openPopup();
+					Trains.trigger("popup",TrainDisplay.getPopup(train.id_mission),train);
 				}
 			}).on('popupclose', function() {
 				TrainDisplay.markers[train.id_mission].unbindPopup();
@@ -114,6 +115,15 @@ Trains.on("add", function(mission_id, train, dataSourceName) {
 
 Trains.on("remove", function(id_mission, dataSourceName) {
 	TrainDisplay.remove(id_mission, dataSourceName);
+});
+
+Trains.on("popup",function(popup,train){
+	//affiche le trajet et les gares	
+	var target=$(".showTrajet");
+	var idMission=train.id_mission;			
+	var trajet=new Trajet(Trains.missions[idMission]);
+	DisplayManager.smallLoading(target, trajet);
+
 });
 
 // Autozoom, autopan
@@ -160,11 +170,5 @@ DisplayManager.on('showLayer', function(layerGroup, layerName) {
 		DisplayManager.smallLoading(target.parent(), infoLigne);
 	}); 
 	
-	//gère le click sur le bouton de trajet dans la popup -> affiche le trajet et les gares
-	$("#map").on("click", ".showTrajet", function(event){
-		var target=$(event.target);
-		var idMission=target.attr("id").substr("btnTrajet".length);			
-		var trajet=new Trajet(Trains.missions[idMission]);
-		DisplayManager.smallLoading(target, trajet);
-	});
+	
 });
