@@ -279,8 +279,8 @@
 		var overlayMaps = {};
 		
 		var layersControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+		var attributionControl = L.control.attribution({position:'bottomleft'}).addTo(map);
 		var scaleControl = L.control.scale({imperial:false}).addTo(map);
-		var attributionControl = L.control.attribution().addTo(map);
 		var zoomControl = L.control.zoom().addTo(map);
 		
 		//FIXME remplacer par un apel a Filers.set();
