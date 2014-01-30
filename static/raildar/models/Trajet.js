@@ -125,7 +125,7 @@ function Trajet(train) {
 		// calcul un rayon de cercle pour les gares en fonction du zoom de la
 		// carte
 		var getRadiusFromZoom = function() {
-			return (map.getZoom() * map.getZoom() / 5);
+			return (map.getZoom() * 1.2);
 		};
 
 		var style = function(feature) {
