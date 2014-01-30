@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>OSM Tchoutchou - Raildar with Leaflet and Open Street Map</title>
+<title>OSM Tchoutchou - Raildar with Open Street Map</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -37,43 +37,68 @@
 			<div class="titleBlock">
 				<i class="fa fa-magic"></i> <strong>Filtres :</strong>
 			</div>
-			<br> Train n°<input type="text" id="number_filter" class="filter" /> <br /> <br /> 
-			<!-- <label class="checkbox-inline"><input
-				type="checkbox" class="filter" name="simple" checked="checked" />
-				TER / Intercités</label> <label class="checkbox-inline"><input
-				type="checkbox" class="filter" name="tgv" checked="checked" /> TGV</label> <label
-				class="checkbox-inline"><input type="checkbox"
-				class="filter" name="thalys" checked="checked" /> Thalys</label> <label
-				class="checkbox-inline"><input type="checkbox"
-				class="filter" name="eurostar" checked="checked" /> Eurostar</label> <br />
-			<label class="checkbox-inline"><input type="checkbox"
-				class="filter" name="rer" /> RER</label> <label class="checkbox-inline"><input
-				type="checkbox" class="filter" name="transilien" /> Transilien</label> <br />
-			<label class="checkbox-inline"><input type="checkbox"
-				class="filter" name="unknown" checked="checked" /> Autres</label> <br /> <br /> -->
-			Traffic : <br/>
-			<label title="TGV, Thalys, Eurostar, ..."><input type="radio" name="train_layer" class="train_layer" value="national" checked="checked"> National</label><br/>
-			<label title="TER, Corails intercités, ..."><input type="radio" name="train_layer" class="train_layer" value="regional"> Régional</label><br/>
-			<label title="Transilien, RER, ..."><input type="radio" name="train_layer" class="train_layer" value="idf"> Ile de france</label><br/>
-			<!-- <label><input type="radio" name="train_layer" class="train_layer" value="toulouse">Toulouse</label><br/> -->
-			<br/>
-			Ponctualité : <br/>
-				<label class="checkbox-inline">
-					<input type="checkbox" class="filter" name="ok" checked="checked"/> 
-					À l'heure
-				</label> 
-				<label class="checkbox-inline">
-					<input type="checkbox" class="filter" name="delayed" checked="checked" />
-					En retard
-				</label> 
-				<label class="checkbox-inline">
-					<input type="checkbox" class="filter" name="cancelled" checked="checked" />
-					Supprimé
-				</label>
-				<label class="checkbox-inline">
-					<input type="checkbox" class="filter" name="unknown" checked="checked" />
-					NC
-				</label>
+			<br> Train n°<input type="text" id="number_filter"
+				class="filter" /> <br /> <br /> Traffic : <br />
+			<div class="train_layer" id="national_train_layer">
+				<label title="TGV, Thalys, Eurostar, ..."><input
+					type="radio" name="train_layer" class="train_layer"
+					value="national" checked="checked"> Trains rapides</label>
+				<fieldset class="train_types" id="national_types_fieldset">
+					<label><input type="checkbox" class="train_filter"
+						name="national_types" value="tgv" checked="checked" />TGV </label> <label><input
+						type="checkbox" class="train_filter" name="national_types"
+						value="eurostar" checked="checked" />Eurostars </label> <label><input
+						type="checkbox" class="train_filter" name="national_types"
+						value="thalys" checked="checked" />Thalys </label> <label><input
+						type="checkbox" class="train_filter" name="national_types"
+						value="unknown" checked="checked" />Autres </label>
+				</fieldset>
+			</div>
+			<div class="train_layer" id="regional_train_layer">
+				<label title="TER, Corails intercités, ..."><input
+					type="radio" name="train_layer" class="train_layer"
+					value="regional"> Trains classiques</label>
+				<fieldset class="train_types" id="regional_types_fieldset">
+					<label><input type="checkbox" class="train_filter"
+						name="regional_types" value="ter" checked="checked" />TER </label> <label><input
+						type="checkbox" class="train_filter" name="regional_types"
+						value="intercite" checked="checked" />Corails Intercité </label> <label><input
+						type="checkbox" class="train_filter" name="regional_types"
+						value="lunea" checked="checked" />Corails Lunéa </label> <label><input
+						type="checkbox" class="train_filter" name="regional_types"
+						value="unknown" checked="checked" />Autres </label>
+				</fieldset>
+			</div>
+			<div class="train_layer" id="idf_train_layer">
+				<label title="Transilien, RER, ..."><input type="radio"
+					name="train_layer" class="train_layer" value="idf"> Ile de
+					france</label><br />
+				<fieldset class="train_types" id="regional_types_fieldset">
+					<label><input type="checkbox" class="train_filter"
+						name="idf_types" value="rer" checked="checked" />RER </label> <label><input
+						type="checkbox" class="train_filter" name="idf_types"
+						value="transilien" checked="checked" />Trainsiliens </label> <label><input
+						type="checkbox" class="train_filter" name="idf_types" value="tram"
+						checked="checked" />Tramway </label> <label><input
+						type="checkbox" class="train_filter" name="idf_types"
+						value="unknown" checked="checked" />Autres </label>
+				</fieldset>
+			</div>
+			<div class="train_layer" id="irishrail_train_layer">
+				<label title="Irlande"><input type="radio"
+					name="train_layer" class="train_layer" value="irishrail">
+					Irlande</label><br />
+			</div>
+			<br /> Ponctualité : <br /> <label class="checkbox-inline">
+				<input type="checkbox" class="filter" value="ok" checked="checked" />
+				À l'heure
+			</label> <label class="checkbox-inline"> <input type="checkbox"
+				class="filter" value="delayed" checked="checked" /> En retard
+			</label> <label class="checkbox-inline"> <input type="checkbox"
+				class="filter" value="cancelled" checked="checked" /> Supprimé
+			</label> <label class="checkbox-inline"> <input type="checkbox"
+				class="filter" value="unknown" checked="checked" /> NC
+			</label>
 		</div>
 		<div></div>
 		<div id="detail_block" class="block">
@@ -123,55 +148,57 @@
 	<script src="./static/raildar/datasources/DataSource.js"></script>
 	<script src="./static/raildar/datasources/TrainDataSource.js"></script>
 	<script src="./static/raildar/datasources/DataSourceConfig.js"></script>
-	
+
 	<script src="./static/raildar/models/Trains.js"></script>
 	<script src="./static/raildar/models/InfoLigne.js"></script>
 	<script src="./static/raildar/models/Trajet.js"></script>
 	<script src="./static/raildar/models/Stats.js"></script>
-	
-	
-	<script src="./static/raildar/Scheduler.js"></script><script src="./static/raildar/Tracking.js"></script>
+
+
+	<script src="./static/raildar/Scheduler.js"></script>
+	<script src="./static/raildar/Tracking.js"></script>
 
 	<script src="./static/raildar/display/DisplayManager.js"></script>
 	<script src="./static/raildar/display/StatsDisplay.js"></script>
 	<script src="./static/raildar/display/TrainDisplay.js"></script>
+	<script src="./static/raildar/display/FiltersDisplay.js"></script>
 
 	<!-- date time picker-->
 	<script src="./static/jquery-ui-1.10.3.custom.min.js"></script>
 	<script src="./static/jquery-ui-timepicker-addon.js"></script>
-	
+
 	<!-- fin date time picker-->
-	
+
 
 	<script>
 		moment.lang('fr');
 		//variable permettant d'agir dans la page sur certains traitements
 		//refreshMissions relance eriodiquement le traitement des missions (refresh data+carte)
 		//showGraphsRegions affiche les graph de stats region aux zoom les plus faibles
-		var DEBUG ={
-			refreshMissions:true,
-			nocontrols:false,
-			showGraphsRegions:false
+		var DEBUG = {
+			refreshMissions : true,
+			nocontrols : false,
+			showGraphsRegions : false
 		};
-		
+
 		//=========================================
-		var getDateHistorique = function (){
-			strDate=$("#dateHistorique").val();
-			var dateH=moment(strDate, "DD-MM-YYYY HH:mm:ss");
-			return (dateH && dateH>0 && dateH.diff(moment())<0 )?dateH:null;
+		var getDateHistorique = function() {
+			strDate = $("#dateHistorique").val();
+			var dateH = moment(strDate, "DD-MM-YYYY HH:mm:ss");
+			return (dateH && dateH > 0 && dateH.diff(moment()) < 0) ? dateH : null;
 		};
-		
+
 		//=========================================
-		var traiteDelaiHisto = function (){
-			var mult=parseInt($("#multiplicateurVitesseHistorique").val());
-			var oldTime=parseInt(getDateHistorique().unix());
-			var newTimestamp=60*mult+oldTime; 
-			var newMoment=moment(newTimestamp*1000);
-			console.log("futur timestamp : " + newTimestamp + " = "+ newMoment.format("LLLL"));
-			L.Hash.setArg("date",newMoment.format("YYYYMMDDHHmm"));
+		var traiteDelaiHisto = function() {
+			var mult = parseInt($("#multiplicateurVitesseHistorique").val());
+			var oldTime = parseInt(getDateHistorique().unix());
+			var newTimestamp = 60 * mult + oldTime;
+			var newMoment = moment(newTimestamp * 1000);
+			console.log("futur timestamp : " + newTimestamp + " = " + newMoment.format("LLLL"));
+			L.Hash.setArg("date", newMoment.format("YYYYMMDDHHmm"));
 			$("#dateHistorique").val(newMoment.format("DD/MM/YYYY HH:mm:ss"));
 		};
-		
+
 		//=========================================
 		//fabrique et affiche dans l'element d'id  "cssId" un graph "camembert de retard"
 		//data est de la forme : 
@@ -182,421 +209,254 @@
 		//   "black":nb_annulation,
 		//   "blue":nb_annulation
 		//   }
-		var makeCamembertStat=function(cssId,data){			
-			var total=0;
-			for(k in data){ //calcul du total des trains
-				if (data[k]){
-					total+=data[k];
+		var makeCamembertStat = function(cssId, data) {
+			var total = 0;
+			for (k in data) { //calcul du total des trains
+				if (data[k]) {
+					total += data[k];
 				}
 			}
-			
-			var pourcentages={
-					"green" : 0,
-					"yellow" : 0,
-					"orange" :0,
-					"red":0,
-					"black":0,
-					"blue":0
+
+			var pourcentages = {
+				"green" : 0,
+				"yellow" : 0,
+				"orange" : 0,
+				"red" : 0,
+				"black" : 0,
+				"blue" : 0
 			};
-			
-			for(k in pourcentages){
-				if(k in data){
-					if (data[k]){
-					  pourcentages[k] = Math.round(data[k]/total*1000)/10;
+
+			for (k in pourcentages) {
+				if (k in data) {
+					if (data[k]) {
+						pourcentages[k] = Math.round(data[k] / total * 1000) / 10;
 					} else {
-						pourcentages[k]=0;
+						pourcentages[k] = 0;
 					}
 				}
 			}
-			var dataGraph = [
-				['green',pourcentages.green], 
-				['yellow',pourcentages.yellow], 
-				['orange',pourcentages.orange], 
-				['red',pourcentages.red], 
-				['black',pourcentages.black],
-				['blue',pourcentages.blue]
-			];
-			var plot1 = jQuery.jqplot (cssId, [dataGraph],
-				{
-				  seriesColors:['#19b419','#e9d91c','#fe7317','#f40000','#252525','#17adfe'],
-			    seriesDefaults: {
-			    	fillAlpha :0,
-			      // Make this a pie chart.
-			      renderer: jQuery.jqplot.PieRenderer,
-			      rendererOptions: {
-				      padding:3,
-				      shadowOffset:0.9,
-			        startAngle: -90
-			      }
-			    }
-				});
-			  /*delete(pourcentages);
-			  delete(dataGraph);
-			  delete(plot1);*/
+			var dataGraph = [ [ 'green', pourcentages.green ], [ 'yellow', pourcentages.yellow ], [ 'orange', pourcentages.orange ], [ 'red', pourcentages.red ], [ 'black', pourcentages.black ], [ 'blue', pourcentages.blue ] ];
+			var plot1 = jQuery.jqplot(cssId, [ dataGraph ], {
+				seriesColors : [ '#19b419', '#e9d91c', '#fe7317', '#f40000', '#252525', '#17adfe' ],
+				seriesDefaults : {
+					fillAlpha : 0,
+					// Make this a pie chart.
+					renderer : jQuery.jqplot.PieRenderer,
+					rendererOptions : {
+						padding : 3,
+						shadowOffset : 0.9,
+						startAngle : -90
+					}
+				}
+			});
+			/*delete(pourcentages);
+			delete(dataGraph);
+			delete(plot1);*/
 		};
-
-
 
 		//=========================================
 		var cloudmadeLayer = L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {
-			maxZoom: 18,
-			minZoom: 5,
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
+			maxZoom : 18,
+			minZoom : 5,
+			attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>'
 		});
 
 		var transportLayer = L.tileLayer('http://{s}.tile.thunderforest.com/transport/{z}/{x}/{y}.png', {
-			maxZoom: 18,
-			minZoom: 5,
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.thunderforest.com/">Thunderforest</a>'
+			maxZoom : 18,
+			minZoom : 5,
+			attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.thunderforest.com/">Thunderforest</a>'
 		});
 
 		var mapquestLayer = L.tileLayer('http://otile2.mqcdn.com/tiles/1.0.0/osm/{z}/{x}/{y}.png', {
-			maxZoom: 18,
-			minZoom: 5,
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.mapquest.com/">Mapquest</a>'
+			maxZoom : 18,
+			minZoom : 5,
+			attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.mapquest.com/">Mapquest</a>'
 		});
-		
-		var osmLegacyLayer = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			maxZoom: 18,
-			minZoom: 5,
-			attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.openstreetmap.org/">OpenStreetMap</a>'
-		});
-		
 
-		var map = L.map('map',{
-			center: new L.LatLng(46.81,6.88),
-			zoom:6,
-			layers: [mapquestLayer],
-			attributionControl: false,
-			zoomControl: false,
-			inertia:false
+		var osmLegacyLayer = L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom : 18,
+			minZoom : 5,
+			attribution : 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://www.openstreetmap.org/">OpenStreetMap</a>'
+		});
+
+		var map = L.map('map', {
+			center : new L.LatLng(46.81, 6.88),
+			zoom : 6,
+			layers : [ mapquestLayer ],
+			attributionControl : false,
+			zoomControl : false,
+			inertia : false
 		});
 
 		var baseMaps = {
-			    "Mapquest": mapquestLayer,
-			    "CloudMade": cloudmadeLayer,
-			    "Transport": transportLayer,
-			    "OSM Legacy": osmLegacyLayer
+			"Mapquest" : mapquestLayer,
+			"CloudMade" : cloudmadeLayer,
+			"Transport" : transportLayer,
+			"OSM Legacy" : osmLegacyLayer
 		};
 		var overlayMaps = {};
-		
+
 		var layersControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
-		var attributionControl = L.control.attribution({position:'bottomleft'}).addTo(map);
-		var scaleControl = L.control.scale({imperial:false}).addTo(map);
+		var attributionControl = L.control.attribution({
+			position : 'bottomleft'
+		}).addTo(map);
+		var scaleControl = L.control.scale({
+			imperial : false
+		}).addTo(map);
 		var zoomControl = L.control.zoom().addTo(map);
-		
-		
 
-		var trajetsLayerGroup=L.featureGroup();
+		var trajetsLayerGroup = L.featureGroup();
 		trajetsLayerGroup.addTo(map);
-		
-		
-		//FIXME remplacer par un apel a Filers.set();
-		function setMapBoundsFilters(){
-			Filters.set({
-				bounds : map.getBounds(),
-				zoom : map.getZoom(),
-				center : map.getCenter()
-			})
-		}
-		map.on('zoomend',setMapBoundsFilters).on('dragend',setMapBoundsFilters);
-		
-		$("body").on("hashchange",function(event,args,old_args,external,changedValues){
- 			if(external){
-				console.log("Hash has changed ",(external ? "from outside" : "from inside"), args,old_args,changedValues);
-				
-				var newFilters = _.omit(changedValues,'zoom','lat','lng');
-				
-				if('zoom' in changedValues || 'lat' in changedValues || 'lng' in changedValues){
-					newFilters.bounds = map.getBounds();
-					newFilters.zoom = map.getZoom();
-					newFilters.center = map.getCenter();
-				}
-				
-				if(!('train_layer' in args)){
-					newFilters.train_layer = $("input.train_layer:checked").val();
-					
-				}else{
-					if($("input.train_layer[value="+args.train_layer+"]").length >0){
-						$("input.train_layer[value="+args.train_layer+"]").prop('checked', true);
-					}else{
-						$("input.train_layer[value=national]").prop('checked', true);
-					}
-				}
-				
-				/*
-				if('date' in  args){
-					if(args.date != old_args.date) {
-						$("#dateHistorique").val(moment(args.date,"YYYYMMDDHHmm").format("DD/MM/YYYY HH:mm:ss"));
-					}
-				}
-				if('increment' in  args){
-					if(args.increment != old_args.increment) {
-						$('#multiplicateurVitesseHistorique').val(args.increment);
-					}
-				}
 
-				if('delay' in  args){
-					if(args.delay != old_args.delay) {
-						var d = parseInt(args.delay);
-						if(!isNaN(d)){
-							Missions.refreshDelays.force = 1000*d;
-						}else{
-							Missions.refreshDelays.force = 0;
-						}
-					}
-				}*/
-				if('visible' in args){
-					if(args.visible != old_args.visible) {
-						var visible = args.visible.split("/");
-						if( ! _.contains(visible,'ok') && ! _.contains(visible,'delayed')&& ! _.contains(visible,'cancelled')){
-							visible.push('ok','delayed','cancelled');
-						}
-						$("input[type=checkbox].filter").each(function(){
-							if(_.contains(visible,'all') || _.contains(visible,$(this).attr('name'))){
-								this.checked = true
-							}else{
-								this.checked = false;
-							}
-						});
-						redraw = true;
-					}
-				}
-				if(args.num != old_args.num){
-					if(args.num){
-						$("#number_filter").val(args.num);
-					} else{
-						$("#number_filter").val("");
-					}
-					redraw = true;
-				}
-				if( args.nocontrol != old_args.nocontrol){
-					if('nocontrol' in args && args['nocontrol'] != null){
-						DEBUG.refreshMissions = false;
-						$("body").addClass('nocontrols');
-						$(".button").hide();
-						$("#detail_block").hide();
-						$("#histo_block").hide();
-						$("#type_selection").hide();
-						$("#about	").hide();
-						$('#sidebar').show();
-						try{
-							layersControl.removeFrom(map);
-							scaleControl.removeFrom(map);
-							attributionControl.removeFrom(map);
-							zoomControl.removeFrom(map);
-						}catch (e){}
-					}else{
-						DEBUG.refreshMissions = true;
-						$("body").removeClass('nocontrols');
-						$(".button").show();
-						$("#histo_block").show();
-						$("#type_selection").show();
-						$("#about").show();
-						try{
-							layersControl.addTo(map);
-							scaleControl.addTo(map);
-							attributionControl.addTo(map);
-							zoomControl.addTo(map);
-						}catch (e){}
-						if(!L.Browser.touch && !!L.Browser.mobile){
-							$("#detail_block").show();
-						}
-					}
-				}
-
-				Filters.set(newFilters);
-
-			} 
-		});
-		var hash = new L.Hash(map);
-		
-		
 		//Sart leaflet geolocation.
 		Tracking.init();
 
-
-
-		
-		
 		//=========================================
-		function onResize(){
+		function onResize() {
 			$("#sidebar").height($(window).height());
-			setMapBoundsFilters();
 		}
-		
-		
-		
 
 		//=========================================	
-		function sendErreurTrajet(idTrain, source){
-			var params={
-					"id_train":idTrain,
-					"correct":"no",
-					"reason": window.location.hash.substring(1),
-					"source": "osmtchoutchou"
-			}
+		function sendErreurTrajet(idTrain, source) {
+			var params = {
+				"id_train" : idTrain,
+				"correct" : "no",
+				"reason" : window.location.hash.substring(1),
+				"source" : "osmtchoutchou"
+			};
 			$(source).addClass("loading");
 			$.ajax({
-				url:"http://raildar.fr/xml/set_checked_train",
-				data:params,
-				complete : function(){
-					if(btnSource) {$(btnSource).removeClass("loading");}
+				url : "http://raildar.fr/xml/set_checked_train",
+				data : params,
+				complete : function() {
+					if (btnSource) {
+						$(btnSource).removeClass("loading");
+					}
 				},
-				success: function(data, textStatus, jqXHR) { 
+				success : function(data, textStatus, jqXHR) {
 					$(source).parent().removeClass("loading");
 					$(source).parent().html("<span class='fa fa-thumbs-up ok ok'>Merci !</span>");
-					
+
 				},
-				error : function(jqXHR,textStatus,errorThrown){
+				error : function(jqXHR, textStatus, errorThrown) {
 					$(source).parent().append("<span class='error'>oups !</span>");
 					$(source).parent().removeClass("loading");
 				}
 			});
 		}
-		
-		
-
 
 		// #####################################################################################
 		//                                  DOCUMENT READY
 		// #####################################################################################
-		$(function(){
+		$(function() {
+			//Ad elements to map			
+			var hash = new L.Hash(map);
 			onResize();
 			$(window).resize(onResize);
-			
-			$( ".datetimepicker" ).datetimepicker({minDate: moment("2013-11-25 05:00:00").toDate(), maxDate: "+0D"});
 
-			var inc = parseInt($( "#multiplicateurVitesseHistorique" ).val());
-			if(isNaN(inc)) inc = 1;
-			$( "#sliderHistoTime" ).slider({
-					range: "min",
-					value: inc,
-					min: 1,
-					max: 1440,
-					slide: function( event, ui ) {
-						$( "#multiplicateurVitesseHistorique" ).val( ui.value );
-						L.Hash.setArg("increment",ui.value);
-						var txt=moment.duration(ui.value, 'minutes').humanize();						
-						$( "#txtMultiplicateurVitesseHistorique" ).html( txt );
-					}
+			$(".datetimepicker").datetimepicker({
+				minDate : moment("2013-11-25 05:00:00").toDate(),
+				maxDate : "+0D"
 			});
-			$( "#multiplicateurVitesseHistorique" ).val($( "#sliderHistoTime" ).slider( "value" ) );
-			$( "#txtMultiplicateurVitesseHistorique" ).html(moment.duration( $( "#sliderHistoTime" ).slider( "value" ), 'minutes').humanize() );
+
+			var inc = parseInt($("#multiplicateurVitesseHistorique").val());
+			if (isNaN(inc))
+				inc = 1;
+			$("#sliderHistoTime").slider({
+				range : "min",
+				value : inc,
+				min : 1,
+				max : 1440,
+				slide : function(event, ui) {
+					$("#multiplicateurVitesseHistorique").val(ui.value);
+					L.Hash.setArg("increment", ui.value);
+					var txt = moment.duration(ui.value, 'minutes').humanize();
+					$("#txtMultiplicateurVitesseHistorique").html(txt);
+				}
+			});
+			$("#multiplicateurVitesseHistorique").val($("#sliderHistoTime").slider("value"));
+			$("#txtMultiplicateurVitesseHistorique").html(moment.duration($("#sliderHistoTime").slider("value"), 'minutes').humanize());
 
 			$("#btnStopHisto").click(function(event) {
-				Missions.modeHistorique.isOn=false;
+				Missions.modeHistorique.isOn = false;
 				$("#dateHistorique").val("");
 				L.Hash.removeArg("date");
 			});
-		
-			function traiteToggleBlock(elt){
-				if ($(elt).parent().hasClass("closed")){
+
+			function traiteToggleBlock(elt) {
+				if ($(elt).parent().hasClass("closed")) {
 					$(elt).next().slideUp();
-					$(elt).addClass("fa-plus-square").removeClass(" fa-minus-square");	
+					$(elt).addClass("fa-plus-square").removeClass(" fa-minus-square");
 				} else {
 					$(elt).next().slideDown();
-					$(elt).addClass("fa-minus-square").removeClass(" fa-plus-square");				
+					$(elt).addClass("fa-minus-square").removeClass(" fa-plus-square");
 				}
 			}
-			$(".block.toggle .titleBlock").each(function(index){traiteToggleBlock($(this));});
-			$(".block.toggle .titleBlock").click(function(event){
+			$(".block.toggle .titleBlock").each(function(index) {
+				traiteToggleBlock($(this));
+			});
+			$(".block.toggle .titleBlock").click(function(event) {
 				$(this).parent().toggleClass("closed");
 				traiteToggleBlock($(this));
-				
+
 			});
 
-			if(L.Browser.touch){
-				$("body").addClass("touch");	
-			}else{
-				if(!$("body").hasClass("nocontrol")){
+			if (L.Browser.touch) {
+				$("body").addClass("touch");
+			} else {
+				if (!$("body").hasClass("nocontrol")) {
 					$("#sidebar").show();
 				}
 			}
-			$("input.filter").change(function(){
-				var visible = [];
-				$("input.filter:checked").each(function(){
-					visible.push($(this).attr('name'));
-				});
-				Filters.set("visible",visible.join("/"));
-				L.Hash.setArg("visible",visible.join("/"));
+
+			$("#sidebar_button").click(function() {
+				$("#sidebar").toggle();
 			});
 
-			$("input.train_layer").change(function(){
-				var train_layer = $("input.train_layer:checked").val();
-				Filters.set("train_layer",train_layer);
-				L.Hash.setArg("train_layer",train_layer);
-			});
-			
-			$("#number_filter").change(function(){
-				var num_train = $.trim($(this).val());
-				if(num_train.length >0){
-					Filters.set("num_train",num_train);
-					L.Hash.setArg("num",TrainFilters.num_train);
-				}else{
-					Filters.set("num_train",null);
-					L.Hash.removeArg("num");
-				} 
-			});
-
- 			$("#sidebar_button" ).click(function(){
- 				$("#sidebar").toggle();
- 			});
- 			
- 			$("#tracking_button").click(function(){
- 				$("#sidebar").hide();
- 				if(Tracking.started){
- 					if(confirm('Arreter le tracking en cours ?')){
- 	 					Tracking.stop();
- 					}
-	 			}else{
-	 				Tracking.start();
-	 			}
- 			}).tooltip({
- 				placement : 'left',
- 				title : function(){
- 					if($(this).hasClass('enabled')){
- 						return "Stopper le tracking en cours";
- 					}else{
- 						return "Demarrer l'enregistrement et le tracking d'un train";
- 					}
- 				}
- 			});
- 			$("body").on('click','#stat_detail',function(e){
- 				e.preventDefault();
- 				var html = $("<div/>").html("<a href='"+$(this).attr('href')+"' target='rrd'><img src='"+$(this).attr('href')+"' style='max-width:100%'/></a>");
- 				bootbox.dialog({
- 					title : "Historique de circulation :",
- 					message: html
- 				});
- 			});
- 			
- 			/*
- 			if (DEBUG.showGraphsRegions) {
-	 			if (map.getZoom()<9){
-					Missions.clear();
-					GraphsRegions.clear();
-					GraphsRegions.show();
+			$("#tracking_button").click(function() {
+				$("#sidebar").hide();
+				if (Tracking.started) {
+					if (confirm('Arreter le tracking en cours ?')) {
+						Tracking.stop();
+					}
 				} else {
-					GraphsRegions.clear();
-				 	Missions.show();
+					Tracking.start();
 				}
- 			} else {
- 				Missions.show();
- 			}*/
+			}).tooltip({
+				placement : 'left',
+				title : function() {
+					if ($(this).hasClass('enabled')) {
+						return "Stopper le tracking en cours";
+					} else {
+						return "Demarrer l'enregistrement et le tracking d'un train";
+					}
+				}
+			});
+			$("body").on('click', '#stat_detail', function(e) {
+				e.preventDefault();
+				var html = $("<div/>").html("<a href='" + $(this).attr('href') + "' target='rrd'><img src='" + $(this).attr('href') + "' style='max-width:100%'/></a>");
+				bootbox.dialog({
+					title : "Historique de circulation :",
+					message : html
+				});
+			});
 
+			/*
+			if (DEBUG.showGraphsRegions) {
+				if (map.getZoom()<9){
+				Missions.clear();
+				GraphsRegions.clear();
+				GraphsRegions.show();
+			} else {
+				GraphsRegions.clear();
+			 	Missions.show();
+			}
+			} else {
+				Missions.show();
+			}*/
 
-			
-		
- 			
 		});
 		Scheduler.init();
-		
-		
-		
-		
-
-			
 	</script>
 </body>
 </html>

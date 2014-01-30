@@ -1,7 +1,8 @@
 var Filters = {
+	_initialized : false,
 	_data : {
 		visible : "ok/delayed/cancelled/unknown",
-		train_layer : "",
+		train_layer : "national",
 		num_train : "",
 		bounds : {
 			_southWest : {
@@ -18,7 +19,8 @@ var Filters = {
 			lat : 0,
 			lng : 0
 		},
-		tracking : null
+		tracking : null,
+
 	},
 
 	/**
@@ -27,9 +29,15 @@ var Filters = {
 	 * 
 	 * Exemples :
 	 * 
-	 * Filters.set('zoom',6);
+	 * Filters.set('zoom',6,'ui');
 	 * 
-	 * Filters.set({'zoom':6,'num':'56781'});
+	 * Filters.set({'zoom':6,'num':'56781'},'hash');
+	 * 
+	 * The change events commes withe 4 parameters : - newValue : an object
+	 * containing only chendes new values - oldValue : an object containing for
+	 * all filed in the newValue, the value before the modification - allValues :
+	 * anobject containing all the fileters values. - from : string to knfrom
+	 * from where the modfication of the filters commes from : 'ui' or 'hash'
 	 * 
 	 * @param obj
 	 *            'String' : Name of the property to set. 'Object' à list of
@@ -37,8 +45,15 @@ var Filters = {
 	 * @param value
 	 *            Value to be set when a string obj argument is defined. Nothing
 	 *            if you provide an object as first arg.
+	 * @param from
+	 *            Indicate if the value is changed form 'ui' or from 'hash'.
 	 */
-	set : function(obj, value) {
+	set : function(obj, value, from) {
+		var from = arguments[arguments.length - 1];
+		if (from != 'ui' && from != 'hash') {
+			console.error("Unknown change from '" + from + "' asume it's 'ui'");
+			from = 'ui';
+		}
 		if (typeof obj === 'string') {
 			if (value != Filters._data[obj]) {
 				var oldValue = {};
@@ -49,7 +64,9 @@ var Filters = {
 				var newValue = {};
 				newValue[obj] = value;
 
-				Filters.trigger("change", newValue,oldValue, Filters._data);
+				if (Filters._initialized) {
+					Filters.trigger("change", newValue, oldValue, Filters._data, from);
+				}
 			}
 		} else if (typeof obj === 'object') {
 			var changed = false;
@@ -64,9 +81,20 @@ var Filters = {
 				}
 			}
 			if (changed) {
-				Filters.trigger("change", newValues, oldValues, Filters._data);
+				if (Filters._initialized) {
+					Filters.trigger("change", newValues, oldValues, Filters._data, from);
+				}
 			}
 
+		}
+	},
+	init : function(obj) {
+		Filters.trigger("init", Filters._data);
+		console.debug("Initialising Filters");	
+		Filters.set(obj,'hash');
+		if (!Filters._initialized) {
+			Filters._initialized = true;
+			Filters.trigger("change", Filters._data, {}, Filters._data, 'hash');
 		}
 	},
 
@@ -80,3 +108,9 @@ var Filters = {
 	}
 };
 observable(Filters);
+Filters.on("change", function(newValues, oldValues, AllValues, from) {
+	for (k in newValues) {
+		Filters.trigger(from + '-change:' + k, newValues[k], oldValues[k], from);
+		Filters.trigger('change:' + k, newValues[k], oldValues[k], from);
+	}
+});

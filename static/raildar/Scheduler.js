@@ -106,11 +106,13 @@ Scheduler.on('dataComplete', function(dataSourceName) {
 });
 
 // update filters on Webworker's side
-Filters.on('change', function(newValues, oldValues, allFilters) {
-	console.log("filterchanges", arguments);
+Filters.on('change', function(newValues, oldValues, allFilters,from) {
+	console.debug("filterchanges", arguments);
 	Scheduler.worker.postMessage(new WorkerMessage('set_filter', {
 		newValues : newValues,
-		oldValues : oldValues
+		oldValues : oldValues,
+		allFilters : allFilters,
+		from : from
 	}));
 	DisplayManager.doTheFilterMagic(newValues, oldValues, allFilters);
 });

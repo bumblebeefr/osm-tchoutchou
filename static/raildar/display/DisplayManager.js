@@ -9,21 +9,21 @@ var DisplayManager = {
 				mapLayer : L.featureGroup(),
 				dataSources : [ "national" ],
 				'center' : {
-					'lat' : 46.81,
-					'lng' : 6.88
+					'lat' : 46.774,
+					'lng' : 1.967
 				},
 				'minZoom' : 5,
-				'maxZoom' : 10
+				'maxZoom' : 7
 			},
 			"regional" : {
 				mapLayer : L.featureGroup(),
 				dataSources : [ "regional" ],
 				'center' : {
-					'lat' : 46.81,
-					'lng' : 6.88
+					'lat' : 46.774,
+					'lng' : 1.967
 				},
 				'minZoom' : 5,
-				'maxZoom' : 10
+				'maxZoom' : 7
 			},
 			"idf" : {
 				mapLayer : L.featureGroup(),
@@ -32,7 +32,7 @@ var DisplayManager = {
 					'lat' : 48.854,
 					'lng' : 2.348
 				},
-				'minZoom' : 7,
+				'minZoom' : 8,
 				'maxZoom' : null
 			},
 			"toulouse" : {
@@ -41,6 +41,16 @@ var DisplayManager = {
 				'center' : {
 					'lat' : 43.621,
 					'lng' : 1.472
+				},
+				'minZoom' : 7,
+				'maxZoom' : null
+			},
+			"irishrail" : {
+				mapLayer : L.featureGroup(),
+				dataSources : [ "irishrail" ],
+				'center' : {
+					'lat' : 53.550,
+					'lng' : -7.657
 				},
 				'minZoom' : 7,
 				'maxZoom' : null
@@ -164,7 +174,7 @@ var DisplayManager = {
 			});
 			if (!ok) {
 				Scheduler.load('national');
-				loaded.push(name);
+				toReload.push(name);
 			}
 		}
 
@@ -227,3 +237,4 @@ Scheduler.on('stop', function(dataSourceName) {
 Scheduler.on('dataComplete', function() {
 	DisplayManager.addLoading(-1);
 });
+

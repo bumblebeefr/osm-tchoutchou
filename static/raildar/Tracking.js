@@ -83,15 +83,15 @@ var Tracking = {
 		map.stopLocate();
 		Tracking.trigger("stop",Tracking.id_mission);
 		$("#tracking_info").hide();
-		Filters.set("tracking", null);
+		Filters.set("tracking", null,'ui');
 	},
 	// Start sending fixes to the mspecified mission
 	run : function(id_mission) {
 		if (id_mission != null && id_mission.length > 0) {
-			Filters.set("tracking", true);
+			Filters.set("tracking", true,'ui');
 			Tracking.running = 2;
 			Tracking.id_mission = id_mission;
-			Filters.set("tracking", id_mission);
+			Filters.set("tracking", id_mission,'ui');
 			Tracking.trigger("run",Tracking.id_mission);
 			console.log('Start sending fixes for mission ', id_mission);
 		} else {

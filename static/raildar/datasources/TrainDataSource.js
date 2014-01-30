@@ -47,6 +47,7 @@ TrainDataSource.prototype.createTrain = function(mission) {
 };
 
 TrainDataSource.prototype.isVisible = function(train) {
+	var self = this;
 	var filters = Filters.get();
 	if (filters.tracking) {
 		return true; // only one train tracked, always visible
@@ -61,11 +62,13 @@ TrainDataSource.prototype.isVisible = function(train) {
 					return true;
 				}
 			} else {
-				// if(_.contains(filters.visible,train.train_type)){
 				if (_.contains(filters.visible.split("/"), train.status)) {
-					return true;
+					if(self.name+"_types" in filters){
+						return _.contains(filters[self.name+"_types"].split('/'),train.train_type);
+					}else{
+						return true;
+					}
 				}
-				// }
 			}
 		}
 	}
@@ -157,5 +160,5 @@ TrainDataSource.prototype.postProcess = function(data, params, filters, checksum
 // called by the scheduler when Filters hcange, in order to know if the
 // modification of filters have impact on this datatSource.
 TrainDataSource.prototype.isConcernedByFilterChanges = function(changedKeys) {
-	return _.intersection(changedKeys, [ 'visible', 'num_train', 'bounds', 'tracking' ]).length > 0;
+	return _.intersection(changedKeys, [ 'visible', 'num_train', 'bounds', 'tracking',this.name+'_types' ]).length > 0;
 };

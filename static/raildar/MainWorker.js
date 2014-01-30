@@ -9,7 +9,7 @@ var runningXHR = {};
 var commands = {
 
 	set_filter : function(args) {
-		Filters.set(args.newValues);
+		Filters.set(args.newValues,args.from);
 	},
 
 	// Load data from a specified datatsource

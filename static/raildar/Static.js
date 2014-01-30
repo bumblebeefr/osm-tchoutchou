@@ -16,14 +16,15 @@ var train_types = {
     'TER/IC': 'simple',
     'Thalys': 'thalys',
     'TGV LYRIA': 'tgv',
-    'Lunea': 'simple',
-    'LER': 'simple',
-    'Intercite': 'simple',
-    'TER': 'simple',
+    'Lunea': 'lunea',
+    'LER': 'unknown',
+    'Intercite': 'intercite',
+    'TER': 'ter',
     'Eurostar': 'eurostar',
     'RER' : 'rer',
     'RATP' : 'rer',
-    'Train' : 'transilien'
+    'Train' : 'transilien',
+    'Tram' : 'tram'
 };
 
 var position_type = {
