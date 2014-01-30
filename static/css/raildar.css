@@ -62,6 +62,8 @@ html,body,#map {
 	-ms-animation: fade 0.6s linear infinite;
 	-o-animation: fade 0.6s linear infinite;
 	animation: fade 0.6s linear infinite;
+	
+	background :none;
 }
 
 #icon.loading #icon-loading {
