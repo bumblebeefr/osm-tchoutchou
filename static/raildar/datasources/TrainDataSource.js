@@ -82,7 +82,8 @@ TrainDataSource.prototype.preProcess = function(params, filters) {
 	_.extend(params, {
 		zoom : filters.zoom,
 		lat : filters.center.lat,
-		lng : filters.center.lng
+		lng : filters.center.lng,
+		bbox : filters.bounds._southWest.lat+","+filters.bounds._southWest.lng+","+filters.bounds._northEast.lat+","+filters.bounds._northEast.lng
 	});
 	if (filters.tracking) {
 		params['id_mission'] = filters.tracking;
