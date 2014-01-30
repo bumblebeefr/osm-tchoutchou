@@ -129,6 +129,7 @@ Trains.on("popup",function(popup,train){
 // Autozoom, autopan
 DisplayManager.on('showLayer', function(layerGroup, layerName) {
 	if (layerGroup == 'trains') {
+		trajetsLayerGroup.clearLayers();
 		var dataLayer = DisplayManager.dataLayers[layerGroup][layerName];
 		var z = map.getZoom();
 		console.debug("Checkin zoom (current,min,max)", z, dataLayer.minZoom, dataLayer.maxZoom);
