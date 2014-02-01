@@ -39,7 +39,8 @@ TrainDataSource.prototype.createTrain = function(mission) {
 	}
 
 	train.lib_pos_type = position_type[train.pos_type];
-	train.human_last_check = (train.last_check) ? moment(train.last_check).format("LLL") : "Inconnue";
+	//train.human_last_check = (train.last_check) ? moment(train.last_check).format("LLL") : "Inconnue";
+	train.human_last_check = (train.last_check) ? moment(train.last_check).fromNow() : "Inconnue";
 	var minutes = parseInt(train.minutes_to_next_gare);
 	train.human_time_to_next_gare = moment.duration(minutes, "minutes").humanize();
 
