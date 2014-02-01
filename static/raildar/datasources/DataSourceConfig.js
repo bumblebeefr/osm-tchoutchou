@@ -40,4 +40,20 @@ var DataSourceConfig = {
 		},
 		'refreshDelay' : 10 * 1000
 	}),
+/*	'networkrail'  : new TrainDataSource({
+		'name' : 'networkrail',
+		'url' : 'http://raildar.fr/json/get_circulation',
+		'urlParams' : {
+			'id_source' : '8'
+		},
+		'refreshDelay' : 10 * 1000
+	}),
+*/	'finlande'  : new TrainDataSource({
+		'name' : 'finlande',
+		'url' : 'http://raildar.fr/json/get_circulation',
+		'urlParams' : {
+			'id_source' : '9'
+		},
+		'refreshDelay' : 10 * 1000
+	})
 };

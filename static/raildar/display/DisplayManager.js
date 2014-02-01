@@ -54,6 +54,26 @@ var DisplayManager = {
 				},
 				'minZoom' : 7,
 				'maxZoom' : null
+			},
+		/*	"networkrail" : {
+				mapLayer : L.featureGroup(),
+				dataSources : [ "networkrail" ],
+				'center' : {
+					'lat' : 53.130,
+					'lng' : -1.241
+				},
+				'minZoom' : 7,
+				'maxZoom' : null
+			},
+		*/	"finlande" : {
+				mapLayer : L.featureGroup(),
+				dataSources : [ "finlande" ],
+				'center' : {
+					'lat' : 65.026,
+					'lng' : 28.477
+				},
+				'minZoom' : 5,
+				'maxZoom' : null
 			}
 		}
 	},
