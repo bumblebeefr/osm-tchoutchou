@@ -2,6 +2,17 @@
  * ObjetTrajet (polyligne suivie théoriquement par le train)
  */
 
+var gareIcon = L.icon({
+	iconUrl : 'static/images/gare.png',
+	shadowUrl : 'static/images/gare_shadow.png',
+
+	iconSize : [ 36, 36 ], // size of the icon
+	shadowSize : [ 46, 46 ], // size of the shadow
+	iconAnchor : [ 18, 26 ], // point of the icon which will correspond to marker's location
+	shadowAnchor : [ 5, 28 ], // the same for the shadow
+	popupAnchor : [ 0, -26 ] // point from which the popup should open relative to the iconAnchor
+});
+
 function Trajet(train) {
 	var self = this;
 	self.train = train;
@@ -45,7 +56,7 @@ function Trajet(train) {
 		bootbox.alert("Erreur de récupération des données de la gare (" + jqXHR.status + ")");
 	};
 
-	self.getGarePopup = function(circle, feature) {
+	self.getGarePopup = function(gareMarker, feature) {
 		var idGare = feature.properties.id_gare;
 		if (idGare) {
 			jQuery.ajax("http://www.raildar.fr/json/next_missions", {
@@ -93,15 +104,21 @@ function Trajet(train) {
 					});
 					newData.gare = feature.properties;
 
-					self.trigger("gare.load", newData, circle);
+					self.trigger("gare.load", newData, gareMarker);
 				}
 			});
 		}
 
 	};
-	self.displayGarePopup = function(data, circle) {
+	self.displayGarePopup = function(data, gareMarker) {
 		var popup_contenu = HandlebarsUtil.render('gare_popup', data);
-		circle.bindPopup(popup_contenu);
+		//ne fonctionne que sur la première gare  !!!!!!
+		if (gareMarker.getPopup()){
+			gareMarker.getPopup().setContent(popup_contenu);
+		} else {
+			gareMarker.bindPopup(popup_contenu);
+		}
+		gareMarker.openPopup();
 	};
 
 	self.display = function(data) {
@@ -113,7 +130,7 @@ function Trajet(train) {
 			weight : 5,
 			opacity : 0.8
 		};
-		var gareStyle = {
+		/*var gareStyle = {
 			radius : 12,
 			fillColor : "#c000FF",
 			color : "#c000FF",
@@ -121,6 +138,9 @@ function Trajet(train) {
 			opacity : 0.8,
 			fillOpacity : 0.2
 		};
+		*/
+		
+		
 
 		// calcul un rayon de cercle pour les gares en fonction du zoom de la
 		// carte
@@ -130,28 +150,37 @@ function Trajet(train) {
 
 		var style = function(feature) {
 			switch (feature.geometry.type) {
-			case 'LineString':
-				return ligneStyle;
-			case 'Point': {
-				gareStyle.radius = getRadiusFromZoom();
-				return gareStyle;
-			}
+				case 'LineString':
+					return ligneStyle;
+				case 'Point': {
+					//gareStyle.radius = getRadiusFromZoom();
+					//return gareStyle;
+					return null;
+				}
 			}
 		};
 
 		var ligne = L.geoJson(data.features, {
 			style : style,
 			pointToLayer : function(feature, latlng) {
-				var circle = L.circleMarker(latlng);
-				$(circle).on("click", function() {
+				//var circle = L.circleMarker(latlng);
+				var gare = L.marker(latlng, {icon: gareIcon,opacity:0.85})
+				/*$(circle).on("click", function() {
 					self.getGarePopup(circle, feature);
 				});
-
-				map.on('zoomend', function() {
+				*/
+				
+				gare.on("click", function() {
+					//console.log("CLICK");
+					self.getGarePopup(gare, feature);
+				});
+				
+				/*map.on('zoomend', function() {
 					console.log([ "new radius", getRadiusFromZoom() ].join(":"));
 					circle.setRadius(getRadiusFromZoom());
 				});
-				return circle;
+				*/
+				return gare;
 			}
 		});
 
