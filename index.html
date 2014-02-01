@@ -315,8 +315,7 @@
 		}).addTo(map);
 		var zoomControl = L.control.zoom().addTo(map);
 
-		var trajetsLayerGroup = L.featureGroup();
-		trajetsLayerGroup.addTo(map);
+		var trajetsLayerGroup = L.featureGroup().addTo(map);
 
 		//Sart leaflet geolocation.
 		Tracking.init();

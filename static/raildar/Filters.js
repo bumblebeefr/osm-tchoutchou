@@ -1,7 +1,11 @@
+var visible_filter = "ok/delayed/cancelled/unknown";
+if(typeof L != 'undefined'){
+	if(L.Browser.mobile || L.Browser.touch) visible_filter = "delayed/cancelled/unknown";
+}
 var Filters = {
 	_initialized : false,
 	_data : {
-		visible : "ok/delayed/cancelled/unknown",
+		visible : visible_filter,
 		train_layer : "national",
 		num_train : "",
 		bounds : {
