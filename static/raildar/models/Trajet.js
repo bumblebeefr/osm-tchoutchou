@@ -79,6 +79,9 @@ function Trajet(train) {
 					var newData = {};
 					newData["trains"] = data;
 					$.each(newData.trains, function(index, train) {
+						if(train.brand.match(/^OCE.*\s(.*)/i)) {
+							train.brand=RegExp.$1;
+						}
 						if (train.minutes_retard < 0) {
 							train["classe_retard"] = "arret_black";
 						} else if (train.minutes_retard < 5) {
@@ -159,12 +162,27 @@ function Trajet(train) {
 				}
 			}
 		};
-
+		//renvoie "Gare de " ou "Gare d'" selon le nom de la gare
+		var prefixGareName = function(nom){
+			if (nom && nom.match(/^[aeiou].*/i)){
+				return "Gare d'";
+			} else {
+				return "Gare de ";
+			}
+		}
+		// parce que les noms des gares comportent des &eacutes;
+		// CA NE DEVRAIT PAS : FAILLES XSS POTENTIELLES
+		function htmlDecode(value){
+			  return $('<div/>').html(value).text();
+		}
+		
 		var ligne = L.geoJson(data.features, {
 			style : style,
 			pointToLayer : function(feature, latlng) {
 				//var circle = L.circleMarker(latlng);
-				var gare = L.marker(latlng, {icon: gareIcon,opacity:0.85})
+				var name=htmlDecode(unescape(feature.properties.name_gare) );
+
+				var gare = L.marker(latlng, {icon: gareIcon,opacity:0.85,title:[prefixGareName(name),name].join("")})
 				/*$(circle).on("click", function() {
 					self.getGarePopup(circle, feature);
 				});

@@ -1,4 +1,4 @@
-<div class="titleBlock "><span class="strong">{{gare.name_gare}}</span> : Liste des prochains trains </div>
+<div class="titleBlock "><span class="strong">{{safe gare.name_gare}}</span> : Liste des prochains trains </div>
 <br/>
 
 <table id="detailInfoMission">
