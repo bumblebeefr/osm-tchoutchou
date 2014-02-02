@@ -20,19 +20,19 @@ Handlebars.registerHelper('fromNow', function(date) {
 	}
 });
 
-// Esacpe (with javascript escape function) a string.
+// Escape (with javascript escape function) a string.
 Handlebars.registerHelper('escape', function(str) {
 	return new Handlebars.SafeString(escape(str));
 });
 
 
-//Esacpe (with javascript escape function) a string.
-Handlebars.registerHelper('escape', function(str) {
-	return new Handlebars.SafeString(escape(str));
-});
 
 Handlebars.registerHelper('safe', function(str) {
-	return new Handlebars.SafeString(str);
+	if (str){
+		return new Handlebars.SafeString(str);
+	} else {
+		return str;
+	}
 });
 
 // allow to disaplay a default value if the specifieed property value is
