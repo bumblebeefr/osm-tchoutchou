@@ -22,7 +22,18 @@ var train_types = {
     'TER': 'ter',
     'Eurostar': 'eurostar',
     'RER' : 'rer',
+    'RER A' : 'rer',
+    'RER B' : 'rer',
+    'RER C' : 'rer',
+    'RER D' : 'rer',
+    'RER E' : 'rer',
     'RATP' : 'rer',
+    'La Verrière - La Défense': 'transilien',
+    'Paris Est': 'transilien',
+    'Paris Nord': 'transilien',
+    'Paris Rive Gauche': 'transilien',
+    'Paris St Lazare': 'transilien',
+    'Paris Sud Est': 'transilien',
     'Train' : 'transilien',
     'Tram' : 'tram'
 };
