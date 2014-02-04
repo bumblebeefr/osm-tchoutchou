@@ -17,6 +17,7 @@ var commands = {
 	// - dataSourceName : name of the datasouce to call
 	// -
 	get_data : function(parameters) {
+		console.debug("Worker loading data "+JSON.stringify(parameters));
 		if (parameters.dataSourceName in DataSourceConfig) {
 			if (parameters.dataSourceName in runningXHR) {
 				runningXHR[parameters.dataSourceName].abort();
@@ -56,6 +57,7 @@ var commands = {
 // - parameter : Object containing parameters to the function.
 this.addEventListener('message', function(e) {
 	if (e.data.cmd in commands) {
+		console.debug("Received command "+e.data.cmd);
 		commands[e.data.cmd](e.data.parameters);
 	} else {
 		console.error("No handler defined for cmd " + e.cmd);

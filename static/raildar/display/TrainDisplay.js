@@ -109,7 +109,13 @@ var TrainDisplay = {
 
 // #######################  EVENEMENTS  ########################
 
+
+//var brands = {};
 Trains.on("add", function(mission_id, train, dataSourceName) {
+//	if(! (train.brand in brands)){
+//		brands[train.brand] = true;
+//		console.log(brands);
+//	}
 	TrainDisplay.drawMarker(train, dataSourceName);
 });
 

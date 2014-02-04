@@ -179,10 +179,10 @@ Filters.on('hash-change:num_train', function(newValue, oldValue, from) {
 // Filtres de chaque type de train
 $.each(_.keys(DisplayManager.dataLayers.trains), function(i, v) {
 	var name = v + "_types";
-	Filters.on('hash-change:' + name, function(newValue, oldValue, from) {
+		Filters.on('hash-change:' + name, function(newValue, oldValue, from) {
 		var arr = newValue.split("/");
 		$("input[name=" + name + "]").each(function() {
-			$(this).attr('checked', (_.contains(arr, name) || _.contains(arr, 'all')));
+			$(this).attr('checked', ( _.contains(arr, 'all') || _.contains(arr, $(this).attr('value'))));
 		});
 	});
 });

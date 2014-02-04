@@ -114,7 +114,9 @@ var Filters = {
 observable(Filters);
 Filters.on("change", function(newValues, oldValues, AllValues, from) {
 	for (k in newValues) {
+		//console.debug('trigger "'+from + '-change:'+ k+'" event');
 		Filters.trigger(from + '-change:' + k, newValues[k], oldValues[k], from);
+		//console.debug('trigger "change:'+ k+'" event');
 		Filters.trigger('change:' + k, newValues[k], oldValues[k], from);
 	}
 });
