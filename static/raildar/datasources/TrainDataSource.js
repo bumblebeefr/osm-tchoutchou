@@ -107,23 +107,33 @@ TrainDataSource.prototype.postProcess = function(data, params, filters, checksum
 		var missions = [];
 		var trains = {};
 		var stats = {
-			ttl : 0
+			ttl : 0,
+		    "green": 0,
+		    "yellow": 0,
+		    "orange": 0,
+		    "red": 0,
+		    "black": 0,
+		    "blue": 0,
+		    'ok' : 0,
+		    'delayed' : 0,
+		    'cancelled' : 0,
+		    'unknown' : 0
 		};
 		for ( var i = 0; i < data.features.length; i++) {
 			var mission = self.createTrain(data.features[i]);
-			if (!(mission.status in stats)) {
-				// console.info("Nouveau type : ",mission.type);
-				stats[mission.status] = 1;
-			} else {
-				stats[mission.status] += 1;
-			}
-			if (!(mission.type in stats)) {
-				// console.info("Nouveau type : ",mission.type);
-				stats[mission.type] = 1;
-			} else {
-				stats[mission.type] += 1;
-			}
-			stats['ttl'] += 1;
+//			if (!(mission.status in stats)) {
+//				// console.info("Nouveau type : ",mission.type);
+//				stats[mission.status] = 1;
+//			} else {
+//				stats[mission.status] += 1;
+//			}
+//			if (!(mission.type in stats)) {
+//				// console.info("Nouveau type : ",mission.type);
+//				stats[mission.type] = 1;
+//			} else {
+//				stats[mission.type] += 1;
+//			}
+//			stats['ttl'] += 1;
 
 			if (stats['hour'] == null) {
 				var dayStart = moment().startOf('day');
@@ -144,6 +154,14 @@ TrainDataSource.prototype.postProcess = function(data, params, filters, checksum
 				delete (mission);
 			}
 		}
+		for(k in data.properties.retard_counts){
+			var ret = parseInt(k);
+			stats.ttl += data.properties.retard_counts[k];
+			stats[getDelayColor(ret)] += data.properties.retard_counts[k];
+			stats[statuses[getDelayColor(ret)]] += data.properties.retard_counts[k];
+		}
+		console.log(JSON.stringify(stats));
+		
 		var output = {};
 		output['Stats'] = stats;
 		output['Trains'] = {

@@ -7,6 +7,22 @@ var statuses = {
     "blue": 'unknown'
 };
 
+function getDelayColor(delay){
+	if (isNaN(delay)) {
+		return "blue";
+	} else if (delay < 0) {
+		return "black";
+	} else if (delay < 5) {
+		return "green";
+	} else if (delay < 15) {
+		return "yellow";
+	} else if (delay < 30) {
+		return "orange";
+	} else {
+		return "red";
+	}
+}
+
 
 var train_types = {
     'TGV/ICE': 'tgv',
