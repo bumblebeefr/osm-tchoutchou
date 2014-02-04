@@ -17,7 +17,7 @@ var commands = {
 	// - dataSourceName : name of the datasouce to call
 	// -
 	get_data : function(parameters) {
-		console.debug("Worker loading data "+JSON.stringify(parameters));
+		//console.debug("Worker loading data "+JSON.stringify(parameters));
 		if (parameters.dataSourceName in DataSourceConfig) {
 			if (parameters.dataSourceName in runningXHR) {
 				runningXHR[parameters.dataSourceName].abort();
