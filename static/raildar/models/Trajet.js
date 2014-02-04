@@ -4,13 +4,13 @@
 
 var gareIcon = L.icon({
 	iconUrl : 'static/images/gare.png',
-	shadowUrl : 'static/images/gare_shadow.png',
+	//shadowUrl : 'static/images/gare_shadow.png',
 
-	iconSize : [ 36, 36 ], // size of the icon
-	shadowSize : [ 46, 46 ], // size of the shadow
-	iconAnchor : [ 18, 26 ], // point of the icon which will correspond to marker's location
-	shadowAnchor : [ 5, 28 ], // the same for the shadow
-	popupAnchor : [ 0, -26 ] // point from which the popup should open relative to the iconAnchor
+	iconSize : [ 26, 26 ], // size of the icon
+	//shadowSize : [ 46, 46 ], // size of the shadow
+	iconAnchor : [ 13, 13 ], // point of the icon which will correspond to marker's location
+	//shadowAnchor : [ 5, 28 ], // the same for the shadow
+	popupAnchor : [ 0, -9 ] // point from which the popup should open relative to the iconAnchor
 });
 
 function Trajet(train) {
@@ -133,8 +133,10 @@ function Trajet(train) {
 			weight : 5,
 			opacity : 0.8
 		};
-		/*var gareStyle = {
-			radius : 12,
+		
+		//100,{color:"#c000FF",fillcolor:'#c000FF',weight:12,opacity:0.8}
+		
+		/*	radius : 12,
 			fillColor : "#c000FF",
 			color : "#c000FF",
 			weight : 4,
@@ -179,8 +181,9 @@ function Trajet(train) {
 		var ligne = L.geoJson(data.features, {
 			style : style,
 			pointToLayer : function(feature, latlng) {
-				//var circle = L.circleMarker(latlng);
+				
 				var name=htmlDecode(unescape(feature.properties.name_gare) );
+				//var circle = L.circleMarker(latlng,{title:[prefixGareName(name),name].join("")});
 
 				var gare = L.marker(latlng, {icon: gareIcon,opacity:0.85,title:[prefixGareName(name),name].join("")})
 				/*$(circle).on("click", function() {
