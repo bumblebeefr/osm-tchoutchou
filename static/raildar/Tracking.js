@@ -108,7 +108,8 @@ var Tracking = {
 
 		var args = {
 			lat : Tracking.latlng.lat,
-			lng : Tracking.latlng.lng
+			lng : Tracking.latlng.lng,
+			encode : 'utf8'
 		};
 		$.get("http://www.raildar.fr/json/gares", args, function(data) {
 			Tracking.loadingMessage.hide();
