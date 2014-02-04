@@ -57,7 +57,7 @@ var commands = {
 // - parameter : Object containing parameters to the function.
 this.addEventListener('message', function(e) {
 	if (e.data.cmd in commands) {
-		console.debug("Received command "+e.data.cmd);
+		//console.debug("Received command "+e.data.cmd);
 		commands[e.data.cmd](e.data.parameters);
 	} else {
 		console.error("No handler defined for cmd " + e.cmd);
