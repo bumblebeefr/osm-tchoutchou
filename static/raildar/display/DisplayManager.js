@@ -74,6 +74,16 @@ var DisplayManager = {
 				},
 				'minZoom' : 5,
 				'maxZoom' : null
+			},
+			"danemark" : {
+				mapLayer : L.featureGroup(),
+				dataSources : [ "danemark" ],
+				'center' : {
+					'lat' : 56.081,
+					'lng' : 10.931
+				},
+				'minZoom' : 7,
+				'maxZoom' : null
 			}
 		}
 	},

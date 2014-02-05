@@ -1,4 +1,4 @@
-body {
+body,h3,h4,h5,h6 {
 	padding: 0;
 	margin: 0;
 	font-family: Verdana, "DejaVu Sans", "Bitstream Vera Sans", Geneva,
@@ -6,6 +6,7 @@ body {
 	font-size: 10pt;
 	overflow: hidden;
 }
+h4 {margin-top:0.5em;text-decoration: underline;}
 
 window {
 	overflow: hidden;
@@ -667,6 +668,7 @@ fieldset.train_types{
 .titleBlock {
 	border-bottom: 1px solid #888888;
 	display: block;
+	font-weight: bold;
 }
 
 table#detailInfoMission {
@@ -733,3 +735,6 @@ table#detailInfoMission th {
 	font-size: 120%;
 	color: orange;
 }
+
+.blockFilter{margin-left : 1.5em;}
+.blockFilter>div{margin-left : 1em;}
