@@ -57,7 +57,7 @@ $(function() {
 					if (!_.contains(visible, 'ok') && !_.contains(visible, 'delayed') && !_.contains(visible, 'cancelled')) {
 						visible.push('ok', 'delayed', 'cancelled');
 					}
-					newFilters.visible = visible;
+					newFilters.visible = visible.join("/");
 				}
 			}
 
