@@ -32,8 +32,8 @@ var DisplayManager = {
 					'lat' : 48.854,
 					'lng' : 2.348
 				},
-				'minZoom' : 8,
-				'maxZoom' : 9
+				'minZoom' : 9,
+				'maxZoom' : 10
 			},
 			"toulouse" : {
 				mapLayer : L.featureGroup(),
