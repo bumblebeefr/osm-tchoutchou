@@ -33,7 +33,7 @@ var DisplayManager = {
 					'lng' : 2.348
 				},
 				'minZoom' : 8,
-				'maxZoom' : null
+				'maxZoom' : 9
 			},
 			"toulouse" : {
 				mapLayer : L.featureGroup(),
@@ -43,7 +43,7 @@ var DisplayManager = {
 					'lng' : 1.472
 				},
 				'minZoom' : 7,
-				'maxZoom' : null
+				'maxZoom' : 8
 			},
 			"irishrail" : {
 				mapLayer : L.featureGroup(),
@@ -52,8 +52,8 @@ var DisplayManager = {
 					'lat' : 53.550,
 					'lng' : -7.657
 				},
-				'minZoom' : 7,
-				'maxZoom' : null
+				'minZoom' : 6,
+				'maxZoom' : 7
 			},
 		/*	"networkrail" : {
 				mapLayer : L.featureGroup(),
@@ -69,11 +69,11 @@ var DisplayManager = {
 				mapLayer : L.featureGroup(),
 				dataSources : [ "finlande" ],
 				'center' : {
-					'lat' : 65.026,
+					'lat' : 64.039,
 					'lng' : 28.477
 				},
 				'minZoom' : 5,
-				'maxZoom' : null
+				'maxZoom' : 6
 			},
 			"danemark" : {
 				mapLayer : L.featureGroup(),
@@ -83,7 +83,7 @@ var DisplayManager = {
 					'lng' : 10.931
 				},
 				'minZoom' : 7,
-				'maxZoom' : null
+				'maxZoom' : 8
 			}
 		}
 	},
