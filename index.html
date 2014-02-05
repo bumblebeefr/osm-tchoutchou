@@ -35,76 +35,88 @@
 		<div id="tmp_camemberts"></div>
 		<div id="type_selection" class="block">
 			<div class="titleBlock">
-				<i class="fa fa-magic"></i> <strong>Filtres :</strong>
+				<i class="fa fa-magic"></i> Filtres :
+			</div>			
+
+			<h4>Train n° <input type="text" id="number_filter"	class="filter" /> </h4>
+
+			<h4>Traffic</h4> 
+			
+			<div id="filtresFrance" class="blockFilter">
+			  <h5><i class='fa fa-hand-o-right '></i> France</h5>
+				<div class="train_layer" id="national_train_layer">
+					<label title="TGV, Thalys, Eurostar, ..."><input
+						type="radio" name="train_layer" class="train_layer"
+						value="national" checked="checked"> Trains rapides</label>
+					<fieldset class="train_types" id="national_types_fieldset">
+						<label><input type="checkbox" class="train_filter"
+							name="national_types" value="tgv" checked="checked" />TGV </label> <label><input
+							type="checkbox" class="train_filter" name="national_types"
+							value="eurostar" checked="checked" />Eurostars </label> <label><input
+							type="checkbox" class="train_filter" name="national_types"
+							value="thalys" checked="checked" />Thalys </label> <label><input
+							type="checkbox" class="train_filter" name="national_types"
+							value="unknown" checked="checked" />Autres </label>
+					</fieldset>
+				</div>
+				<div class="train_layer" id="regional_train_layer">
+					<label title="TER, Corails intercités, ..."><input
+						type="radio" name="train_layer" class="train_layer"
+						value="regional"> Trains classiques</label>
+					<fieldset class="train_types" id="regional_types_fieldset">
+						<label><input type="checkbox" class="train_filter"
+							name="regional_types" value="ter" checked="checked" />TER </label> <label><input
+							type="checkbox" class="train_filter" name="regional_types"
+							value="intercite" checked="checked" />Corails Intercité </label> <label><input
+							type="checkbox" class="train_filter" name="regional_types"
+							value="lunea" checked="checked" />Corails Lunéa </label> <label><input
+							type="checkbox" class="train_filter" name="regional_types"
+							value="unknown" checked="checked" />Autres </label>
+					</fieldset>
+				</div>
+				<div class="train_layer" id="idf_train_layer">
+					<label title="Transilien, RER, ..."><input type="radio"
+						name="train_layer" class="train_layer" value="idf"> Ile de
+						france</label><br />
+					<fieldset class="train_types" id="regional_types_fieldset">
+						<label><input type="checkbox" class="train_filter"
+							name="idf_types" value="rer" checked="checked" />RER </label> <label><input
+							type="checkbox" class="train_filter" name="idf_types"
+							value="transilien" checked="checked" />Transiliens </label> <label><input
+							type="checkbox" class="train_filter" name="idf_types" value="tram"
+							checked="checked" />Tramway </label> <label><input
+							type="checkbox" class="train_filter" name="idf_types"
+							value="unknown" checked="checked" />Autres </label>
+					</fieldset>
+				</div>
 			</div>
-			<br> Train n°<input type="text" id="number_filter"
-				class="filter" /> <br /> <br /> Traffic : <br />
-			<div class="train_layer" id="national_train_layer">
-				<label title="TGV, Thalys, Eurostar, ..."><input
-					type="radio" name="train_layer" class="train_layer"
-					value="national" checked="checked"> Trains rapides</label>
-				<fieldset class="train_types" id="national_types_fieldset">
-					<label><input type="checkbox" class="train_filter"
-						name="national_types" value="tgv" checked="checked" />TGV </label> <label><input
-						type="checkbox" class="train_filter" name="national_types"
-						value="eurostar" checked="checked" />Eurostars </label> <label><input
-						type="checkbox" class="train_filter" name="national_types"
-						value="thalys" checked="checked" />Thalys </label> <label><input
-						type="checkbox" class="train_filter" name="national_types"
-						value="unknown" checked="checked" />Autres </label>
-				</fieldset>
+			<div id="filtresEurope" class="blockFilter">
+			<h5><i class='fa fa-hand-o-right '></i> Europe</h5>
+				<div class="train_layer" id="irishrail_train_layer">
+					<label title="Irlande"><input type="radio"
+						name="train_layer" class="train_layer" value="irishrail">
+						Irlande</label><br />
+				</div>
+		<!--<div class="train_layer" id="networkrail_train_layer">
+					<label title="Angleterre"><input type="radio"
+						name="train_layer" class="train_layer" value="networkrail">
+						Angleterre</label><br />
+				</div>
+		-->	<div class="train_layer" id="finlande_train_layer">
+					<label title="Finlande"><input type="radio"
+						name="train_layer" class="train_layer" value="finlande">
+						Finlande</label><br />
+				</div>
+				<div class="train_layer" id="danemark_train_layer">
+					<label title="Danemark"><input type="radio"
+						name="train_layer" class="train_layer" value="danemark">
+						Danemark</label><br />
+				</div>
 			</div>
-			<div class="train_layer" id="regional_train_layer">
-				<label title="TER, Corails intercités, ..."><input
-					type="radio" name="train_layer" class="train_layer"
-					value="regional"> Trains classiques</label>
-				<fieldset class="train_types" id="regional_types_fieldset">
-					<label><input type="checkbox" class="train_filter"
-						name="regional_types" value="ter" checked="checked" />TER </label> <label><input
-						type="checkbox" class="train_filter" name="regional_types"
-						value="intercite" checked="checked" />Corails Intercité </label> <label><input
-						type="checkbox" class="train_filter" name="regional_types"
-						value="lunea" checked="checked" />Corails Lunéa </label> <label><input
-						type="checkbox" class="train_filter" name="regional_types"
-						value="unknown" checked="checked" />Autres </label>
-				</fieldset>
-			</div>
-			<div class="train_layer" id="idf_train_layer">
-				<label title="Transilien, RER, ..."><input type="radio"
-					name="train_layer" class="train_layer" value="idf"> Ile de
-					france</label><br />
-				<fieldset class="train_types" id="regional_types_fieldset">
-					<label><input type="checkbox" class="train_filter"
-						name="idf_types" value="rer" checked="checked" />RER </label> <label><input
-						type="checkbox" class="train_filter" name="idf_types"
-						value="transilien" checked="checked" />Transiliens </label> <label><input
-						type="checkbox" class="train_filter" name="idf_types" value="tram"
-						checked="checked" />Tramway </label> <label><input
-						type="checkbox" class="train_filter" name="idf_types"
-						value="unknown" checked="checked" />Autres </label>
-				</fieldset>
-			</div>
-			<div class="train_layer" id="irishrail_train_layer">
-				<label title="Irlande"><input type="radio"
-					name="train_layer" class="train_layer" value="irishrail">
-					Irlande</label><br />
-			</div>
-	<!--<div class="train_layer" id="networkrail_train_layer">
-				<label title="Angleterre"><input type="radio"
-					name="train_layer" class="train_layer" value="networkrail">
-					Angleterre</label><br />
-			</div>
-	-->	<div class="train_layer" id="finlande_train_layer">
-				<label title="Finlande"><input type="radio"
-					name="train_layer" class="train_layer" value="finlande">
-					Finlande</label><br />
-			</div>
-			<div class="train_layer" id="danemark_train_layer">
-				<label title="Danemark"><input type="radio"
-					name="train_layer" class="train_layer" value="danemark">
-					Danemark</label><br />
-			</div>
-			<br /> Ponctualité : <br /> <label class="checkbox-inline">
+			
+			
+			<h4>Ponctualité</h4> 
+			<label class="checkbox-inline">
 				<input type="checkbox" class="filter" value="ok" checked="checked" />
 				À l'heure
 			</label> <label class="checkbox-inline"> <input type="checkbox"
@@ -118,7 +130,7 @@
 		<div></div>
 		<div id="detail_block" class="block">
 			<div class="titleBlock">
-				<i class="fa fa-search"></i> <strong>Détail du train :</strong>
+				<i class="fa fa-search"></i> Détail du train :
 			</div>
 			<div id="details">
 				<div id="mission_detail_help" class="help centered">Survolez
