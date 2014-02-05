@@ -55,5 +55,13 @@ var DataSourceConfig = {
 			'id_source' : '9'
 		},
 		'refreshDelay' : 10 * 1000
+	}),
+	'danemark'  : new TrainDataSource({
+		'name' : 'danemark',
+		'url' : 'http://raildar.fr/json/get_circulation',
+		'urlParams' : {
+			'id_source' : '11'
+		},
+		'refreshDelay' : 10 * 1000
 	})
 };
