@@ -1,6 +1,22 @@
 //fist hashchange event have to be managed, even if is from inside the ap, in order to initialize the context.
 var hashInitilized = false;
 
+// get bounds filters object.
+function getMapBoundsFilters() {
+	return{
+		bounds : map.getBounds(),
+		zoom : map.getZoom(),
+		center : map.getCenter()
+	};
+}
+
+// Update bounds filters as 'map' key in filters.
+function setMapBoundsFilters() {
+	Filters.set('map',getMapBoundsFilters(), 'ui');
+}
+
+
+
 $(function() {
 	/**
 	 * ====================================================================================================================================
@@ -8,15 +24,13 @@ $(function() {
 	 * ====================================================================================================================================
 	 */
 	$("body").on("hashchange", function(event, args, old_args, external, changedValues) {
-		console.log("Hash has changed ", (external ? "from outside" : "from inside"), args, old_args, changedValues);
 		if (external || !hashInitilized) {
+			console.log("Hash has changed ", (external ? "from outside" : "from inside"), args, old_args, changedValues);
 			hashInitilized = true;
 			var newFilters = _.omit(changedValues, 'zoom', 'lat', 'lng');
 
 			if ('zoom' in changedValues || 'lat' in changedValues || 'lng' in changedValues) {
-				newFilters.bounds = map.getBounds();
-				newFilters.zoom = map.getZoom();
-				newFilters.center = map.getCenter();
+				newFilters['map'] = getMapBoundsFilters();
 			}
 
 			if (!('train_layer' in args)) {
@@ -105,15 +119,8 @@ $(function() {
 	 * ====================================================================================================================================
 	 */
 
-	// Update bounds filters
-	function setMapBoundsFilters() {
-		Filters.set({
-			bounds : map.getBounds(),
-			zoom : map.getZoom(),
-			center : map.getCenter()
-		}, 'ui');
-	}
-	map.on('zoomend', setMapBoundsFilters).on('dragend', setMapBoundsFilters);
+
+	map.on('zoomend', setMapBoundsFilters).on('dragend', setMapBoundsFilters).on('moveend', setMapBoundsFilters);
 	$(window).resize(setMapBoundsFilters);
 
 	$("input.train_layer").change(function() {
@@ -155,7 +162,7 @@ $(function() {
  * ====================================================================================================================================
  */
 Filters.on('ui-change:train_layer hash-change:train_layer', function(evt,newValue, oldValue, from) {
-	console.error("train_layer change", newValue, oldValue, from);
+	console.debug("train_layer change", newValue, oldValue, from);
 	if (newValue != null) {
 		$("fieldset.train_types").hide();
 		$("#" + newValue + "_train_layer fieldset.train_types").show();

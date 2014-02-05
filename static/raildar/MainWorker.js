@@ -1,6 +1,6 @@
-var worker = this;
+ var worker = this;
 importScripts('../spark-md5.min.js', '../moment.min.js', '../moment.fr.js', '../underscore.js');
-importScripts('./library.js', './Static.js', './WorkerConsole.js', './Filters.js');
+importScripts('./library.js', './Static.js', './WorkerConsole.js');
 importScripts('./datasources/DataSource.js', './datasources/TrainDataSource.js', './datasources/DataSourceConfig.js');
 
 // Hold filters
@@ -8,9 +8,6 @@ var runningXHR = {};
 
 var commands = {
 
-	set_filter : function(args) {
-		Filters.set(args.newValues,args.from);
-	},
 
 	// Load data from a specified datatsource
 	// parameters :
@@ -24,12 +21,13 @@ var commands = {
 			}
 			var dataSourceObject = DataSourceConfig[parameters.dataSourceName];
 			var urlParams = _.clone(DataSourceConfig[parameters.dataSourceName].urlParams);
-			dataSourceObject.preProcess(urlParams, Filters.get());
+			dataSourceObject.preProcess(urlParams, parameters.filters);
+			
 			getJSON(DataSourceConfig[parameters.dataSourceName].url, {
 				data : urlParams,
 				cache : false,
 				error : function(jqXHR, textStatus, errorThrown) {
-					console.log("Error occurs when getting loading data from " + parameters.dataSourceName + "datasource", textStatus, errorThrown);
+					console.log("Error occurs when getting loading data from " + parameters.dataSourceName + "datasource : "+textStatus+" --- "+errorThrown, textStatus, errorThrown);
 					worker.postMessage(new WorkerMessage("data_error", {
 						dataSourceName : parameters.dataSourceName,
 						textStatus : textStatus,
@@ -40,7 +38,7 @@ var commands = {
 					var md5 = SparkMD5.hash(jqXHR.responseText);
 					worker.postMessage(new WorkerMessage("data_received", {
 						dataSourceName : parameters.dataSourceName,
-						data : dataSourceObject.postProcess(data, urlParams, Filters.get(), md5)
+						data : dataSourceObject.postProcess(data, urlParams, parameters.filters, md5)
 					}));
 				}
 			});

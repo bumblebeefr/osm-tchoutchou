@@ -254,7 +254,12 @@ Scheduler.on('stop', function(dataSourceName) {
 		}
 	}
 });
+
 Scheduler.on('dataComplete', function() {
 	DisplayManager.addLoading(-1);
 });
 
+Filters.on('change', function(newValues, oldValues, allFilters, from) {
+	console.debug("Disaplay manager detect a change on filters, will execute filtermagic", arguments);
+	DisplayManager.doTheFilterMagic(newValues, oldValues, allFilters);
+});

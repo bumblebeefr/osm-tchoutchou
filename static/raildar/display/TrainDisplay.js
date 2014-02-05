@@ -159,14 +159,12 @@ DisplayManager.on('showLayer', function(layerGroup, layerName) {
 				map.setZoom(dataLayer.maxZoom);
 			}
 		}
-		console.log(dataLayer.center);
 		if (dataLayer.center && !map.getBounds().contains(L.latLng(dataLayer.center.lat, dataLayer.center.lng))) {
 			console.debug("Recenter");
 			map.panTo(dataLayer.center, {
 				animate : false
 			});
 		}
-		console.debug("Checkin zoom (current,min,max)", z, dataLayer.minZoom, dataLayer.maxZoom);
 	};
 	
 

@@ -1,30 +1,37 @@
 var visible_filter = "ok/delayed/cancelled/unknown";
-if(typeof L != 'undefined'){
-	if(L.Browser.mobile || L.Browser.touch) visible_filter = "delayed/cancelled/unknown";
+if (typeof L != 'undefined') {
+	if (L.Browser.mobile || L.Browser.touch)
+		visible_filter = "delayed/cancelled/unknown";
 }
+var cpt = 0;
 var Filters = {
 	_initialized : false,
 	_data : {
 		visible : visible_filter,
 		train_layer : "national",
 		num_train : "",
-		bounds : {
-			_southWest : {
-				lat : -200,
-				lng : -200,
+		map : {
+			bounds : {
+				_southWest : {
+					lat : -200,
+					lng : -200,
+				},
+				_northEast : {
+					lat : 200,
+					lng : 200,
+				}
 			},
-			_northEast : {
-				lat : 200,
-				lng : 200,
+			zoom : 0,
+			center : {
+				lat : 0,
+				lng : 0
 			}
-		},
-		zoom : 0,
-		center : {
-			lat : 0,
-			lng : 0
 		},
 		tracking : null,
 
+	},
+	_equals : function(val1, val2) {
+		return ((typeof val1 == typeof val2) && (JSON.stringify(val1) == JSON.stringify(val2)));
 	},
 
 	/**
@@ -53,31 +60,39 @@ var Filters = {
 	 *            Indicate if the value is changed form 'ui' or from 'hash'.
 	 */
 	set : function(obj, value, from) {
+		//c = "["+(cpt++)+"]";
+		//console.debug(c+" -- Set filters on " + (typeof document == 'undefined' ? 'WebWorker' : 'Main UI Thread'));
 		var from = arguments[arguments.length - 1];
 		if (from != 'ui' && from != 'hash') {
-			console.error("Unknown change from '" + from + "' asume it's 'ui'");
+			console.warn("Unknown change from '" + from + "' asume it's 'ui'");
 			from = 'ui';
 		}
 		if (typeof obj === 'string') {
-			if (value != Filters._data[obj]) {
-				var oldValue = {};
-				oldValue[obj] = Filters._data[obj];
+			if (!Filters._equals(value, Filters._data[obj])) {
+				//console.debug(c+' -- filter changes');
+				var oldValues = {};
+				oldValues[obj] = Filters._data[obj];
 
 				Filters._data[obj] = value;
+				Filters._data['_t'] = new Date().getTime();
 
-				var newValue = {};
-				newValue[obj] = value;
+				var newValues = {};
+				newValues[obj] = value;
 
 				if (Filters._initialized) {
-					Filters.trigger("change", newValue, oldValue, Filters._data, from);
+					setTimeout(function() {
+						Filters.trigger("change", newValues, oldValues, Filters._data, from);
+					});
 				}
+			} else {
+				//console.debug(c+' -- filter does not change');
 			}
 		} else if (typeof obj === 'object') {
 			var changed = false;
 			var oldValues = {};
 			var newValues = {};
 			for (k in obj) {
-				if (obj[k] != Filters._data[k]) {
+				if (!Filters._equals(obj[k], Filters._data[k])) {
 					changed = true;
 					oldValues[k] = Filters._data[k];
 					newValues[k] = obj[k];
@@ -85,17 +100,23 @@ var Filters = {
 				}
 			}
 			if (changed) {
+				//console.debug(c+' -- filter changes');
 				if (Filters._initialized) {
-					Filters.trigger("change", newValues, oldValues, Filters._data, from);
+					setTimeout(function() {
+						Filters.trigger("change", newValues, oldValues, Filters._data, from);
+					}, 0);
 				}
+			} else {
+				//console.debug(c+' -- filter does not change');
 			}
 
 		}
+
 	},
 	init : function(obj) {
 		Filters.trigger("init", Filters._data);
-		console.debug("Initialising Filters");	
-		Filters.set(obj,'hash');
+		console.debug("Initialising Filters");
+		Filters.set(obj, 'hash');
 		if (!Filters._initialized) {
 			Filters._initialized = true;
 			Filters.trigger("change", Filters._data, {}, Filters._data, 'hash');
@@ -114,9 +135,9 @@ var Filters = {
 observable(Filters);
 Filters.on("change", function(newValues, oldValues, AllValues, from) {
 	for (k in newValues) {
-		//console.debug('trigger "'+from + '-change:'+ k+'" event');
+		// console.debug('trigger "'+from + '-change:'+ k+'" event');
 		Filters.trigger(from + '-change:' + k, newValues[k], oldValues[k], from);
-		//console.debug('trigger "change:'+ k+'" event');
+		// console.debug('trigger "change:'+ k+'" event');
 		Filters.trigger('change:' + k, newValues[k], oldValues[k], from);
 	}
 });
