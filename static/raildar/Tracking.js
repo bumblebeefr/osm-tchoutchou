@@ -14,12 +14,6 @@ var Tracking = {
 	}),
 	timer : null,
 	worker : new Worker('./static/raildar/TrackingWorker.js'),
-	initLocator : function() {
-
-		map.stopLocate();
-		map.locate();
-
-	},
 	init : function() {
 
 		if (navigator.geolocation) {
@@ -30,7 +24,6 @@ var Tracking = {
 			});
 		}
 
-		Tracking.initLocator();
 
 		Tracking.auto_userid = Tracking.username();
 
