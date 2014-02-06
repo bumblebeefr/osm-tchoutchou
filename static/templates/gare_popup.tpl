@@ -3,8 +3,9 @@
 
 <table id="detailInfoMission">
 	<tr>
-		<th>Train</th>
+		<th>Train</th>		
 		<th>Heure&nbsp;&nbsp;</th>
+		<th>Direction</th>
 		<th>Info horaire</th>
 	</tr>
 
@@ -17,6 +18,7 @@
 		  	<span class="biffe">{{horaireTheorique}}</span>
 		  {{/when}}
 		</td>
+		<td>{{safe terminus}}</td>
 		<td>{{safe info}}</td>
 	</tr>
 {{else}}
