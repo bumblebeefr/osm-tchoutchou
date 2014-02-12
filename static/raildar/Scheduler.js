@@ -111,16 +111,16 @@ Scheduler.on('dataComplete', function(dataSourceName) {
 Scheduler.workerCallbacks = {
 	// Console events
 	console_log : function(args) {
-		console.log.apply(window, args);
+		console.log( args);
 	},
 	console_error : function(args) {
-		console.error.apply(window, args);
+		console.error( args);
 	},
 	console_info : function(args) {
-		console.info.apply(window, args);
+		console.info( args);
 	},
 	console_debug : function(args) {
-		console.debug.apply(window, args);
+		console.debug( args);
 	},
 
 	// Data events

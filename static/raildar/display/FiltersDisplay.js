@@ -66,6 +66,10 @@ $(function() {
 				newFilters.num_train = args.num;
 			}
 
+			if ('id_gare' in args) {
+				newFilters.id_gare = args.id_gare;
+			}
+
 			// Gestion du nocontrol
 			// FIXME a mettre ailleur
 			if (args.nocontrol != old_args.nocontrol) {
@@ -153,6 +157,16 @@ $(function() {
 		});
 		Filters.set(name, visible.join("/"), 'ui');
 	});
+
+	$("#no_id_gare").click(function(e){
+		e.preventDefault();
+		Filters.set('id_gare', null , 'ui');
+	});
+
+	$("body").on("click","#gare_filter",function(e){
+		e.preventDefault();
+		Filters.set("id_gare",$(this).attr("id_gare"),'ui');
+	});
 });
 
 /**
@@ -183,6 +197,15 @@ Filters.on('hash-change:num_train', function(newValue, oldValue, from) {
 	$("#number_filter").val(newValue);
 });
 
+Filters.on('hash-change:id_gare ui-change:id_gare', function(event,newValue, oldValue, from) {
+	if(newValue && newValue.split('|').length==2){ 
+		$("#no_id_gare").show();
+		$("#name_gare").text(newValue.split('|')[0]);
+	}else{
+		$("#no_id_gare").hide();
+		$("#name_gare").text("Toutes");
+	}
+});
 // Filtres de chaque type de train
 $.each(_.keys(DisplayManager.dataLayers.trains), function(i, v) {
 	var name = v + "_types";
@@ -213,6 +236,14 @@ Filters.on('ui-change:num_train', function(newValue, oldValue, from) {
 		L.Hash.setArg("num_train", newValue);
 	} else {
 		L.Hash.removeArg("num_train");
+	}
+});
+
+Filters.on('ui-change:id_gare', function(newValue, oldValue, from) {
+	if (newValue != null) {
+		L.Hash.setArg("id_gare", newValue);
+	} else {
+		L.Hash.removeArg("id_gare");
 	}
 });
 

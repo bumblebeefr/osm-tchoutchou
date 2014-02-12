@@ -6,7 +6,7 @@ body,h3,h4,h5,h6 {
 	font-size: 10pt;
 	overflow: hidden;
 }
-h4 {margin-top:0.5em;text-decoration: underline;}
+h4 {padding-top:0.5em;text-decoration: underline;display:inline-block;}
 
 window {
 	overflow: hidden;
@@ -51,6 +51,10 @@ html,body,#map {
 .loading {
 	background: url("/static/images/loading.gif") no-repeat center;
 	color: lightgrey;
+}
+
+.loadingCursor *{
+	cursor:progress;
 }
 
 #icon #icon-loading {
@@ -738,3 +742,7 @@ table#detailInfoMission th {
 
 .blockFilter{margin-left : 1.5em;}
 .blockFilter>div{margin-left : 1em;}
+
+#gare_filter{
+	font-size:0.8em;
+}

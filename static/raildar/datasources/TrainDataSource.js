@@ -79,10 +79,15 @@ TrainDataSource.prototype.preProcess = function(params, filters) {
 		zoom : filters.map.zoom,
 		lat : filters.map.center.lat,
 		lng : filters.map.center.lng,
-		bbox : filters.map.bounds._southWest.lat + "," + filters.map.bounds._southWest.lng + "," + filters.map.bounds._northEast.lat + "," + filters.map.bounds._northEast.lng
 	});
 	if (filters.tracking) {
 		params['id_mission'] = filters.tracking;
+	}
+	console.log("Id_gare : "+filters.id_gare);
+	if(filters.id_gare && filters.id_gare.split("|").length==2){
+		params['id_gare'] = filters.id_gare.split("|")[1];
+	}else{
+		params['bbox'] = filters.map.bounds._southWest.lat + "," + filters.map.bounds._southWest.lng + "," + filters.map.bounds._northEast.lat + "," + filters.map.bounds._northEast.lng
 	}
 };
 
@@ -176,5 +181,5 @@ TrainDataSource.prototype.postProcess = function(data, params, filters, checksum
 // called by the scheduler when Filters hcange, in order to know if the
 // modification of filters have impact on this datatSource.
 TrainDataSource.prototype.isConcernedByFilterChanges = function(changedKeys) {
-	return _.intersection(changedKeys, [ 'visible', 'num_train', 'map', 'tracking', this.name + '_types' ]).length > 0;
+	return _.intersection(changedKeys, [ 'visible', 'num_train', 'id_gare','map', 'tracking', this.name + '_types' ]).length > 0;
 };

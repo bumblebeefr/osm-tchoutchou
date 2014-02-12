@@ -25,3 +25,4 @@
   <tr><td class="help" colspan="2">Aucun train</td></tr>
 {{/each}}
 </table>
+<a href="#" id="gare_filter" Id_gare="{{safe gare.name_gare}}|{{safe gare.id_gare}}" ><i class="fa fa-magic"></i> Filtrer les trains passant par {{safe gare.name_gare}}</button>

@@ -10,6 +10,7 @@ var Filters = {
 		visible : visible_filter,
 		train_layer : "national",
 		num_train : "",
+		id_gare : "", //id de la gare sur laquelle filtrer les trains
 		map : {
 			bounds : {
 				_southWest : {

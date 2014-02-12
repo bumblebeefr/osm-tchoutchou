@@ -95,9 +95,11 @@ var DisplayManager = {
 	addLoading : function(nb) {
 		DisplayManager.loading += nb;
 		if (DisplayManager.loading > 0) {
+			$("body").addClass("loadingCursor");
 			$("#icon").addClass("loading");
 		} else {
 			$("#icon").removeClass("loading");
+			$("body").removeClass("loadingCursor");
 		}
 	},
 	//gestion d'un icone de chargement sur une "iconTarget" fournie (par ex le bouton qui a lancé l'action)
