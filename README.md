@@ -1,9 +1,10 @@
-osm-tchoutchou
+Raildar
 ==============
+*OSM Tchoutchou UI*
 
-An Open Street Map (leaflet) interface to Turblog's raildar.fr data.
+Web GUI of [Raildar](http://raildar.fr), a free real-time map of french Trains.
 
-Demo : http://raildar.bumblebee.cc or http://raildar.fr/osmtchoutchou/
+It use Leaflet.js and Open Street Map Tiles to display the map, data are provided [raildar api](http://wiki.raildar.fr/index.php/API).
 
 Some details on the original raildar map and API : https://pad.ilico.org/p/raildar  & http://blog.spyou.org/wordpress-mu/2013/11/30/jstchoutchou/
 
