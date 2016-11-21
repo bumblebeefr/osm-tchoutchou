@@ -2,8 +2,30 @@
  * ObjetTrajet (polyligne suivie théoriquement par le train)
  */
 
-var gareIcon = L.icon({
+var gareIconVerySmall = L.icon({
 	iconUrl : 'static/images/gare.png',
+	//shadowUrl : 'static/images/gare_shadow.png',
+
+	iconSize : [ 10, 10 ], // size of the icon
+	//shadowSize : [ 46, 46 ], // size of the shadow
+	iconAnchor : [ 5, 5 ], // point of the icon which will correspond to marker's location
+	//shadowAnchor : [ 5, 28 ], // the same for the shadow
+	popupAnchor : [ 0, -3 ] // point from which the popup should open relative to the iconAnchor
+});
+
+var gareIconSmall = L.icon({
+	iconUrl : 'static/images/gare.png',
+	//shadowUrl : 'static/images/gare_shadow.png',
+
+	iconSize : [ 18, 18 ], // size of the icon
+	//shadowSize : [ 46, 46 ], // size of the shadow
+	iconAnchor : [ 9, 9 ], // point of the icon which will correspond to marker's location
+	//shadowAnchor : [ 5, 28 ], // the same for the shadow
+	popupAnchor : [ 0, -7 ] // point from which the popup should open relative to the iconAnchor
+});
+
+var gareIcon = L.icon({
+	iconUrl : 'static/images/gare1.png',
 	//shadowUrl : 'static/images/gare_shadow.png',
 
 	iconSize : [ 26, 26 ], // size of the icon
@@ -12,6 +34,29 @@ var gareIcon = L.icon({
 	//shadowAnchor : [ 5, 28 ], // the same for the shadow
 	popupAnchor : [ 0, -9 ] // point from which the popup should open relative to the iconAnchor
 });
+var gareIconLarge = L.icon({
+	iconUrl : 'static/images/gare1.png',
+	//shadowUrl : 'static/images/gare_shadow.png',
+
+	iconSize : [ 50, 50 ], // size of the icon
+	//shadowSize : [ 46, 46 ], // size of the shadow
+	iconAnchor : [ 25, 25 ], // point of the icon which will correspond to marker's location
+	//shadowAnchor : [ 5, 28 ], // the same for the shadow
+	popupAnchor : [ 0, -20 ] // point from which the popup should open relative to the iconAnchor
+});
+
+
+var getIconForZoom=function(zoom){
+	if (zoom<11){
+		return gareIconVerySmall;
+	} else if (zoom <13){
+		return gareIconSmall;
+	}else if (zoom<15){
+		return gareIcon;
+	} else {
+		return gareIconLarge;		
+	}
+};
 
 function Trajet(train) {
 	var self = this;
@@ -185,7 +230,7 @@ function Trajet(train) {
 				var name=htmlDecode(unescape(feature.properties.name_gare) );
 				//var circle = L.circleMarker(latlng,{title:[prefixGareName(name),name].join("")});
 
-				var gare = L.marker(latlng, {icon: gareIcon,opacity:0.85,title:[prefixGareName(name),name].join("")})
+				var gare = L.marker(latlng, {icon: getIconForZoom(map.getZoom()),opacity:0.85,title:[prefixGareName(name),name].join("")})
 				/*$(circle).on("click", function() {
 					self.getGarePopup(circle, feature);
 				});
@@ -196,11 +241,11 @@ function Trajet(train) {
 					self.getGarePopup(gare, feature);
 				});
 				
-				/*map.on('zoomend', function() {
-					console.log([ "new radius", getRadiusFromZoom() ].join(":"));
-					circle.setRadius(getRadiusFromZoom());
+				map.on('zoomend', function() {					
+					gare.setIcon(getIconForZoom(map.getZoom()));
 				});
-				*/
+				
+				
 				return gare;
 			}
 		});

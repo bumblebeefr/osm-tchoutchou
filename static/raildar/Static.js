@@ -56,5 +56,6 @@ var train_types = {
 
 var position_type = {
 	1:"GPS théorique",
-	2:"extrapolée"	
+	2:"extrapolée",	
+	3:"GPS réel"	
 };
